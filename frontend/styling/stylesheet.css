@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Stardos+Stencil:wght@700&display=swap');
+
+.test-class{
+    /*font-family: 'Saira Stencil One', cursive;*/
+    font-family: 'Stardos Stencil', cursive;
+    font-size: 128px;
+}
+
+.bsr-matrix{
+    border: solid 2px blue;
+}
+.bsr-matrix table{
+    border-collapse: collapse;
+}
+.bsr-matrix td{
+    
+    border: solid 1px black;
+}

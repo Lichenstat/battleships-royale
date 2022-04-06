@@ -17,3 +17,7 @@
     
     border: solid 1px black;
 }
+
+table, th, td {
+    border: 1px solid;
+  }

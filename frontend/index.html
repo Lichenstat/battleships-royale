@@ -31,23 +31,21 @@
             </tr>
         </table>
     </div>
+    <div id="test-table">
+
+    </div>
+    <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
         console.log("fadfasdf");
     </script>
-    <script src="./scripts/table-maker.js">
-        function func(a, b) {
-            var sum = a + b;
-            return sum;
-            }
-        console.log(func(1, 2));agdadf
-        hiehwi 
-        table = new Table(10, 10);
-        console.log("foofoofofoff");
-        console.log(table.test());
-        console.log(Table.test());
-        
-        document.getElementById("test").onclick = function(){func(1,2)};
+    -->
+    <script type="module">
+        import {GenerateTable} from "./scripts/generate-table.js";
+        let testcase = new GenerateTable('testing', 'testing', 0, 0, 10, 10);
+        document.getElementById("test-table").innerHTML = testcase.showinfo();
+        document.getElementById("test-table").innerHTML = testcase.generateTable();
 
+        //console.log(parseInt('1') + 1);
     </script>
 </body>
 <hr>

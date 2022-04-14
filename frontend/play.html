@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Battleships Royale</title>
+    <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
+    <!--<meta name="author" content="SitePoint">-->
+    <link href="./styling/stylesheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class='bsr'>
+        <div class='bsr__nav'>
+            <a class="bsr__link bsr__link--active" href="play.html">Play</a>
+            <a class="bsr__link bsr__link--inactive" href="leaderboard.html">Leaderboard</a>
+            <a class="bsr__link bsr__link--inactive" href="about.html">About</a>
+        </div>
+        <div class="bsr__menu">
+            <div class="bsr__game">
+                <button class=""></button>
+                <button class=""></button>
+                <button class=""></button>
+            </div>
+            <div class="bsr__options" id="bsr__options">
+
+            </div>
+            <div class="bsr__players" id="bsr__players">
+
+            </div>
+        </div>
+        <div class="color">
+            test
+            <div class="test__color">
+                test
+                <div class="test__color--border">
+                    test
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='test' id="test">
+
+    </div>
+    <!--
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
+    </script>
+    -->
+    <script type="module">
+        import {GenerateTable} from "./scripts/generate-table.js";
+        import {GenerateButton} from "./scripts/generate-button.js";
+        let testtable = new GenerateTable();
+        testtable.showInfo();
+        let testbutton = new GenerateButton();
+        testbutton.showInfo();
+        //document.getElementById('test').innerHTML = testbutton.showButtonInfo();
+        //document.getElementById("test-table").innerHTML = testcase.showinfo();
+        //document.getElementById("test-table").innerHTML = testcase.generateTable();
+    </script>
+</body>
+<hr>
+<footer>
+
+</footer>
+</html>

@@ -1,9 +1,10 @@
-// MakeTable class to help with generating a table for use in html
+// GenerateTable class to help with generating a table for use in html
+// Can generate and return a html table object
 
 export {GenerateTable}
 
 class GenerateTable{
-    constructor(tableclass = '', tableid = '', tableheadcolumns = 0, tablefootcolumns = 0, rows = 0, columns = 0){
+    constructor(tableclass = 'generic-table', tableid = 'generic-table', tableheadcolumns = 0, tablefootcolumns = 0, rows = 0, columns = 0){
         this.rows = rows;
         this.columns = columns;
         this.tableclass = tableclass;
@@ -16,29 +17,25 @@ class GenerateTable{
     // create table cells via a given number of columns for a row in a table
     #generateTableRow(numberofcols){
         let generatedrow = '<tr' + 
-                     ' class=' + this.tableclass + '-row-' + this.tablerow +
-                     ' id=' + this.tableid + '-row-' + this.tablerow + 
+                     ' class=' + this.tableclass + '__row--' + this.tablerow +
+                     ' id=' + this.tableid + '__row--' + this.tablerow + 
                      '>';
         // generate table cells ina  row via a number of columns
         for(let i = 1; i <= numberofcols; i++){
             generatedrow = generatedrow + '<td ' + 
-            ' class=' + this.tableclass + '-cell-(' + this.tablerow + ',' + i + ')' +
-            ' id=' + this.tableid + '-cell-(' + this.tablerow + ',' + i + ')' +
+            ' class=' + this.tableclass + '__cell-(' + this.tablerow + ',' + i + ')' +
+            ' id=' + this.tableid + '__cell-(' + this.tablerow + ',' + i + ')' +
             '>' +
             '</td>';
         }
         // end table elements and return finished table row with cells
         generatedrow = generatedrow + '</tr>';
-        console.log(this.tablerow);
         this.tablerow = this.tablerow + 1;
-        console.log(this.tablerow);
-        this.tablerow = this.tablerow;
-        console.log(this.tablerow);
         return generatedrow;
     }
 
     //generate the table and return it
-    generateTable(){
+    generateHTMLTable(){
         // generating beginning of the table
         let generatedtable = 
         '<table' + 
@@ -49,8 +46,8 @@ class GenerateTable{
         if(!this.tableheadcolumns == 0){
             generatedtable = generatedtable + 
                             '<thead' + 
-                            ' class=' + this.tableclass + '-head' +
-                            ' id=' + this.tableid + '-head' +
+                            ' class=' + this.tableclass + '__head' +
+                            ' id=' + this.tableid + '__head' +
                             '>' +
                             this.#generateTableRow(this.tableheadcolumns) + 
                             '</thead>';
@@ -67,22 +64,25 @@ class GenerateTable{
         if(!this.tablefootcolumns == 0){
             generatedtable = generatedtable + 
                             '<tfoot' + 
-                            ' class=' + this.tableclass + '-foot' +
-                            ' id=' + this.tableid + '-foot' +
+                            ' class=' + this.tableclass + '__foot' +
+                            ' id=' + this.tableid + '__foot' +
                             '>' +
                             this.#generateTableRow(this.tablefootcolumns) + 
                             '</tfoot>';
         }
         // finished generating the table, add closing element and return table
         generatedtable = generatedtable + '</table>';
+        this.tablerow = 1;
         return generatedtable;
     }
 
+    /*
     test3by3(){
         return '<table><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>';
     }
+    */
 
-    showinfo(){
+    showInfo(){
         console.log(this.tableclass, 
                     this.tableid,
                     this.tableheadcolumns,

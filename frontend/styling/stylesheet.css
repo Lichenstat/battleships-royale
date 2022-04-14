@@ -1,23 +1,50 @@
+/* battleships royale css is stylized using BEM naming conventions*/
+
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Stardos+Stencil:wght@700&display=swap');
 
-.test-class{
-    /*font-family: 'Saira Stencil One', cursive;*/
+body{
     font-family: 'Stardos Stencil', cursive;
-    font-size: 128px;
 }
 
-.bsr-matrix{
-    border: solid 2px blue;
+/* bsr is shorthand for battleships royale*/
+.bsr{
+
 }
-.bsr-matrix table{
-    border-collapse: collapse;
+
+.bsr__nav{
+    text-align: center;
+    margin: auto;
+    width: 50%;
+    border: 3px solid green;
+    padding: 10px;
 }
-.bsr-matrix td{
-    
-    border: solid 1px black;
+
+.bsr__link{
+
+}
+
+.bsr__link--active{
+
+}
+
+.bsr__link--inactive{
+
 }
 
 table, th, td {
     border: 1px solid;
+  }
+
+  .color{
+    color: brown;
+  }
+
+  .test__color{
+    font-size: 24px;
+  }
+
+  .test__color--border{
+      color: green;
+      border: 2px solid green;
   }

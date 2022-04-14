@@ -1,0 +1,1 @@
+import { GenerateTable, Generate } from "./generate-table";

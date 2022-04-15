@@ -9,6 +9,18 @@ class GenerateButton{
         this.buttonid = buttonid;
         this.buttontype = buttontype;
         this.buttoninternal = buttoninternal;
+        this.currentbutton = this.#generateHTMLButton();
+    }
+
+    // generate the set html button
+    #generateHTMLButton(){
+        let finalizedbutton = '<button' + 
+                              ' class=' + this.buttonclass + '__button' +
+                              ' id=' + this.buttonid + '__button' +
+                              ' type=' + this.buttontype + 
+                              '>' + this.buttoninternal + 
+                              '</button>';
+        return finalizedbutton;
     }
 
     // set html button properties when wanting to generate a html button
@@ -17,16 +29,12 @@ class GenerateButton{
         this.buttonid = buttonid;
         this.buttontype = buttontype;
         this.buttoninternal = buttoninternals;
+        this.currentbutton = this.#generateHTMLButton();
     }
 
-    // generate and return a set html button
-    generateHTMLButton(){
-        let finalizedbutton = '<button' + 
-                              ' class=' + this.buttonclass + 
-                              ' id=' + this.buttonid + 
-                              ' type=' + this.buttontype +
-                              '>' + this.buttoninternal +
-                              '</button>';
-        return finalizedbutton;
+    // get the currently made html button
+    getHTMLButton(){
+        return this.currentbutton;
     }
+
 }

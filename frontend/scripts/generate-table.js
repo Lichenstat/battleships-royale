@@ -12,18 +12,19 @@ class GenerateTable{
         this.rows = rows;
         this.columns = columns;
         this.tablerow = 1;
+        this.currenttable = this.#generateHTMLTable();
     }
 
     // create table cells via a given number of columns for a row in a table
     #generateTableRow(numberofcols){
         let generatedrow = '<tr' + 
-                     ' class=' + this.tableclass + '__row--' + this.tablerow +
-                     ' id=' + this.tableid + '__row--' + this.tablerow + 
+                     ' class=' + this.tableclass + '__row' + 
+                     ' id=' + this.tableid + '__row-' + this.tablerow + 
                      '>';
         // generate table cells ina  row via a number of columns
         for(let i = 1; i <= numberofcols; i++){
             generatedrow = generatedrow + '<td ' + 
-            ' class=' + this.tableclass + '__cell-(' + this.tablerow + ',' + i + ')' +
+            ' class=' + this.tableclass + '__cell' +
             ' id=' + this.tableid + '__cell-(' + this.tablerow + ',' + i + ')' +
             '>' +
             '</td>';
@@ -34,18 +35,8 @@ class GenerateTable{
         return generatedrow;
     }
 
-    // set the html table properties when desiring to make a table
-    setHTMLTableProperties(tableclass, tableid, tableheadcolumnnumber, tablefootcolumnnumber, rows, columns){
-        this.tableclass = tableclass;
-        this.tableid = tableid;
-        this.tableheadcolumns = tableheadcolumnnumber;
-        this.tablefootcolumns = tablefootcolumnnumber;
-        this.rows = rows;
-        this.columns = columns;
-    }
-
     // generate the table and return it
-    generateHTMLTable(){
+    #generateHTMLTable(){
         // generating beginning of the table
         let generatedtable = 
         '<table' + 
@@ -84,5 +75,21 @@ class GenerateTable{
         generatedtable = generatedtable + '</table>';
         this.tablerow = 1;
         return generatedtable;
+    }
+
+    // set the html table properties when desiring to make a table
+    setHTMLTableProperties(tableclass, tableid, tableheadcolumnnumber, tablefootcolumnnumber, rows, columns){
+        this.tableclass = tableclass;
+        this.tableid = tableid;
+        this.tableheadcolumns = tableheadcolumnnumber;
+        this.tablefootcolumns = tablefootcolumnnumber;
+        this.rows = rows;
+        this.columns = columns;
+        this.currenttable = this.#generateHTMLTable();
+    }
+
+    // get the currently made html table to return
+    getHTMLTable(){
+        return this.currenttable;
     }
 }

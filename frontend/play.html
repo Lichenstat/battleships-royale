@@ -47,15 +47,16 @@
     <script type="module">
         import {GenerateTable} from "./scripts/generate-table.js";
         import {GenerateButton} from "./scripts/generate-button.js";
-        import {GenerateHelper} from "./scripts/generate-index.js";
+        import {Helper} from "./scripts/helper.js";
         let testtable = new GenerateTable();
-        //testtable.showInfo();
+        testtable.setHTMLTableProperties('testc', 'testi', 0, 0, 10, 10);
         let testbutton = new GenerateButton();
-        //document.getElementById('test').innerHTML = testbutton.generateHTMLButton();
-        document.getElementById('test').innerHTML = GenerateHelper.printObjectInfo(testtable);
-
-        //document.getElementById("test-table").innerHTML = testcase.showinfo();
-        //document.getElementById("test-table").innerHTML = testcase.generateTable();
+        testbutton.setHTMLButtonProperties('bc', 'bi', "button", 'X');
+        document.getElementById('test').innerHTML = testtable.getHTMLTable();
+        document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();
+        //console.log(document.getElementById('generic-button__button').parentElement.id);
+        document.getElementById('test').innerHTML = Helper.getObjectInfo(testtable);
+        console.log(Helper.parseElementIdForMatrixLocation(document.getElementById('testi__cell-(1,1)').id));
     </script>
 </body>
 <hr>

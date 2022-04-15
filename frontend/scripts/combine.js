@@ -1,1 +1,1 @@
-import { GenerateTable, Generate } from "./generate-table";
+import {GenerateTable} from "./scripts/generate-table.js";

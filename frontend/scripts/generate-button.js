@@ -1,5 +1,5 @@
 // GenerateButton class to help with generating buttons for a choice in html
-// Can generate and return a button
+// Can generate and return button(s)
 
 export {GenerateButton}
 
@@ -11,14 +11,22 @@ class GenerateButton{
         this.buttoninternal = buttoninternal;
     }
 
-    showInfo(){
-        for(let i = 0; i < 4; i++){
-            console.log(GenerateButton);
-            //console.log(Object.keys(GenerateButton));
-        }
+    // set html button properties when wanting to generate a html button
+    setHTMLButtonProperties(buttonclass, buttonid, buttontype, buttoninternals){
+        this.buttonclass = buttonclass;
+        this.buttonid = buttonid;
+        this.buttontype = buttontype;
+        this.buttoninternal = buttoninternals;
     }
-    
 
-
-
+    // generate and return a set html button
+    generateHTMLButton(){
+        let finalizedbutton = '<button' + 
+                              ' class=' + this.buttonclass + 
+                              ' id=' + this.buttonid + 
+                              ' type=' + this.buttontype +
+                              '>' + this.buttoninternal +
+                              '</button>';
+        return finalizedbutton;
+    }
 }

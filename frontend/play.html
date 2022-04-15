@@ -18,7 +18,7 @@
             <div class="bsr__game">
                 <button class=""></button>
                 <button class=""></button>
-                <button class=""></button>
+                <button class="" id="" type="button"> button </button>
             </div>
             <div class="bsr__options" id="bsr__options">
 
@@ -47,11 +47,13 @@
     <script type="module">
         import {GenerateTable} from "./scripts/generate-table.js";
         import {GenerateButton} from "./scripts/generate-button.js";
+        import {GenerateHelper} from "./scripts/generate-index.js";
         let testtable = new GenerateTable();
-        testtable.showInfo();
+        //testtable.showInfo();
         let testbutton = new GenerateButton();
-        testbutton.showInfo();
-        //document.getElementById('test').innerHTML = testbutton.showButtonInfo();
+        //document.getElementById('test').innerHTML = testbutton.generateHTMLButton();
+        document.getElementById('test').innerHTML = GenerateHelper.printObjectInfo(testtable);
+
         //document.getElementById("test-table").innerHTML = testcase.showinfo();
         //document.getElementById("test-table").innerHTML = testcase.generateTable();
     </script>

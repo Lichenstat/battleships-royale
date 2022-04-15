@@ -1,16 +1,16 @@
 // GenerateTable class to help with generating a table for use in html
 // Can generate and return a html table object
 
-export {GenerateTable}
+export {GenerateTable} 
 
 class GenerateTable{
     constructor(tableclass = 'generic-table', tableid = 'generic-table', tableheadcolumns = 0, tablefootcolumns = 0, rows = 0, columns = 0){
-        this.rows = rows;
-        this.columns = columns;
         this.tableclass = tableclass;
         this.tableid = tableid;
         this.tableheadcolumns = tableheadcolumns;
         this.tablefootcolumns = tablefootcolumns;
+        this.rows = rows;
+        this.columns = columns;
         this.tablerow = 1;
     }
 
@@ -34,7 +34,17 @@ class GenerateTable{
         return generatedrow;
     }
 
-    //generate the table and return it
+    // set the html table properties when desiring to make a table
+    setHTMLTableProperties(tableclass, tableid, tableheadcolumnnumber, tablefootcolumnnumber, rows, columns){
+        this.tableclass = tableclass;
+        this.tableid = tableid;
+        this.tableheadcolumns = tableheadcolumnnumber;
+        this.tablefootcolumns = tablefootcolumnnumber;
+        this.rows = rows;
+        this.columns = columns;
+    }
+
+    // generate the table and return it
     generateHTMLTable(){
         // generating beginning of the table
         let generatedtable = 
@@ -75,20 +85,4 @@ class GenerateTable{
         this.tablerow = 1;
         return generatedtable;
     }
-
-    /*
-    test3by3(){
-        return '<table><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>';
-    }
-    */
-
-    showInfo(){
-        console.log(this.tableclass, 
-                    this.tableid,
-                    this.tableheadcolumns,
-                    this.tablefootcolumns, 
-                    this.rows, 
-                    this.columns);
-    }
-
 }

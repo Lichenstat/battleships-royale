@@ -1,95 +1,95 @@
 // GenerateTable class to help with generating a table for use in html
 // Can generate and return a html table object
 
-export {GenerateTable} 
+export { GenerateTable } 
 
 class GenerateTable{
-    constructor(tableclass = 'generic-table', tableid = 'generic-table', tableheadcolumns = 0, tablefootcolumns = 0, rows = 0, columns = 0){
-        this.tableclass = tableclass;
-        this.tableid = tableid;
-        this.tableheadcolumns = tableheadcolumns;
-        this.tablefootcolumns = tablefootcolumns;
+    constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0){
+        this.className = className;
+        this.id = id;
+        this.tableHeadColumnCount = tableHeadColumnCount;
+        this.tableFootColumnCount = tableFootColumnCount;
         this.rows = rows;
         this.columns = columns;
-        this.tablerow = 1;
-        this.currenttable = this.#generateHTMLTable();
+        this.tableRow = 1;
+        this.currentTable = this.#generateHTMLTable();
     }
 
     // create table cells via a given number of columns for a row in a table
     #generateTableRow(numberofcols){
-        let generatedrow = '<tr' + 
-                     ' class=' + this.tableclass + '__row' + 
-                     ' id=' + this.tableid + '__row-' + this.tablerow + 
+        let finalizedRow = '<tr' + 
+                     ' class=' + this.className + '-row' + 
+                     ' id=' + this.id + '-row-' + this.tableRow + 
                      '>';
         // generate table cells ina  row via a number of columns
         for(let i = 1; i <= numberofcols; i++){
-            generatedrow = generatedrow + '<td ' + 
-            ' class=' + this.tableclass + '__cell' +
-            ' id=' + this.tableid + '__cell-(' + this.tablerow + ',' + i + ')' +
+            finalizedRow = finalizedRow + '<td ' + 
+            ' class=' + this.className + '-cell' +
+            ' id=' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' +
             '>' +
             '</td>';
         }
         // end table elements and return finished table row with cells
-        generatedrow = generatedrow + '</tr>';
-        this.tablerow = this.tablerow + 1;
-        return generatedrow;
+        finalizedRow = finalizedRow + '</tr>';
+        this.tableRow = this.tableRow + 1;
+        return finalizedRow;
     }
 
     // generate the table and return it
     #generateHTMLTable(){
         // generating beginning of the table
-        let generatedtable = 
+        let finalizedTable = 
         '<table' + 
-        ' class=' + this.tableclass + 
-        ' id=' + this.tableid + 
+        ' class=' + this.className + 
+        ' id=' + this.id + 
         '>';
         // generate table header (if it exists) an append to table
-        if(!this.tableheadcolumns == 0){
-            generatedtable = generatedtable + 
+        if(!this.tableHeadColumnCount == 0){
+            finalizedTable = finalizedTable + 
                             '<thead' + 
-                            ' class=' + this.tableclass + '__head' +
-                            ' id=' + this.tableid + '__head' +
+                            ' class=' + this.className + '-head' +
+                            ' id=' + this.id + '-head' +
                             '>' +
-                            this.#generateTableRow(this.tableheadcolumns) + 
+                            this.#generateTableRow(this.tableHeadColumnCount) + 
                             '</thead>';
         }
         // generating and appending table body
-        generatedtable = generatedtable + 
+        finalizedTable = finalizedTable + 
                         '<tbody>';
         for(let i = 1; i <= this.rows; i++){
-            generatedtable = generatedtable + this.#generateTableRow(this.columns);
+            finalizedTable = finalizedTable + this.#generateTableRow(this.columns);
         }
-        generatedtable = generatedtable + 
+        finalizedTable = finalizedTable + 
                         '</tbody>';
         // generate table footer (if it exists) and append to table
-        if(!this.tablefootcolumns == 0){
-            generatedtable = generatedtable + 
+        if(!this.tableFootColumnCount == 0){
+            finalizedTable = finalizedTable + 
                             '<tfoot' + 
-                            ' class=' + this.tableclass + '__foot' +
-                            ' id=' + this.tableid + '__foot' +
+                            ' class=' + this.className + '-foot' +
+                            ' id=' + this.id + '-foot' +
                             '>' +
-                            this.#generateTableRow(this.tablefootcolumns) + 
+                            this.#generateTableRow(this.tableFootColumnCount) + 
                             '</tfoot>';
         }
         // finished generating the table, add closing element and return table
-        generatedtable = generatedtable + '</table>';
-        this.tablerow = 1;
-        return generatedtable;
+        finalizedTable = finalizedTable + '</table>';
+        this.tableRow = 1;
+        return finalizedTable;
     }
 
     // set the html table properties when desiring to make a table
-    setHTMLTableProperties(tableclass, tableid, tableheadcolumnnumber, tablefootcolumnnumber, rows, columns){
-        this.tableclass = tableclass;
-        this.tableid = tableid;
-        this.tableheadcolumns = tableheadcolumnnumber;
-        this.tablefootcolumns = tablefootcolumnnumber;
+    setHTMLTableProperties(className, id, tableHeadColumnCount, tableFootColumnCount, rows, columns){
+        this.className = className;
+        this.id = id;
+        this.tableHeadColumnCount = tableHeadColumnCount;
+        this.tableFootColumnCount = tableFootColumnCount;
         this.rows = rows;
         this.columns = columns;
-        this.currenttable = this.#generateHTMLTable();
+        this.currentTable = this.#generateHTMLTable();
     }
 
     // get the currently made html table to return
     getHTMLTable(){
-        return this.currenttable;
+        return this.currentTable;
     }
 }

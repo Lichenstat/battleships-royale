@@ -1,15 +1,15 @@
 // helper class with various methods for using and getting various info about generated
 // objects during .js runtime
 
-export {Helper}
+export { Helper }
 
 class Helper{
-    constructor(objectlist = {}){
-        this.objectlist = objectlist;
+    constructor(objectList = {}){
+        this.objectList = objectList;
     }
 
     // function to help with printing object information to html
-    static ObjectInfo(object){
+    static getObjectInfo(object){
         let text = ''
         for(var key in object){
             text = text + key + ': ' + object[key] + '<br>';

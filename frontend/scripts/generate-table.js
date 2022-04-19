@@ -1,28 +1,39 @@
 // GenerateTable class to help with generating a table for use in html
 // Can generate and return a html table object
 
+//import { Helper } from "./helper";
+
 export { GenerateTable } 
 
 class GenerateTable{
-    constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0){
+    constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0, cellContents=null){
         this.className = className;
         this.id = id;
         this.tableHeadColumnCount = tableHeadColumnCount;
         this.tableFootColumnCount = tableFootColumnCount;
         this.rows = rows;
         this.columns = columns;
+        this.cellContents = cellContents;
+        this.cellContentsBeingChecked = null;
         this.tableRow = 1;
         this.currentTable = this.#generateHTMLTable();
     }
 
+    // if there has been cell contents given during the generation process of the table
+    #getCellContents(){
+        if(this.cellContents){
+            
+        }
+    }
+
     // create table cells via a given number of columns for a row in a table
-    #generateTableRow(numberofcols){
+    #generateTableRow(numberOfCols){
         let finalizedRow = '<tr' + 
                      ' class=' + this.className + '-row' + 
                      ' id=' + this.id + '-row-' + this.tableRow + 
                      '>';
         // generate table cells ina  row via a number of columns
-        for(let i = 1; i <= numberofcols; i++){
+        for(let i = 1; i <= numberOfCols; i++){
             finalizedRow = finalizedRow + '<td ' + 
             ' class=' + this.className + '-cell' +
             ' id=' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' +
@@ -78,13 +89,14 @@ class GenerateTable{
     }
 
     // set the html table properties when desiring to make a table
-    setHTMLTableProperties(className, id, tableHeadColumnCount, tableFootColumnCount, rows, columns){
+    setHTMLTableProperties(className, id, tableHeadColumnCount, tableFootColumnCount, rows, columns, cellContents){
         this.className = className;
         this.id = id;
         this.tableHeadColumnCount = tableHeadColumnCount;
         this.tableFootColumnCount = tableFootColumnCount;
         this.rows = rows;
         this.columns = columns;
+        this.cellContents = cellContents;
         this.currentTable = this.#generateHTMLTable();
     }
 

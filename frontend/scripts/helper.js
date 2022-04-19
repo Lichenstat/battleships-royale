@@ -6,6 +6,53 @@ export { Helper }
 class Helper{
     constructor(objectList = {}){
         this.objectList = objectList;
+        this.objectArray = [];
+    }
+
+    // function to match case object contents to a desired property to see if it exists
+    static doesObjectContainProperty(object, propertyName){
+        //console.log(object, propertyName);
+        // if the object has the property
+        if (object.hasOwnProperty(propertyName)){
+            return true;
+        }
+        // otherwise check the other objects in the object (checking nested objects)
+        for (var key in object){
+            if (typeof object[key] === 'object'){
+                return this.doesObjectContainProperty(object[key], propertyName);
+            } 
+        }
+        return false;
+    }
+
+    // to simply set the name of an object if it is desired
+    static #doesWantNameOfObject(bool, objectName){
+        if (bool){
+            return (objectName + ' <- ');
+        }
+        return '';
+    }
+
+    // function to retrieve a property or given properties from a given object using keys (can find nested properties)
+    static getObjectPropertiesByName(object, propertyName, showWhereDerivedFrom = false, parentName = object.constructor.name){
+        let objectArray = [];
+        let objectLastPosition = Object.keys(object).length - 1;
+        for (var key in object){
+            // check other objects in the object (checking for nested objects)
+            if (typeof object[key] === 'object'){
+                return objectArray.concat(this.getObjectPropertiesByName(object[key], propertyName, showWhereDerivedFrom, this.#doesWantNameOfObject(showWhereDerivedFrom, parentName) + key));
+            }
+            // check if the object property does exist and return it if it does
+            if (key === propertyName){
+                let overallName = this.#doesWantNameOfObject(showWhereDerivedFrom, parentName) + [propertyName];
+                objectArray.push({[overallName] : object[key]});
+            }
+            // if cycling through the object has found the last position, return the matching objects
+            if (object[objectLastPosition] === object[key]){
+                return objectArray;
+            }
+        }
+        return objectArray;
     }
 
     // function to help with printing object information to html

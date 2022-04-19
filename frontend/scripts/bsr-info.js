@@ -10,8 +10,8 @@ const bsrTableProperties = {
     id : 'bsr__table',
     tableHeadColumnCount : 0,
     tableFootColumnCount : 0,
-    tableRows : 10,
-    tableColumns : 10
+    rows : 10,
+    columns : 10
 }
 
 // for the bsr plots/squares

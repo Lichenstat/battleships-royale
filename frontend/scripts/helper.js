@@ -34,13 +34,13 @@ class Helper{
     }
 
     // function to retrieve a property or given properties from a given object using keys (can find nested properties)
-    static getObjectPropertiesByName(object, propertyName, showWhereDerivedFrom = false, parentName = object.constructor.name){
+    static getObjectPropertyByName(object, propertyName, showWhereDerivedFrom = false, parentName = object.constructor.name){
         let objectArray = [];
         let objectLastPosition = Object.keys(object).length - 1;
         for (var key in object){
             // check other objects in the object (checking for nested objects)
             if (typeof object[key] === 'object'){
-                return objectArray.concat(this.getObjectPropertiesByName(object[key], propertyName, showWhereDerivedFrom, this.#doesWantNameOfObject(showWhereDerivedFrom, parentName) + key));
+                return objectArray.concat(this.getObjectPropertyByName(object[key], propertyName, showWhereDerivedFrom, this.#doesWantNameOfObject(showWhereDerivedFrom, parentName) + key));
             }
             // check if the object property does exist and return it if it does
             if (key === propertyName){

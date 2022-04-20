@@ -5,6 +5,7 @@
     <title>Battleships Royale</title>
     <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
     <!--<meta name="author" content="SitePoint">-->
+    <!--<base href=".">-->
     <link href="./styling/stylesheet.css" rel="stylesheet" />
 </head>
 <body>
@@ -45,14 +46,15 @@
     </script>
     -->
     <script type="module">
-        import {GenerateTable} from "./scripts/generate-table.js";
-        import {GenerateButton} from "./scripts/generate-button.js";
+        import {BsrGrid} from "./scripts/bsr-grid.js";
         import {Helper} from "./scripts/helper.js";
-        let testtable = new GenerateTable();
-        testtable.setHTMLTableProperties('testc', 'testi', 0, 0, 10, 10);
-        let testbutton = new GenerateButton();
-        testbutton.setHTMLButtonProperties('bc', 'bi', "button", 'X');
-        document.getElementById('test').innerHTML = testtable.getHTMLTable();
+        
+        let grid = new BsrGrid();
+        document.getElementById('test').innerHTML = grid.getGameGrid();
+        let bsrPlot = document.querySelectorAll("[id='bsr__plot']");
+        console.log(bsrPlot);
+        bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
+        //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();
         //console.log(document.getElementById('generic-button__button').parentElement.id);
         //document.getElementById('test').innerHTML = Helper.getObjectInfo(testtable);
@@ -63,7 +65,7 @@
         let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
 
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
-        console.log(Helper.getObjectPropertiesByName(testObj4, 'one', true));
+        //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));
 
         
     </script>

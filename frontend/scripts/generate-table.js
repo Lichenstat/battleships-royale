@@ -6,7 +6,7 @@
 export { GenerateTable } 
 
 class GenerateTable{
-    constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0, cellContents=null){
+    constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0, cellContents = {'all' : ''}){
         this.className = className;
         this.id = id;
         this.tableHeadColumnCount = tableHeadColumnCount;
@@ -14,16 +14,24 @@ class GenerateTable{
         this.rows = rows;
         this.columns = columns;
         this.cellContents = cellContents;
-        this.cellContentsBeingChecked = null;
+        //this.cellContentsBeingChecked = null;
         this.tableRow = 1;
         this.currentTable = this.#generateHTMLTable();
     }
 
     // if there has been cell contents given during the generation process of the table
-    #getCellContents(){
+    // to fill the cell with, data goes by object such as {'(2,3)' : value, '(5,7)' : value}
+    #getCellContents(location){
+        let locationName = '('+ location[0] + ',' + location[1] + ')';
         if(this.cellContents){
-            
+            if(this.cellContents[locationName]){
+                return this.cellContents[locationName];
+            }
+            if(this.cellContents['all']){
+                return this.cellContents['all'];
+            }
         }
+        return '';
     }
 
     // create table cells via a given number of columns for a row in a table
@@ -38,6 +46,7 @@ class GenerateTable{
             ' class=' + this.className + '-cell' +
             ' id=' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' +
             '>' +
+            this.#getCellContents([this.tableRow, i]) +
             '</td>';
         }
         // end table elements and return finished table row with cells

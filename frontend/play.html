@@ -17,9 +17,38 @@
         </div>
         <div class="bsr__menu">
             <div class="bsr__game">
-                <button class=""></button>
-                <button class=""></button>
-                <button class="" id="" type="button"> button </button>
+                *32 player limit at the moment*
+                <br>
+                <button class="bsr__choice bsr__choice--disabled">Join A Match</button>
+                <div class="bsr__dropdown bsr__dropdown--disabled">
+                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__join">Join Match</button>
+                    Got A Code? Enter It Here:
+                    <input type="text" class="bsr__code" id="bsr__code" minlength="32" maxlength="32" size="46" placeholder="################################">
+                </div>
+                <button class="bsr__choice bsr__choice--disabled">Create A Match</button>
+                <div class="bsr__dropdown bsr__dropdown--disabled">
+                    <label for="bsr_checkbox--ai">A.I. Enabled?</label>
+                    <input type="checkbox" class="bsr__checkbox bsr__checkbox--disabled" id="bsr__checkbox--ai" name="bsr__checkbox--ai" value=false>
+                    <label for="bsr__checkbox--public">Public Game? (Random people can join)</label>
+                    <input type="checkbox" class="bsr__checkbox bsr__checkbox--disabled" id="bsr__checkbox--public" name="bsr__checkbox--public" value=false>
+                    <label for="bsr__players--count">A.I. Count</label>
+                    <input type="number" class="bsr__players bsr__players--count" id="bsr__players--count" name="bsr__players--count" min=1 max=31 size="3">
+                    <br>
+                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__prepare">Prepare Game</button>
+                    <br>
+                    Match will start when countdown is finished or match is manually started...
+                    <br>
+                    (match time here)
+                    <br>
+                    Match Code:
+                    <br>
+                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__start">Start Game</button>
+                    <br>
+
+                    <div class="test__drag" id="test_drag" draggable="true" ondragstart="dragBoardPiece(event)">
+                        drag stuff
+                    </div>
+                </div>
             </div>
             <div class="bsr__options" id="bsr__options">
 
@@ -45,15 +74,55 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
     </script>
     -->
+    <script>
+        function allowDropBoardPiece(event) {
+          event.preventDefault();
+        }
+
+        function dragBoardPiece(event) {
+          event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function dropBoardPiece(event) {
+          event.preventDefault();
+          var data = event.dataTransfer.getData("text");
+          event.target.appendChild(document.getElementById(data));
+        }
+    </script>
     <script type="module">
         import {BsrGrid} from "./scripts/bsr-grid.js";
         import {Helper} from "./scripts/helper.js";
+        import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
+
+        //--------------------------------------------------------------
+        let joinGame = document.getElementById('bsr__join');
+        let gameCode = document.getElementById('bsr__code');
+
+        let aiCheckbox = document.getElementById('bsr__checkbox--ai');
+        let publicGame = document.getElementById('bsr__checkbox--public');
+        let playerCount = document.getElementById('bsr__players--count');
+        let prepareGame = document.getElementById('bsr__prepare');
+        let startGame = document.getElementById('bsr__start');
+
+        playerCount.onchange = () => {
+            if (playerCount.value < 1)
+                playerCount.value = 1;
+            if (playerCount.value > 31)
+                playerCount.value = 31;
+        }
+
+        //--------------------------------------------------------------
+
+
+        //--------------------------------------------------------------
         
         let grid = new BsrGrid();
-        document.getElementById('test').innerHTML = grid.getGameGrid();
+        document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
         let bsrPlot = document.querySelectorAll("[id='bsr__plot']");
         console.log(bsrPlot);
         bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
+        let playPieces = new BsrPlayPieces();
+        document.getElementById("bsr__options").innerHTML = (playPieces.getPiecesHorizontal())['carrier'];
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();
         //console.log(document.getElementById('generic-button__button').parentElement.id);
@@ -63,10 +132,10 @@
         let testObj2 = {'objectouter': {'objectinner': {'two' : 2}, 'three': 3}};
         let testObj3 = {'one' : {'two': 2 ,'three' : {'four' : 4 }}};
         let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
-
+        
+        console.log(Helper.setModifier(document.getElementById("bsr__checkbox--ai").className));
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
         //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));
-
         
     </script>
 </body>

@@ -1,8 +1,6 @@
 // GenerateTable class to help with generating a table for use in html
 // Can generate and return a html table object
 
-//import { Helper } from "./helper";
-
 export { GenerateTable } 
 
 class GenerateTable{
@@ -14,14 +12,13 @@ class GenerateTable{
         this.rows = rows;
         this.columns = columns;
         this.cellContents = cellContents;
-        //this.cellContentsBeingChecked = null;
         this.tableRow = 1;
         this.currentTable = this.#generateHTMLTable();
     }
 
     // if there has been cell contents given during the generation process of the table
     // to fill the cell with, data goes by object such as {'(2,3)' : value, '(5,7)' : value}
-    #getCellContents(location){
+    #setCellContents(location){
         let locationName = '('+ location[0] + ',' + location[1] + ')';
         if(this.cellContents){
             if(this.cellContents[locationName]){
@@ -46,7 +43,7 @@ class GenerateTable{
             ' class=' + this.className + '-cell' +
             ' id=' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' +
             '>' +
-            this.#getCellContents([this.tableRow, i]) +
+            this.#setCellContents([this.tableRow, i]) +
             '</td>';
         }
         // end table elements and return finished table row with cells

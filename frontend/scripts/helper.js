@@ -4,10 +4,6 @@
 export { Helper }
 
 class Helper{
-    constructor(objectList = {}){
-        this.objectList = objectList;
-        this.objectArray = [];
-    }
 
     // function to match case object contents to a desired property to see if it exists
     static doesObjectContainProperty(object, propertyName){
@@ -72,5 +68,16 @@ class Helper{
         row = matrix.substring(matrix.indexOf('(') + 1, matrix.indexOf(','));
         col = matrix.substring(matrix.indexOf(',') + 1, matrix.indexOf(')'));
         return [row, col];
+    }
+
+    // parse class or id to change it's modifier in BEM format for enabling or disabling 
+    static setModifier(classOrId){
+        let change = classOrId.substring(classOrId.indexOf('--') + 2);
+        if (change == 'disabled'){
+            return classOrId.substring(classOrId.indexOf(0), classOrId.indexOf('--') + 2) + 'enabled';
+        }
+        if (change == 'enabled'){
+            return classOrId.substring(classOrId.indexOf(0), classOrId.indexOf('--') + 2) + 'disabled';
+        }
     }
 }

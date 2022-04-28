@@ -2,7 +2,7 @@
 
 import { GenerateButton } from "./generate-button.js";
 import { Helper } from "./helper.js";
-import { bsrPlotProperties } from "./bsr-info.js";
+import { bsrPlotProperties } from "./bsr-config.js";
 
 export { BsrPlot }
 

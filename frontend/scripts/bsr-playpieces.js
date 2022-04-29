@@ -39,6 +39,4 @@ class BsrPlayPieces{
         return { carrier : this.bsrCarrierVertical, battleship : this.bsrBattleshipVertical, destroyer : this.bsrDestroyerVertical, submarine : this.bsrSubmarineVertical, patrolBoat : this.bsrPatrolBoatVertical};
     }
 
-
-
 }

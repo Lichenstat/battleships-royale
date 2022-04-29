@@ -41,7 +41,6 @@ const bsrGridPieces = {
     submarineVertical : { size : 3, class : 'bsr__playpiece bsr__playpiece--submarine-vertical', id: 'bsr__playpiece--submarine', rows : 1, columns : 3, content : '' },
     patrolboatHorizontal : { size : 2, class : 'bsr__playpiece bsr__playpiece--patrolboat-horizontal', id: 'bsr__playpiece--patrolboat', rows : 2, columns : 1, content : '' },
     patrolboatVertical : { size : 2, class : 'bsr__playpiece bsr__playpiece--patrolboat-vertical', id: 'bsr__playpiece--patrolboat', rows : 1, columns : 2, content : '' },
-    contentFiller : { 'all' : '<div class="bsr__placementplot bsr__placementplot-disabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)">generic text</div>' }
 }
 
 const bsrGridInternals = {

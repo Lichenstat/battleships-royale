@@ -110,4 +110,5 @@ class GenerateTable{
     getHTMLTable(){
         return this.currentTable;
     }
+    
 }

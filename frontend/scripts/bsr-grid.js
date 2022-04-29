@@ -32,12 +32,12 @@ class BsrGrid{
 
     // generate drag and drop grid
     #generateGameGridDragAndDrop(){
-        return this.currentGameGridDragAndDrop;
+        return this.gamePlacementTable;
     }
 
     // get drag and drop table
     getGameGridDragAndDrop(){
-        return this.gamePlacementTable;
+        return this.currentGameGridDragAndDrop;
     }
 
     // get grid position of clicked plot

@@ -87,15 +87,33 @@ class Helper{
 
     // eliminate content in a string that is quoted (bob "ate" pie -> bob pie)
     // must use even number of quotes
-    static getEliminatedQuotedContentInString(string){
-        let quoteCheck = string.match(/\"/g).length;
-        if (quoteCheck % 2){
-            throw new Error("uneven number of quotes used in string, cannot be parsed properly");
-        }
+    static getEliminateQuotedContentInString(string){
+        removedQuote = string.replace(/\"[^"]+\"/g, '');
+
         return string.replace(/\"[^"]+\"/g, ''); 
     }
 
+    // eliminate everything assigned in an html string of elements so parts can be copied and replaced
+    static getCleanedCopiedHtml(string){
+        console.log(string);
+        let partiallyCleaned = string.replace(/\s+="|=\s+"/, '="');
+        let elementAssigns = partiallyCleaned.match(/=\"[^"]+\"/g);
+        // partiallyCleaned = partiallyCleaned.replace(/>+>|\s+>/g, '>');
+        //let partiallyCleaned = string.replace(/<+</g, '<');
+        //partiallyCleaned = partiallyCleaned.replace(//, '="');
+        //partiallyCleaned = partiallyCleaned.replace(/<\/\s/g, '');
+        //partiallyCleaned = partiallyCleaned.replace(/<\/\W/g, '<');
+        partiallyCleaned = partiallyCleaned.replace(/\"[^"]+\"/g, '');
+
+        console.log(elementAssigns);
+
+        //partiallyCleaned = partiallyCleaned.replace(/[^<+\S+\s>]/g, '~');
+        console.log(partiallyCleaned);
+        return partiallyCleaned;
+    }
+
     // eliminate everything between <...> signs in a string (for use with html js strings)
+    // return example would be <><><></></>
     static getStrippedHtml(string){
         // remove anything that isn't <, >, or /
         let strippedHtml = string.replace(/[^<>\/]/g, '');
@@ -113,22 +131,46 @@ class Helper{
         return finalizedHtmlReduction;
     }
 
+    // get the tags in an html element
+    static getTagsOfHtmlElement(string){
+        return string.match(/<{1}\/{0,1}\w+/g);
+    }
+
+    // get the values of the attributes in the html tags
+    static getAttributeValuesOfHtmlTags(string){
+        let partiallyCleaned = this.getCleanedTagAttributes(string);
+        return partiallyCleaned.match(/\w+=\"[^"]+\"|\w+=\d+/g); // gives internal html equation values at times, fix later
+        
+    }
+
+    // clean up tag attributes if necessary
+    static getCleanedTagAttributes(string){
+        let partiallyCleaned = string.replace(/=\s+"/, '="');
+        partiallyCleaned = partiallyCleaned.replace(/\s+="/, '="');
+        partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
+        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, might fix later
+        return partiallyCleaned;
+    }
+
     // set the internal contents of a certain html string made in javascript using it's id
     // assumes a js html string exists in such a format of <div class.. id=..><e></e><f></f></div>
     // (note: does bug currently when used with placed url's containing </, as string needs to find ending element)
     static setHtmlStringInternalContent(htmlString, id, contentToInsert){
         console.log('working');
-        let checkInternalElements = 0;
-        console.log(this.getEliminatedQuotedContentInString(htmlString));
-        console.log(this.getStrippedHtml(htmlString));
-        let htmlElement = htmlString.substring(0, htmlString.indexOf(id));
-        htmlElement = htmlElement.substring(htmlElement.lastIndexOf('<') + 1, htmlElement.indexOf(' '));
-        console.log(htmlElement);
-
+        let pieces = this.getStrippedHtml(htmlString);
+        let startElement = pieces.match(/<>/g).length;
+        let startSymbol = htmlString.match(/</g);
+        let endElement = pieces.match(/<\/>/g).length;
+        let endSymbol = htmlString.match(/<\//g);
+        let htmlElementType = htmlString.substring(0, htmlString.indexOf(id));
+        htmlElementType = htmlElementType.substring(htmlElementType.lastIndexOf('<') + 1, htmlElementType.indexOf(' '));
+        console.log(this.getTagsOfHtmlElement(htmlString));
+        
+        console.log(startElement, startSymbol, endElement, endSymbol);
     }
 
     static testConsoleLog(){
         console.log("test console log");
     }
-    
+
 }

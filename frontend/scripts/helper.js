@@ -85,36 +85,16 @@ class Helper{
         return words.reduce((result, word) => result.replaceAll(word, ''), string);
     }
 
-    // eliminate content in a string that is quoted (bob "ate" pie -> bob pie)
-    // must use even number of quotes
-    static getEliminateQuotedContentInString(string){
-        removedQuote = string.replace(/\"[^"]+\"/g, '');
-
-        return string.replace(/\"[^"]+\"/g, ''); 
-    }
-
     // eliminate everything assigned in an html string of elements so parts can be copied and replaced
-    static getCleanedCopiedHtml(string){
-        console.log(string);
-        let partiallyCleaned = string.replace(/\s+="|=\s+"/, '="');
-        let elementAssigns = partiallyCleaned.match(/=\"[^"]+\"/g);
-        // partiallyCleaned = partiallyCleaned.replace(/>+>|\s+>/g, '>');
-        //let partiallyCleaned = string.replace(/<+</g, '<');
-        //partiallyCleaned = partiallyCleaned.replace(//, '="');
-        //partiallyCleaned = partiallyCleaned.replace(/<\/\s/g, '');
-        //partiallyCleaned = partiallyCleaned.replace(/<\/\W/g, '<');
-        partiallyCleaned = partiallyCleaned.replace(/\"[^"]+\"/g, '');
-
-        console.log(elementAssigns);
-
-        //partiallyCleaned = partiallyCleaned.replace(/[^<+\S+\s>]/g, '~');
+    static getHtmlCleanedCopy(string){
+        let partiallyCleaned = 0;
         console.log(partiallyCleaned);
         return partiallyCleaned;
     }
 
     // eliminate everything between <...> signs in a string (for use with html js strings)
     // return example would be <><><></></>
-    static getStrippedHtml(string){
+    static getHtmlStripped(string){
         // remove anything that isn't <, >, or /
         let strippedHtml = string.replace(/[^<>\/]/g, '');
         // remove all desired cases (<> and </>)
@@ -132,23 +112,102 @@ class Helper{
     }
 
     // get the tags in an html element
-    static getTagsOfHtmlElement(string){
-        return string.match(/<{1}\/{0,1}\w+/g);
+    static getHtmlTagsOfElements(string){
+        let partiallyCleaned = string.match(/<{1}\/{0,1}\w+/g);
+        return partiallyCleaned;
+    }
+    
+    // get the end case of the internals of html elements
+    static getHtmlEndingAttributesOfElements(string){
+        let changedString = this.getHtmlCleanedTagAttributes(string);
+        let htmlAttributes = this.getHtmlAttributesOfElements(string);
+        //console.log(htmlAttributes);
+        let htmlEndingAttributes = []
+        htmlAttributes.filter(
+            attribute =>
+            {
+                attribute = attribute.replace(/\(/g, '\\(');
+                attribute = attribute.replace(/\)/g, '\\)');
+                attribute = new RegExp(attribute + ' *>');
+                let attributeEnd = changedString.match(attribute);
+                if(attributeEnd){
+                    htmlEndingAttributes.push(attributeEnd.toString());
+                }
+            }
+        );
+        return htmlEndingAttributes;
     }
 
     // get the values of the attributes in the html tags
-    static getAttributeValuesOfHtmlTags(string){
-        let partiallyCleaned = this.getCleanedTagAttributes(string);
-        return partiallyCleaned.match(/\w+=\"[^"]+\"|\w+=\d+/g); // gives internal html equation values at times, fix later
-        
+    static getHtmlAttributesOfElements(string){
+        let partiallyCleaned = this.getHtmlCleanedTagAttributes(string);
+        partiallyCleaned = partiallyCleaned.match(/\w+=\"[^"]+\"|[^0-9\s\W]+=\d+|disabled(?=(\s*>))|enabled(?=(\s*>))/g);
+        return partiallyCleaned;
+    }
+
+    // get internal html content between elements
+    static getHtmlInternalContents(string){
+        let partiallyCleaned = this.getHtmlCleanedTagAttributes(string);
+        let htmlTags = this.getHtmlTagsOfElements(string);
+        //htmlTags = htmlTags.filter(
+        //    tag => tag.replace(/<\/\w*/g, '')
+        //);
+        //console.log(htmlTags);
+        let htmlEndingAttributes = this.getHtmlEndingAttributesOfElements(string);
+        //console.log(Array.from(new Set(htmlEndingAttributes)));
+        let htmlInternalContents = [];
+        let tagLen = htmlTags.length;
+        // check if anything comes after tag
+        for (let i = 0; i < tagLen - 1; i++){
+            let patternMatch = new RegExp(htmlTags[i] + '.*?' + htmlTags[i+1]);
+            // match tag and pattern
+            let patternExists = partiallyCleaned.match(patternMatch);
+            // if the pattern exists
+            if(patternExists){
+                // turn the gotten pattern into a string then push gotten contents to array and remove gotten string from original string, keeping last tag part of original string
+                let pec = patternExists;
+                console.log(patternExists);
+                patternExists = patternExists.toString();
+                for(let j = 0; j < htmlEndingAttributes.length; j++){
+                    let currentAttribute = htmlEndingAttributes[j];
+                    currentAttribute = currentAttribute.replace(/\(/g, '\\(');
+                    currentAttribute = currentAttribute.replace(/\)/g, '\\)');
+                    let patternMatch = new RegExp('.*?' + currentAttribute);
+                    let patternDoesMatch = patternExists.match(patternMatch);
+                    if(patternDoesMatch){
+                        //console.log(patternDoesMatch);
+                        htmlEndingAttributes.splice(j ,1);
+                        patternExists = patternExists.replace(patternDoesMatch, '');
+                        htmlInternalContents.push(patternExists);
+                        console.log(patternExists);
+                        //partiallyCleaned = partiallyCleaned.replace(patternDoesMatch, '');
+                        break;
+                    }
+                }
+            
+                //htmlEndingAttributes.filter(
+                //    (attribute, index) => 
+                //    {
+                //        attribute = attribute.replace(/\(/g, '\\(');
+                //        attribute = attribute.replace(/\)/g, '\\)');
+                //        let attributePattern = new RegExp('.*' + attribute);
+                //        //if(patternExists.match(attributePattern)){
+                //        //    htmlEndingAttributes = htmlEndingAttributes.splice(index, 1);
+                //        //}
+                //        patternExists = patternExists.replace(attributePattern, '');
+                //    }
+                //);
+            }
+        }
+
+        return htmlInternalContents;
     }
 
     // clean up tag attributes if necessary
-    static getCleanedTagAttributes(string){
-        let partiallyCleaned = string.replace(/=\s+"/, '="');
-        partiallyCleaned = partiallyCleaned.replace(/\s+="/, '="');
+    static getHtmlCleanedTagAttributes(string){
+        let partiallyCleaned = string.replace(/=\s+"|\s+="/g, '="');
         partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
-        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, might fix later
+        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, visual impact, might fix later
         return partiallyCleaned;
     }
 

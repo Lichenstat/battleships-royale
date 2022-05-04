@@ -34,14 +34,14 @@ class GenerateTable{
     // create table cells via a given number of columns for a row in a table
     #generateTableRow(numberOfCols){
         let finalizedRow = '<tr' + 
-                     ' class=' + this.className + '-row' + 
-                     ' id=' + this.id + '-row-' + this.tableRow + 
+                     ' class=\"' + this.className + '-row' + '\"' + 
+                     ' id=\"' + this.id + '-row-' + this.tableRow + '\"' + 
                      '>';
         // generate table cells ina  row via a number of columns
         for(let i = 1; i <= numberOfCols; i++){
             finalizedRow = finalizedRow + '<td ' + 
-            ' class=' + this.className + '-cell' +
-            ' id=' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' +
+            ' class=\"' + this.className + '-cell' + '\"' +
+            ' id=\"' + this.id + '-cell-(' + this.tableRow + ',' + i + ')' + '\"' +
             '>' +
             this.#setCellContents([this.tableRow, i]) +
             '</td>';
@@ -57,15 +57,15 @@ class GenerateTable{
         // generating beginning of the table
         let finalizedTable = 
         '<table' + 
-        ' class=' + this.className + 
-        ' id=' + this.id + 
+        ' class=\"' + this.className + '\"' + 
+        ' id=\"' + this.id + '\"' + 
         '>';
         // generate table header (if it exists) an append to table
         if(!this.tableHeadColumnCount == 0){
             finalizedTable = finalizedTable + 
                             '<thead' + 
-                            ' class=' + this.className + '-head' +
-                            ' id=' + this.id + '-head' +
+                            ' class=\"' + this.className + '-head' + '\"' +
+                            ' id=\"' + this.id + '-head' + '\"' +
                             '>' +
                             this.#generateTableRow(this.tableHeadColumnCount) + 
                             '</thead>';
@@ -82,8 +82,8 @@ class GenerateTable{
         if(!this.tableFootColumnCount == 0){
             finalizedTable = finalizedTable + 
                             '<tfoot' + 
-                            ' class=' + this.className + '-foot' +
-                            ' id=' + this.id + '-foot' +
+                            ' class=\"' + this.className + '-foot' + '\"' +
+                            ' id=\"' + this.id + '-foot' + '\"' +
                             '>' +
                             this.#generateTableRow(this.tableFootColumnCount) + 
                             '</tfoot>';
@@ -110,5 +110,5 @@ class GenerateTable{
     getHTMLTable(){
         return this.currentTable;
     }
-    
+
 }

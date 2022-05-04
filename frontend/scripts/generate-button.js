@@ -24,9 +24,9 @@ class GenerateButton{
     // generate the set html button
     #generateHTMLButton(){
         let finalizedButton = '<button' + 
-                              ' className=' + this.className + 
-                              ' id=' + this.id + 
-                              ' type=' + this.type + 
+                              ' className=\"' + this.className + '\"' + 
+                              ' id=\"' + this.id + '\"' + 
+                              ' type=\"' + this.type + '\"' + 
                               ' ' + this.#isButtonEnabled() +
                               '>' + this.internalText + 
                               '</button>';

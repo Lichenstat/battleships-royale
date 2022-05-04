@@ -38,7 +38,7 @@
                     <br>
                     Match will start when countdown is finished or match is manually started...
                     <br>
-                    (match time here)
+                    (match time here) 
                     <br>
                     Match Code:
                     <br>
@@ -136,10 +136,15 @@
         let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
         
 
-        let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2)"> <img id = "doo doo"> drag  1 = 1 <i>akka </i>stuff as well as e"e" </ /  ok<e>><</</e><div class="garbo" id="garbo" max = 1 min =1>/</div></div>';
-        Helper.setHtmlStringInternalContent(teststring, 'test__drag', 'foobars');
-        console.log('ca',Helper.getAttributeValuesOfHtmlTags(teststring));
-        console.log(Helper.getCleanedCopiedHtml(teststring));
+        let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2)"  > <img id = "doo doo"> > <img id="doo doo"> drag  1 > = 1 <i enabled>akka </i>stuff as well as e"e" </ /  ok<e>><</</e><div class="garbo" id="garbo" max = 1 min =1>/</div></div>';
+        console.log(teststring);
+        console.log('cleaned attributes',Helper.getHtmlCleanedTagAttributes(teststring));
+        console.log('getting attributes',Helper.getHtmlAttributesOfElements(teststring));
+        console.log('getting front tags', Helper.getHtmlTagsOfElements(teststring));
+        console.log('getting back tags', Helper.getHtmlEndingAttributesOfElements(teststring));
+        console.log('getting interal contents', Helper.getHtmlInternalContents(teststring));
+        console.log(Helper.getHtmlCleanedCopy(teststring));
+        //Helper.setHtmlStringInternalContent(teststring, 'test__drag', 'foobars');
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
         //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));
         

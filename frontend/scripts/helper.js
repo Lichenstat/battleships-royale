@@ -19,7 +19,6 @@ class Helper{
         }
         return false;
     }
-
     // to simply set the name of an object if it is desired
     static #doesWantNameOfObject(bool, objectName){
         if (bool){
@@ -85,11 +84,20 @@ class Helper{
         return words.reduce((result, word) => result.replaceAll(word, ''), string);
     }
 
-    // eliminate everything assigned in an html string of elements so parts can be copied and replaced
-    static getHtmlCleanedCopy(string){
-        let partiallyCleaned = 0;
-        console.log(partiallyCleaned);
-        return partiallyCleaned;
+    // remove words in an array from given array of words
+    static removeDuplicatesFromArrayUsingArray(words, duplicateCheckWords){
+        duplicateCheckWords.filter(
+            (wordDuplicate, indexFromDuplicate) => {
+                words.filter(
+                    (word, index) => {
+                        if(word == wordDuplicate){
+                            words.splice(index, 1);
+                        }
+                    }
+                )
+            }
+        );
+        return words;
     }
 
     // eliminate everything between <...> signs in a string (for use with html js strings)
@@ -117,11 +125,10 @@ class Helper{
         return partiallyCleaned;
     }
     
-    // get the end case of the internals of html elements
+    // get the end case of the attributes of html elements
     static getHtmlEndingAttributesOfElements(string){
         let changedString = this.getHtmlCleanedTagAttributes(string);
         let htmlAttributes = this.getHtmlAttributesOfElements(string);
-        //console.log(htmlAttributes);
         let htmlEndingAttributes = []
         htmlAttributes.filter(
             attribute =>
@@ -145,69 +152,105 @@ class Helper{
         return partiallyCleaned;
     }
 
+    
+    // clean up tag attributes if necessary
+    static getHtmlCleanedTagAttributes(string){
+        let partiallyCleaned = string.replace(/=\s+"|\s+="/g, '="');
+        partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
+        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, visual impact, might fix later
+        return partiallyCleaned;
+    }
+
     // get internal html content between elements
     static getHtmlInternalContents(string){
         let partiallyCleaned = this.getHtmlCleanedTagAttributes(string);
         let htmlTags = this.getHtmlTagsOfElements(string);
-        //htmlTags = htmlTags.filter(
-        //    tag => tag.replace(/<\/\w*/g, '')
-        //);
-        //console.log(htmlTags);
         let htmlEndingAttributes = this.getHtmlEndingAttributesOfElements(string);
-        //console.log(Array.from(new Set(htmlEndingAttributes)));
         let htmlInternalContents = [];
         let tagLen = htmlTags.length;
-        // check if anything comes after tag
+        // check what comes after tag #1 and before tag #2 (including these tags themselves), dont worry about last closing tag
         for (let i = 0; i < tagLen - 1; i++){
             let patternMatch = new RegExp(htmlTags[i] + '.*?' + htmlTags[i+1]);
             // match tag and pattern
             let patternExists = partiallyCleaned.match(patternMatch);
             // if the pattern exists
             if(patternExists){
-                // turn the gotten pattern into a string then push gotten contents to array and remove gotten string from original string, keeping last tag part of original string
-                let pec = patternExists;
-                console.log(patternExists);
-                patternExists = patternExists.toString();
-                for(let j = 0; j < htmlEndingAttributes.length; j++){
-                    let currentAttribute = htmlEndingAttributes[j];
-                    currentAttribute = currentAttribute.replace(/\(/g, '\\(');
-                    currentAttribute = currentAttribute.replace(/\)/g, '\\)');
-                    let patternMatch = new RegExp('.*?' + currentAttribute);
-                    let patternDoesMatch = patternExists.match(patternMatch);
-                    if(patternDoesMatch){
-                        //console.log(patternDoesMatch);
-                        htmlEndingAttributes.splice(j ,1);
-                        patternExists = patternExists.replace(patternDoesMatch, '');
-                        htmlInternalContents.push(patternExists);
-                        console.log(patternExists);
-                        //partiallyCleaned = partiallyCleaned.replace(patternDoesMatch, '');
-                        break;
+                let patternFound = patternExists.toString();
+                let usesNoAttributes = patternFound.match(htmlTags[i] + ' *>');
+                // check if the internals can be filtered via given attributes
+                if(!usesNoAttributes){
+                    for(let j = 0; j < htmlEndingAttributes.length; j++){
+                        // get our current attribute and replace any troublesome symbols with readable regexp syntax
+                        let currentAttribute = htmlEndingAttributes[j];
+                        currentAttribute = currentAttribute.replace(/\(/g, '\\(');
+                        currentAttribute = currentAttribute.replace(/\)/g, '\\)');
+                        // can we use our current attribute to find a pattern?
+                        let patternMatch = new RegExp('.*?' + currentAttribute);
+                        let patternDoesMatch = patternFound.match(patternMatch);
+                        if(patternDoesMatch){
+                            // if there is a match splice the attribute array by our current readable attribute to shorten loop times
+                            htmlEndingAttributes.splice(j ,1);
+                            // replace our found <tag to <tag pattern arrtribute portion with empty string and push
+                            // to save tag internals including <tag ending to pattern match for later
+                            patternFound = patternFound.replace(patternDoesMatch, '');
+                            htmlInternalContents.push(patternFound);
+                            // replace the found internals <tag ending with empty string and append to our current attribute pattern
+                            patternFound = patternFound.replace(htmlTags[i+1], '');
+                            patternDoesMatch = patternDoesMatch + patternFound;
+                            // replace the original string that includes our attribute all the way up to the ending <tag of that pattern
+                            partiallyCleaned = partiallyCleaned.replace(patternDoesMatch, '');
+                            // we have used an attribute to get the string internals, mark that we have and break from the loop
+                            break;
+                        }
                     }
                 }
-            
-                //htmlEndingAttributes.filter(
-                //    (attribute, index) => 
-                //    {
-                //        attribute = attribute.replace(/\(/g, '\\(');
-                //        attribute = attribute.replace(/\)/g, '\\)');
-                //        let attributePattern = new RegExp('.*' + attribute);
-                //        //if(patternExists.match(attributePattern)){
-                //        //    htmlEndingAttributes = htmlEndingAttributes.splice(index, 1);
-                //        //}
-                //        patternExists = patternExists.replace(attributePattern, '');
-                //    }
-                //);
+                if(usesNoAttributes){
+                    // we rewrite the regexp pattern to include an ending portion on the first tag
+                    let tagPattern = new RegExp(htmlTags[i] + '>.*?' + htmlTags[i+1]);
+                    // we then find a pattern and replace the first <tag portion and push it as internals to be used
+                    patternFound = partiallyCleaned.match(tagPattern);
+                    patternFound = patternFound.toString();
+                    patternFound = patternFound.replace(htmlTags[i] + '>', '');
+                    htmlInternalContents.push(patternFound);
+                    // we then take the original pattern and remove it's ending <tag, and replace the original string pattern portion with an empty string
+                    patternMatch = patternMatch.toString();
+                    patternMatch = patternMatch.replace(htmlTags[i+1], '');
+                    partiallyCleaned = partiallyCleaned.replace(patternMatch, '');
+                }
             }
         }
-
+        // return the equals to normal in the given strings
+        //htmlInternalContents = this.removeDuplicatesFromArrayUsingArray(htmlInternalContents, htmlTags);
+        htmlInternalContents = this.#returnHtmlEqualsToNormal(htmlInternalContents, string);
+        // finally we can return all intenal contents
         return htmlInternalContents;
     }
 
-    // clean up tag attributes if necessary
-    static getHtmlCleanedTagAttributes(string){
-        let partiallyCleaned = string.replace(/=\s+"|\s+="/g, '="');
-        partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
-        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, visual impact, might fix later
+    // return given array of strings containing '=' back to the original format it was in (made mostly for internal html strings)
+    static #returnHtmlEqualsToNormal(modifiedStringArray, originalString){
+        modifiedStringArray.filter(
+            (str, index) => {
+                let stringMatch = str.match(/=/g);
+                if(stringMatch){
+                    var len = stringMatch.length;
+                    for(var i = 1; i <= len; i++){
+                        let strSplit = str.split('=');
+                        let pattern = new RegExp(strSplit[0] + '.*?=.*?' + strSplit[strSplit.length - 1])
+                        let possibleStrings = originalString.match(pattern);
+                        if(possibleStrings.length == 1){
+                            modifiedStringArray[index] = possibleStrings.toString();
+                        }
+                    }
+                }
+            }
+        );
+        return modifiedStringArray;
+    }
+
+    // eliminate everything assigned in an html string of elements so parts can be copied and replaced
+    static getHtmlCleanedCopy(string){
+        let partiallyCleaned = 0;
+        //console.log(partiallyCleaned);
         return partiallyCleaned;
     }
 

@@ -70,12 +70,13 @@ class Helper{
 
     // parse class or id to change it's modifier in BEM format for enabling or disabling 
     static setModifierOfClassOrId(classOrId){
-        let change = classOrId.substring(classOrId.lastIndexOf('--') + 2);
-        if (change == 'disabled'){
-            return classOrId.substring(classOrId.indexOf(0), classOrId.lastIndexOf('--') + 2) + 'enabled';
+        let change = classOrId.toString().match(/--disabled|--enabled/g);
+        change = change.toString();
+        if (change == '--disabled'){
+            return classOrId.replace(/--disabled/g, '--enabled');
         }
-        if (change == 'enabled'){
-            return classOrId.substring(classOrId.indexOf(0), classOrId.lastIndexOf('--') + 2) + 'disabled';
+        if (change == '--enabled'){
+            return classOrId.replace(/--enabled/g, '--disabled');
         }
     }
 
@@ -84,20 +85,20 @@ class Helper{
         return words.reduce((result, word) => result.replaceAll(word, ''), string);
     }
 
-    // remove words in an array from given array of words
-    static removeDuplicatesFromArrayUsingArray(words, duplicateCheckWords){
-        duplicateCheckWords.filter(
-            (wordDuplicate, indexFromDuplicate) => {
-                words.filter(
-                    (word, index) => {
-                        if(word == wordDuplicate){
-                            words.splice(index, 1);
+    // remove duplicates in an array using a desired remove duplicates array
+    static removeDuplicatesFromArrayUsingArray(arrayToClean, arrayForChecking){
+        arrayForChecking.filter(
+            (itemDuplicate, indexFromDuplicate) => {
+                arrayToClean.filter(
+                    (item, index) => {
+                        if(item == itemDuplicate){
+                            arrayToClean.splice(index, 1);
                         }
                     }
                 )
             }
         );
-        return words;
+        return arrayToClean;
     }
 
     // eliminate everything between <...> signs in a string (for use with html js strings)
@@ -152,12 +153,11 @@ class Helper{
         return partiallyCleaned;
     }
 
-    
     // clean up tag attributes if necessary
     static getHtmlCleanedTagAttributes(string){
         let partiallyCleaned = string.replace(/=\s+"|\s+="/g, '="');
         partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
-        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, visual impact, might fix later
+        partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, attempted fix in #returnHtmlInternalsToNormal
         return partiallyCleaned;
     }
 
@@ -221,27 +221,54 @@ class Helper{
         }
         // return the equals to normal in the given strings
         //htmlInternalContents = this.removeDuplicatesFromArrayUsingArray(htmlInternalContents, htmlTags);
-        htmlInternalContents = this.#returnHtmlEqualsToNormal(htmlInternalContents, string);
+        htmlInternalContents = this.#returnHtmlInternalsToNormal(htmlInternalContents, string);
         // finally we can return all intenal contents
         return htmlInternalContents;
     }
 
     // return given array of strings containing '=' back to the original format it was in (made mostly for internal html strings)
-    static #returnHtmlEqualsToNormal(modifiedStringArray, originalString){
+    // *** WARNING *** Cannot parse multiple ********* in a row, possible fix later
+    static #returnHtmlInternalsToNormal(modifiedStringArray, originalString){
         modifiedStringArray.filter(
             (str, index) => {
                 let stringMatch = str.match(/=/g);
+                // if a given string has = in it
                 if(stringMatch){
-                    var len = stringMatch.length;
-                    for(var i = 1; i <= len; i++){
-                        let strSplit = str.split('=');
-                        let pattern = new RegExp(strSplit[0] + '.*?=.*?' + strSplit[strSplit.length - 1])
-                        let possibleStrings = originalString.match(pattern);
-                        if(possibleStrings.length == 1){
-                            modifiedStringArray[index] = possibleStrings.toString();
+                    let fixed = false;
+                    let strSplit = str.split('=');
+                    // create pattern for checking
+                    let pattern = new RegExp(strSplit[0] + '.*?=.*?' + strSplit[strSplit.length - 1]);
+                    let possibleString = originalString.match(pattern);
+                    if(possibleString){
+                        // pattern match and find possible errors to watch out for (mostly = at the beginning of the internal string)
+                        possibleString = possibleString.toString();
+                        let errorCheck = false;
+                        let errorString = str.match(/[ *.+]*?=+.*/g);
+                        errorString = errorString.toString();
+                        // if the error pattern matches the ending str, return the original string internals after modification
+                        errorCheck = (str == errorString);
+                        // if a proper string that can be used is found
+                        if(!errorCheck){
+                            modifiedStringArray[index] = possibleString;
+                            fixed = true;
                         }
+                        // if no matching string from the original can be used
+                        // just add spaces to the original internal string around =
+                        if(errorCheck && !fixed){
+                            errorString = possibleString.replace(/.*>/, '');
+                            modifiedStringArray[index] = errorString;
+                            fixed = true;
+                        }
+                    };
+                    // if a pattern can't be found just use the original string and put spaces between the = signs
+                    if(!fixed){
+                        modifiedStringArray[index] = str.replace(/=/g, ' = ');
+                        fixed = true;
                     }
                 }
+                // cut original string to avoid possible errors
+                let removePattern = new RegExp('.*' + str);
+                originalString = originalString.replace(removePattern, '');
             }
         );
         return modifiedStringArray;

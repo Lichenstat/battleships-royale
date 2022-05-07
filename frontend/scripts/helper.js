@@ -85,6 +85,12 @@ class Helper{
         return words.reduce((result, word) => result.replaceAll(word, ''), string);
     }
 
+    // remove all spaces from a string
+    static removeAllSpacesFromString(string){
+        string = string.replace(/[ ]*/g, '');
+        return string;
+    }
+
     // remove duplicates in an array using a desired remove duplicates array
     static removeDuplicatesFromArrayUsingArray(arrayToClean, arrayForChecking){
         arrayForChecking.filter(
@@ -100,6 +106,41 @@ class Helper{
         );
         return arrayToClean;
     }
+
+    // get index locations of match cases in a, array/string
+    static getIndexLocationsOfMatchCase(matchCase, string){
+        let markedIndex = [];
+        var result;
+        let pattern = new RegExp(matchCase, 'gi');
+        while((result = pattern.exec(string))){
+            markedIndex.push(result.index);
+        }
+        return markedIndex;
+    }
+
+    // merge index locations together replacing their indexes with strings
+    static getStringsInOrderViaIndexArray(indexArrOne, wordOne, indexArrTwo, wordTwo){
+        let finalArray = [];
+        let arrOneLoc = 0;
+        let arrTwoLoc = 0;
+        let combinedLength = indexArrOne.length + indexArrTwo.length;
+        let loop = 0;
+        while(loop < combinedLength){
+            loop = loop + 1;
+            let ione = indexArrOne[arrOneLoc];
+            let itwo = indexArrTwo[arrTwoLoc];
+            if( ione <= itwo ){
+                finalArray.push(wordOne);
+                arrOneLoc = arrOneLoc + 1;
+            }
+            else{
+                finalArray.push(wordTwo);
+                arrTwoLoc = arrTwoLoc + 1;
+            }
+        }
+        return finalArray;
+    }
+
 
     // eliminate everything between <...> signs in a string (for use with html js strings)
     // return example would be <><><></></>
@@ -134,12 +175,12 @@ class Helper{
         htmlAttributes.filter(
             attribute =>
             {
-                attribute = attribute.replace(/\(/g, '\\(');
-                attribute = attribute.replace(/\)/g, '\\)');
+                attribute = this.#getRegExpParenthesis(attribute);
                 attribute = new RegExp(attribute + ' *>');
                 let attributeEnd = changedString.match(attribute);
                 if(attributeEnd){
                     htmlEndingAttributes.push(attributeEnd.toString());
+                    changedString = changedString.replace(new RegExp('.*' + attributeEnd), '');
                 }
             }
         );
@@ -159,6 +200,13 @@ class Helper{
         partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
         partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, attempted fix in #returnHtmlInternalsToNormal
         return partiallyCleaned;
+    }
+
+    // clean up parentesis for regexp use
+    static #getRegExpParenthesis(string){
+        string = string.replace(/\(/g, '\\(');
+        string = string.replace(/\)/g, '\\)');
+        return string;
     }
 
     // get internal html content between elements
@@ -182,8 +230,7 @@ class Helper{
                     for(let j = 0; j < htmlEndingAttributes.length; j++){
                         // get our current attribute and replace any troublesome symbols with readable regexp syntax
                         let currentAttribute = htmlEndingAttributes[j];
-                        currentAttribute = currentAttribute.replace(/\(/g, '\\(');
-                        currentAttribute = currentAttribute.replace(/\)/g, '\\)');
+                        currentAttribute = this.#getRegExpParenthesis(currentAttribute);
                         // can we use our current attribute to find a pattern?
                         let patternMatch = new RegExp('.*?' + currentAttribute);
                         let patternDoesMatch = patternFound.match(patternMatch);
@@ -206,11 +253,11 @@ class Helper{
                 }
                 if(usesNoAttributes){
                     // we rewrite the regexp pattern to include an ending portion on the first tag
-                    let tagPattern = new RegExp(htmlTags[i] + '>.*?' + htmlTags[i+1]);
+                    let tagPattern = new RegExp(htmlTags[i] + ' *?>.*?' + htmlTags[i+1]);
                     // we then find a pattern and replace the first <tag portion and push it as internals to be used
                     patternFound = partiallyCleaned.match(tagPattern);
-                    patternFound = patternFound.toString();
-                    patternFound = patternFound.replace(htmlTags[i] + '>', '');
+                    patternFound = patternFound.toString();   
+                    patternFound = patternFound.replace(new RegExp(htmlTags[i] + ' *>'), '');
                     htmlInternalContents.push(patternFound);
                     // we then take the original pattern and remove it's ending <tag, and replace the original string pattern portion with an empty string
                     patternMatch = patternMatch.toString();
@@ -231,11 +278,12 @@ class Helper{
     static #returnHtmlInternalsToNormal(modifiedStringArray, originalString){
         modifiedStringArray.filter(
             (str, index) => {
+                let strFixed = this.#getRegExpParenthesis(str)
                 let stringMatch = str.match(/=/g);
                 // if a given string has = in it
                 if(stringMatch){
                     let fixed = false;
-                    let strSplit = str.split('=');
+                    let strSplit = strFixed.split('=');
                     // create pattern for checking
                     let pattern = new RegExp(strSplit[0] + '.*?=.*?' + strSplit[strSplit.length - 1]);
                     let possibleString = originalString.match(pattern);
@@ -267,35 +315,116 @@ class Helper{
                     }
                 }
                 // cut original string to avoid possible errors
-                let removePattern = new RegExp('.*' + str);
+                let removePattern = new RegExp('.*' + strFixed);
                 originalString = originalString.replace(removePattern, '');
             }
         );
         return modifiedStringArray;
     }
 
-    // eliminate everything assigned in an html string of elements so parts can be copied and replaced
+    // returns a cleaned copied html string
+    // format must have tags descripton right by beginning of < such as <div, as well as onclick etc. string patterns in
+    // single quotes. ex: <e><div class="abc" id="1" onclick="if(1>3){console.log('here')}" enabled> something else </div></e>
     static getHtmlCleanedCopy(string){
-        let partiallyCleaned = 0;
-        //console.log(partiallyCleaned);
-        return partiallyCleaned;
+        let spacelessString = this.removeAllSpacesFromString(string);
+        let tags = this.getHtmlTagsOfElements(string);
+        let attributes = this.getHtmlAttributesOfElements(string);
+        let endAttributes = this.getHtmlEndingAttributesOfElements(string);
+        let combinedAttributes = [];
+        let internalContents = this.getHtmlInternalContents(string);
+        // combine attributes with their known endings then slice to get entire attributes of a tag
+        let attEndLength = endAttributes.length;
+        for (let i = 0; i < attEndLength; i++){
+            let collectAttribute = '';
+            let foundMatch = false;
+            let attLength = attributes.length;
+            // go through the attributes and find out which ones go together
+            for (let j = 0; j < attLength; j++){
+                // check if an attribute is the final one in a element
+                let match = endAttributes[i].match(this.#getRegExpParenthesis(attributes[j]));
+                if(match){
+                    // finish the attribute string for the element
+                    foundMatch = true;
+                    collectAttribute = collectAttribute + attributes[j];
+                    attributes = attributes.slice(j + 1 , attLength);
+                    break;
+                }
+                collectAttribute = collectAttribute + attributes[j] + ' ';
+            }
+            // push combined attributes onto array of finished attributes
+            if(foundMatch){
+                combinedAttributes.push(collectAttribute);
+            }
+        }
+        // match tags/attributes/endings with their right places and append together
+        let spacelessCombinedAttributes = [];
+        combinedAttributes.filter((attribute, index) => spacelessCombinedAttributes.push(this.removeAllSpacesFromString(attribute)));
+        let tagLength = tags.length - 1;
+        let finalizedHtml = tags[0];
+        for(let i = 0; i < tagLength; i++){
+            let checkMatch = this.#getRegExpParenthesis(tags[i] + spacelessCombinedAttributes[0]);
+            checkMatch = spacelessString.match(checkMatch);
+            // if there is attributes in the tag, append string + attribute + content with ending
+            if(checkMatch){
+                finalizedHtml = finalizedHtml + ' ' + combinedAttributes[0] + '>' + internalContents[0];
+                spacelessCombinedAttributes.shift();
+                combinedAttributes.shift();
+                internalContents.shift();
+            }
+            // if there aren't attributes in the tag
+            if(!checkMatch){
+                // combine html string + content with ending
+                finalizedHtml = finalizedHtml + '>' + internalContents[0];
+                internalContents.shift();
+            }
+        }
+        finalizedHtml = finalizedHtml + '>';
+        return finalizedHtml;
     }
 
-    // set the internal contents of a certain html string made in javascript using it's id
+    // add internal contents of a certain html string made in javascript using it's class or id at the end of the tag
     // assumes a js html string exists in such a format of <div class.. id=..><e></e><f></f></div>
-    // (note: does bug currently when used with placed url's containing </, as string needs to find ending element)
-    static setHtmlStringInternalContent(htmlString, id, contentToInsert){
-        console.log('working');
-        let pieces = this.getStrippedHtml(htmlString);
-        let startElement = pieces.match(/<>/g).length;
-        let startSymbol = htmlString.match(/</g);
-        let endElement = pieces.match(/<\/>/g).length;
-        let endSymbol = htmlString.match(/<\//g);
-        let htmlElementType = htmlString.substring(0, htmlString.indexOf(id));
-        htmlElementType = htmlElementType.substring(htmlElementType.lastIndexOf('<') + 1, htmlElementType.indexOf(' '));
-        console.log(this.getTagsOfHtmlElement(htmlString));
-        
-        console.log(startElement, startSymbol, endElement, endSymbol);
+    // will add content to very back of element (queue style). Maybe implement a stack style of appending later?
+    static setHtmlInternalContent(htmlString, contentToInsert, classOrId = null){
+        // beginning portion of this is simply to get get proper tag to begin indexing
+        let elementTag = htmlString.match(new RegExp('<.*' + classOrId, 'g'));
+        elementTag = elementTag.toString();
+        elementTag = elementTag.slice(elementTag.lastIndexOf('<'));
+        elementTag = elementTag.match(/<\w*/g);
+        let beginningTag = elementTag.toString();
+        let endingTag = beginningTag.replace(/</g, '</');
+        endingTag = endingTag.toString().replace(/ /g, '');
+        endingTag = endingTag.toString();
+        // get array of tag index locations, as well as make combined tag array to check for pattern matching
+        let beginningTagIndexes = this.getIndexLocationsOfMatchCase(beginningTag, htmlString);
+        let endingTagIndexes = this.getIndexLocationsOfMatchCase(endingTag, htmlString);
+        let allTags = this.getStringsInOrderViaIndexArray(beginningTagIndexes, beginningTag, endingTagIndexes, endingTag);
+        let allTagIndexes = beginningTagIndexes.concat(endingTagIndexes).sort();
+        // get our indexed tag directly to know where to slice tag array
+        let tagLocation = (htmlString.split(classOrId)[0]).lastIndexOf(beginningTag);
+        tagLocation = allTagIndexes.indexOf(tagLocation) + 1;
+        let tagToRest = allTags.slice(tagLocation);
+        //console.log('tag: ', beginningTag, beginningTagIndexes, endingTag, endingTagIndexes, allTags, allTagIndexes);
+        // check the amount of tags we throw away to help later in the placement of our content
+        var tagCountAfterSplice = allTags.length - tagToRest.length;
+        var marker = 0;
+        // get to ending tag of the element and mark the locations ending tag index
+        for (var i in tagToRest){
+            if(tagToRest[i] == beginningTag){
+                marker = marker + 1;
+            }
+            if(tagToRest[i] == endingTag){
+                marker = marker - 1;
+            }
+            if(marker <= -1){
+                marker = tagCountAfterSplice + Number(i);
+                break;
+            }
+        }
+        // get the index of the location of the ending tag and append internal contents to html string
+        let indexOfInsertion = htmlString.indexOf(endingTag, allTagIndexes[marker]);
+        htmlString = htmlString.slice(0, indexOfInsertion) + contentToInsert + htmlString.slice(indexOfInsertion, htmlString.length);
+        return htmlString;
     }
 
     static testConsoleLog(){

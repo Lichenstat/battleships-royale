@@ -51,7 +51,7 @@ class Helper{
 
     // function to help with printing object information to html
     static getObjectInfo(object){
-        let text = ''
+        let text = '';
         for(var key in object){
             text = text + key + ': ' + object[key] + '<br>';
         }
@@ -66,6 +66,11 @@ class Helper{
         row = matrix.substring(matrix.indexOf('(') + 1, matrix.indexOf(','));
         col = matrix.substring(matrix.indexOf(',') + 1, matrix.indexOf(')'));
         return [row, col];
+    }
+
+    // parse part of a string and replace that part with a desired string
+    static parsePartOfStringToReplace(originalString, partToReplace, replaceWith){
+        return originalString.replace(new RegExp(partToReplace, 'g'), replaceWith).toString();
     }
 
     // parse class or id to change it's modifier in BEM format for enabling or disabling 
@@ -390,7 +395,7 @@ class Helper{
         let elementTag = htmlString.match(new RegExp('<.*' + classOrId, 'g'));
         elementTag = elementTag.toString();
         elementTag = elementTag.slice(elementTag.lastIndexOf('<'));
-        elementTag = elementTag.match(/<\w*/g);
+        elementTag = elementTag.match(/<\w+/g);
         let beginningTag = elementTag.toString();
         let endingTag = beginningTag.replace(/</g, '</');
         endingTag = endingTag.toString().replace(/ /g, '');

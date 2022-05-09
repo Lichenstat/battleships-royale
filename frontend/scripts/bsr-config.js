@@ -31,20 +31,21 @@ const bsrPlotProperties = {
 
 // information on play pieces
 const bsrGridPieces = {
-    carrierHorizontal : { size : 5, class : 'bsr__playpiece bsr__playpiece--carrier-horizontal', id: 'bsr__playpiece--carrier', rows : 5, columns : 1, content : '' },
-    carrierVertical : { size : 5, class : 'bsr__playpiece bsr__playpiece--carrier-vertical', id: 'bsr__playpiece--carrier', rows : 1, columns : 5, content : '' },
-    battleshipHorizontal : { size : 4, class : 'bsr__playpiece bsr__playpiece--battleship-horizontal', id: 'bsr__playpiece--battleship', rows : 4, columns : 1, content : '' },
-    battleshipVertical : { size : 4, class : 'bsr__playpiece bsr__playpiece--battleship-vertical', id: 'bsr__playpiece--battleship', rows : 1, columns : 4, content : '' },
-    destroyerHorizontal : { size : 3, class : 'bsr__playpiece bsr__playpiece--destroyer-horizontal', id: 'bsr__playpiece--destroyer', rows : 3, columns : 1, content : '' },
-    destroyerVertical : { size : 3, class : 'bsr__playpiece bsr__playpiece--destroyer-vertical', id: 'bsr__playpiece--destroyer', rows : 1, columns : 3, content : '' },
-    submarineHorizontal : { size : 3, class : 'bsr__playpiece bsr__playpiece--submarine-horizontal', id: 'bsr__playpiece--submarine', rows : 3, columns : 1, content : '' },
-    submarineVertical : { size : 3, class : 'bsr__playpiece bsr__playpiece--submarine-vertical', id: 'bsr__playpiece--submarine', rows : 1, columns : 3, content : '' },
-    patrolboatHorizontal : { size : 2, class : 'bsr__playpiece bsr__playpiece--patrolboat-horizontal', id: 'bsr__playpiece--patrolboat', rows : 2, columns : 1, content : '' },
-    patrolboatVertical : { size : 2, class : 'bsr__playpiece bsr__playpiece--patrolboat-vertical', id: 'bsr__playpiece--patrolboat', rows : 1, columns : 2, content : '' },
+    carrierHorizontal : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-horizontal', id: 'bsr__table--carrier', rows : 1, columns : 5, content : '' },
+    carrierVertical : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-vertical', id: 'bsr__table--carrier', rows : 5, columns : 1, content : '' },
+    battleshipHorizontal : { count : 2, size : 4, name : 'battleship', class : 'bsr__table bsr__table--enabled bsr__table--battleship-horizontal', id: 'bsr__table--battleship', rows : 1, columns : 4, content : '' },
+    battleshipVertical : { count : 2, size : 4, name : 'battleship', class : 'bsr__table bsr__table--enabled bsr__table--battleship-vertical', id: 'bsr__table--battleship', rows : 4, columns : 1, content : '' },
+    destroyerHorizontal : { count : 2, size : 3, name : 'destroyer', class : 'bsr__table bsr__table--enabled bsr__table--destroyer-horizontal', id: 'bsr__table--destroyer', rows : 1, columns : 3, content : '' },
+    destroyerVertical : { count : 2, size : 3, name : 'destroyer', class : 'bsr__table bsr__table--enabled bsr__table--destroyer-vertical', id: 'bsr__table--destroyer', rows : 3, columns : 1, content : '' },
+    submarineHorizontal : { count : 2, size : 3, name : 'submarine', class : 'bsr__table bsr__table--enabled bsr__table--submarine-horizontal', id: 'bsr__table--submarine', rows : 1, columns : 3, content : '' },
+    submarineVertical : { count : 2, size : 3, name : 'submarine', class : 'bsr__table bsr__table--enabled bsr__table--submarine-vertical', id: 'bsr__table--submarine', rows : 3, columns : 1, content : '' },
+    patrolboatHorizontal : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-horizontal', id: 'bsr__table--patrolboat', rows : 1, columns : 2, content : '' },
+    patrolboatVertical : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-vertical', id: 'bsr__table--patrolboat', rows : 2, columns : 1, content : '' },
 }
 
 const bsrGridInternals = {
-    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot-disabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)">generic text</div>'
+    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot-disabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)">Generic Text</div>',
+    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--enabled" id="bsr__boardpiece" draggable="true" ondragstart="dragBoardPiece(event)">Drag Text</div>'
 }
 
 // for the bsr menu

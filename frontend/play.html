@@ -120,12 +120,11 @@
         let logic = new BsrLogic();
         console.log(logic);
         let grid = new BsrGrid();
+        document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
         logic.changeBoardPieceRotation('horizontal');
         // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
         let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [1,5], 'localPortionIndex' : [3,11]}
         //let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [5,1], 'localPortionIndex' : [7,2]}
-        console.log(logic.setPiecesInDataTable(logictest));
-        document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
         //let bsrPlot = document.querySelectorAll("[id='bsr__boardpiece--carrier-(1,1)']");
         //console.log(bsrPlot);
         //bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
@@ -133,9 +132,9 @@
         document.getElementById("bsr__options").innerHTML = (playPieces.getPiecesHorizontal())['carrier'];
         document.getElementById("test__drag").ondragend = () => {console.log('asdfadf')}
         //document.addEventListener('', item => {console.log(item)});
-        document.addEventListener('dragstart', item => {console.log(item.originalTarget.id)});
-        document.addEventListener('drop', item => {console.log(item)});
-        document.addEventListener('dragover', (item) => {console.log(item)});
+        document.addEventListener('dragstart', item => {logic.setDraggedPiece(item.originalTarget.id)});
+        document.addEventListener('dragover', (item) => {logic.setDraggedOntoPiece(item.target.parentNode.id); logic.checkPieceLocation()});
+        document.addEventListener('drop', item => {logic.setPieceLocation()});
 
 
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}

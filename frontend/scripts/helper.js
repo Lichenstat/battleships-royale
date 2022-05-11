@@ -67,10 +67,10 @@ class Helper{
     // parse an element id for a location inside a matrix
     // (assumes between parenthesis, ex: (14,7))
     static parseElementIdForMatrixLocation(id){
-        let row, col = null;
+        var row, col;
         let matrix = id.substring(id.indexOf('('), id.indexOf(')') + 1);
-        row = matrix.substring(matrix.indexOf('(') + 1, matrix.indexOf(','));
-        col = matrix.substring(matrix.indexOf(',') + 1, matrix.indexOf(')'));
+        row = Number(matrix.substring(matrix.indexOf('(') + 1, matrix.indexOf(',')));
+        col = Number(matrix.substring(matrix.indexOf(',') + 1, matrix.indexOf(')')));
         return [row, col];
     }
 

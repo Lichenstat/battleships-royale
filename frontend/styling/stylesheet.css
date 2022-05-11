@@ -32,9 +32,31 @@ body{
 
 }
 
-table, th, td {
+.bsr__placementplot{
+  height: 40px;
+  display: block;
+  background-color: grey;
+  border: 2px solid black;
+}
+
+.bsr__table{
+  height: 40px;
+  background-color: grey;
+  border: 2px solid black;
+}
+
+table{
     border: 1px solid;
-  }
+}
+
+th{
+  border: 1px solid;
+}
+
+td{
+  border: 1px solid;
+  width: 50px;
+}
 
   .color{
     color: brown;

@@ -118,14 +118,26 @@
 
         //--------------------------------------------------------------
         let logic = new BsrLogic();
+        console.log(logic);
         let grid = new BsrGrid();
+        logic.changeBoardPieceRotation('horizontal');
+        // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
+        let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [1,5], 'localPortionIndex' : [3,11]}
+        //let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [5,1], 'localPortionIndex' : [7,2]}
+        console.log(logic.setPiecesInDataTable(logictest));
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
-        let bsrPlot = document.querySelectorAll("[id='bsr__plot']");
-        console.log(bsrPlot);
-        bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
+        //let bsrPlot = document.querySelectorAll("[id='bsr__boardpiece--carrier-(1,1)']");
+        //console.log(bsrPlot);
+        //bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
         let playPieces = new BsrPlayPieces();
         document.getElementById("bsr__options").innerHTML = (playPieces.getPiecesHorizontal())['carrier'];
         document.getElementById("test__drag").ondragend = () => {console.log('asdfadf')}
+        //document.addEventListener('', item => {console.log(item)});
+        document.addEventListener('dragstart', item => {console.log(item.originalTarget.id)});
+        document.addEventListener('drop', item => {console.log(item)});
+        document.addEventListener('dragover', (item) => {console.log(item)});
+
+
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();
         //console.log(document.getElementById('generic-button__button').parentElement.id);
@@ -135,7 +147,6 @@
         //let testObj2 = {'objectouter': {'objectinner': {'two' : 2}, 'three': 3}};
         //let testObj3 = {'one' : {'two': 2 ,'three' : {'four' : 4 }}};
         //let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
-        
 
         let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2) {}"  >  <div> </div> <div class="tater"> </div> <img id = "doo doo"> > <img id="doo doo"  > drag  1 > = wild= = 1 <i enabled >akka </i> stuff as well as e"e" </ /  ok<e>>><</</e><div class="garbo" id="garbo" max = 1 min =1>  10 )( =15 </div></div>';
         //console.log(teststring);

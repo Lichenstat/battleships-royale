@@ -4,6 +4,11 @@ export { Helper }
 
 class Helper{
 
+    // just test helper for a console log
+    static testConsoleLog(){
+        console.log("test console log");
+    }
+
     // function to match case object contents to a desired property to see if it exists
     static doesObjectContainProperty(object, propertyName){
         //console.log(object, propertyName);
@@ -19,7 +24,8 @@ class Helper{
         }
         return false;
     }
-    // to simply set the name of an object if it is desired
+
+    // to simply print the name of an object if it is desired in certain functions
     static #doesWantNameOfObject(bool, objectName){
         if (bool){
             return (objectName + ' <- ');
@@ -85,7 +91,7 @@ class Helper{
         }
     }
 
-    // remove words from a given array of strings inside of a string
+    // remove words from a string via a given array of strings
     static removeWordsFromString(words, string){
         return words.reduce((result, word) => result.replaceAll(word, ''), string);
     }
@@ -110,6 +116,21 @@ class Helper{
             }
         );
         return arrayToClean;
+    }
+
+    // check if arrays are equal by position and size
+    static checkIfArraysAreEqual(arrayOne, arrayTwo){
+        let arrOne = arrayOne.length;
+        let arrTwo = arrayTwo.length;
+        if (arrOne == arrTwo){
+            for (var i in arrayOne){
+                if (arrayOne[i] != arrayTwo[i]){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     // get index locations of match cases in a, array/string
@@ -200,14 +221,14 @@ class Helper{
     }
 
     // clean up tag attributes if necessary
-    static getHtmlCleanedTagAttributes(string){
+    static #getHtmlCleanedTagAttributes(string){
         let partiallyCleaned = string.replace(/=\s+"|\s+="/g, '="');
         partiallyCleaned = partiallyCleaned.replace(/\s+=/g, '=');
         partiallyCleaned = partiallyCleaned.replace(/=\s+/g, '='); // shrinks equations = spaces down, attempted fix in #returnHtmlInternalsToNormal
         return partiallyCleaned;
     }
 
-    // clean up parentesis for regexp use
+    // clean up string parenthesis for regexp use
     static #getRegExpParenthesis(string){
         string = string.replace(/\(/g, '\\(');
         string = string.replace(/\)/g, '\\)');
@@ -216,7 +237,7 @@ class Helper{
 
     // get internal html content between elements
     static getHtmlInternalContents(string){
-        let partiallyCleaned = this.getHtmlCleanedTagAttributes(string);
+        let partiallyCleaned = this.#getHtmlCleanedTagAttributes(string);
         let htmlTags = this.getHtmlTagsOfElements(string);
         let htmlEndingAttributes = this.getHtmlEndingAttributesOfElements(string);
         let htmlInternalContents = [];
@@ -261,7 +282,7 @@ class Helper{
                     let tagPattern = new RegExp(htmlTags[i] + ' *?>.*?' + htmlTags[i+1]);
                     // we then find a pattern and replace the first <tag portion and push it as internals to be used
                     patternFound = partiallyCleaned.match(tagPattern);
-                    patternFound = patternFound.toString();   
+                    patternFound = patternFound.toString();
                     patternFound = patternFound.replace(new RegExp(htmlTags[i] + ' *>'), '');
                     htmlInternalContents.push(patternFound);
                     // we then take the original pattern and remove it's ending <tag, and replace the original string pattern portion with an empty string
@@ -279,7 +300,7 @@ class Helper{
     }
 
     // return given array of strings containing '=' back to the original format it was in (made mostly for internal html strings)
-    // *** WARNING *** Cannot parse multiple ********* in a row, possible fix later
+    // *** WARNING *** Cannot parse multiple ********* in a row, regexp issue, possible fix later
     static #returnHtmlInternalsToNormal(modifiedStringArray, originalString){
         modifiedStringArray.filter(
             (str, index) => {
@@ -430,10 +451,6 @@ class Helper{
         let indexOfInsertion = htmlString.indexOf(endingTag, allTagIndexes[marker]);
         htmlString = htmlString.slice(0, indexOfInsertion) + contentToInsert + htmlString.slice(indexOfInsertion, htmlString.length);
         return htmlString;
-    }
-
-    static testConsoleLog(){
-        console.log("test console log");
     }
 
 }

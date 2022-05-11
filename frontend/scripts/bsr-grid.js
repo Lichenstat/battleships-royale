@@ -1,13 +1,13 @@
 // Object class for creating and interacting with player grids
 
-import { GenerateTable } from "./generate-table.js";
+import { CreateTable } from "./create-table.js";
 import { bsrGridProperties, bsrGridInternals } from "./bsr-config.js";
 
 export { BsrGrid }
 
 class BsrGrid{
     constructor(){
-        this.gameTable = new GenerateTable();
+        this.gameTable = new CreateTable();
         // default table that will be used
         this.gameTable.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, bsrGridProperties.content);
         this.gameGridDefault = this.gameTable.getHTMLTable();
@@ -16,12 +16,12 @@ class BsrGrid{
         this.gameTable.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, this.gamePlacementPlot);
         this.gamePlacementTable = this.gameTable.getHTMLTable();
 
-        this.currentGameGridDefault = this.#generateGameGridDefault();
-        this.currentGameGridDragAndDrop = this.#generateGameGridDragAndDrop();
+        this.currentGameGridDefault = this.#createGameGridDefault();
+        this.currentGameGridDragAndDrop = this.#createGameGridDragAndDrop();
     }
 
     // generate the game grid
-    #generateGameGridDefault(){
+    #createGameGridDefault(){
         return this.gameGridDefault;
     }
 
@@ -31,7 +31,7 @@ class BsrGrid{
     }
 
     // generate drag and drop grid
-    #generateGameGridDragAndDrop(){
+    #createGameGridDragAndDrop(){
         return this.gamePlacementTable;
     }
 

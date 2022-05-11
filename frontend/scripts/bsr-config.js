@@ -12,6 +12,8 @@ const bsrGridProperties = {
     tableFootColumnCount : 0,
     rows : 11,
     columns : 11,
+    rowsNameAndIndexSize : 2,
+    columnsIndexSize : 1,
     content : {'(1,1)' : 'name',
                '(2,1)' : ' ', '(2,2)' : 'A', '(2,3)' : 'B', '(2,4)' : 'C', '(2,5)' : 'D', '(2,6)' : 'E', '(2,7)' : 'F', '(2,8)' : 'G', '(2,9)' : 'H', '(2,10)' : 'I', '(2,11)' : 'J',
                '(3,1)' : '1', '(4,1)' : '2', '(5,1)' : '3', '(6,1)' : '4', '(7,1)' : '5', '(8,1)' : '6', '(9,1)' : '7', '(10,1)' : '8', '(11,1)' : '9', '(12,1)' : '10'} 
@@ -44,7 +46,7 @@ const bsrGridPieces = {
 }
 
 const bsrGridInternals = {
-    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot-disabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)">Generic Text</div>',
+    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--enabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)">Generic Text</div>',
     dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--enabled" id="bsr__boardpiece" draggable="true" ondragstart="dragBoardPiece(event)">Drag Text</div>'
 }
 

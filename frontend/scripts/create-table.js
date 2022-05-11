@@ -1,9 +1,9 @@
-// GenerateTable class to help with generating a table for use in html
-// Can generate and return a html table object
+// CreateTable class to help with creating a table for use in html
+// Can create and return a html table object
 
-export { GenerateTable } 
+export { CreateTable } 
 
-class GenerateTable{
+class CreateTable{
     constructor(className = 'generic__table', id = 'generic__table', tableHeadColumnCount = 0, tableFootColumnCount = 0, rows = 0, columns = 0, cellContents = {'all' : ''}){
         this.className = className;
         this.id = id;
@@ -13,10 +13,10 @@ class GenerateTable{
         this.columns = columns;
         this.cellContents = cellContents;
         this.tableRow = 1;
-        this.currentTable = this.#generateHTMLTable();
+        this.currentTable = this.#createHTMLTable();
     }
 
-    // if there has been cell contents given during the generation process of the table
+    // if there has been cell contents given during the creation process of the table
     // to fill the cell with, data goes by object such as {'(2,3)' : value, '(5,7)' : value}
     #setCellContents(location){
         let locationName = '('+ location[0] + ',' + location[1] + ')';
@@ -32,7 +32,7 @@ class GenerateTable{
     }
 
     // create table cells via a given number of columns for a row in a table
-    #generateTableRow(numberOfCols){
+    #createTableRow(numberOfCols){
         let finalizedRow = '<tr' + 
                      ' class=\"' + this.className + '-row' + '\"' + 
                      ' id=\"' + this.id + '-row-' + this.tableRow + '\"' + 
@@ -52,43 +52,43 @@ class GenerateTable{
         return finalizedRow;
     }
 
-    // generate the table and return it
-    #generateHTMLTable(){
-        // generating beginning of the table
+    // create the table and return it
+    #createHTMLTable(){
+        // create beginning of the table
         let finalizedTable = 
         '<table' + 
         ' class=\"' + this.className + '\"' + 
         ' id=\"' + this.id + '\"' + 
         '>';
-        // generate table header (if it exists) an append to table
+        // create table header (if it exists) an append to table
         if(!this.tableHeadColumnCount == 0){
             finalizedTable = finalizedTable + 
                             '<thead' + 
                             ' class=\"' + this.className + '-head' + '\"' +
                             ' id=\"' + this.id + '-head' + '\"' +
                             '>' +
-                            this.#generateTableRow(this.tableHeadColumnCount) + 
+                            this.#createTableRow(this.tableHeadColumnCount) + 
                             '</thead>';
         }
-        // generating and appending table body
+        // create and appending table body
         finalizedTable = finalizedTable + 
                         '<tbody>';
         for(let i = 1; i <= this.rows; i++){
-            finalizedTable = finalizedTable + this.#generateTableRow(this.columns);
+            finalizedTable = finalizedTable + this.#createTableRow(this.columns);
         }
         finalizedTable = finalizedTable + 
                         '</tbody>';
-        // generate table footer (if it exists) and append to table
+        // create table footer (if it exists) and append to table
         if(!this.tableFootColumnCount == 0){
             finalizedTable = finalizedTable + 
                             '<tfoot' + 
                             ' class=\"' + this.className + '-foot' + '\"' +
                             ' id=\"' + this.id + '-foot' + '\"' +
                             '>' +
-                            this.#generateTableRow(this.tableFootColumnCount) + 
+                            this.#createTableRow(this.tableFootColumnCount) + 
                             '</tfoot>';
         }
-        // finished generating the table, add closing element and return table
+        // finished creating the table, add closing element and return table
         finalizedTable = finalizedTable + '</table>';
         this.tableRow = 1;
         return finalizedTable;
@@ -103,7 +103,7 @@ class GenerateTable{
         this.rows = rows;
         this.columns = columns;
         this.cellContents = cellContents;
-        this.currentTable = this.#generateHTMLTable();
+        this.currentTable = this.#createHTMLTable();
     }
 
     // get the currently made html table to return

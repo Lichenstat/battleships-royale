@@ -5,7 +5,7 @@ export { BsrLogic };
 import { BsrPlayPieces } from "./bsr-playpieces.js";
 import { BsrGrid } from "./bsr-grid.js";
 import { Helper } from "./helper.js";
-import { bsrGridProperties, bsrGridPieces } from "./bsr-config.js";
+import { bsrGridProperties, bsrGridPieces, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
 
 class BsrLogic{
     constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
@@ -35,12 +35,18 @@ class BsrLogic{
         this.lastDraggedOntoPiece = [];
         this.temporaryLocations = [];
         this.canUseTemporaryLocations = true;
+        this.temporaryDraggablePieces = '';
         console.log(this.tableRowsOffset, this.tableColumnsOffset);
     }
 
     // set rotation of pieces during grid setup
     changeBoardPieceRotation(rotation){
         if(rotation == 1 || rotation == this.vertical ? this.pieceRotation = this.vertical : this.pieceRotation = this.horizontal);
+    }
+
+    // a return to see if the current location can be used
+    canUseCurrentLocation(){
+        return this.canUseTemporaryLocations;
     }
 
     // set dragged content
@@ -55,7 +61,7 @@ class BsrLogic{
     // get content that piece was dragged onto
     setDraggedOntoPiece(pieceId){
         this.draggedOntoPiece = Helper.parseElementIdForMatrixLocation(pieceId);
-        console.log(this.draggedOntoPiece);
+        //console.log(this.draggedOntoPiece);
     }
 
     // check if the current piece will overlap with any currently set pieces in the data table
@@ -63,7 +69,7 @@ class BsrLogic{
         //console.log(this.piecesDataTable);
         //console.log(pieceLocations);
         let pieceDataLength = this.piecesDataTable.length;
-        let pieceLocationsLength = pieceLocations.length
+        let pieceLocationsLength = pieceLocations.length;
         for (var i = 0; i < pieceDataLength; i++){
             var currentData = this.piecesDataTable[i].locations;
             var currentDataLength = currentData.length;
@@ -78,6 +84,21 @@ class BsrLogic{
         return false;
     }
 
+    // return the desired piece from pieces
+    #getPieceType(){
+        let desiredPiece;
+        this.pieces.every(
+            boardPiece => {
+                if(this.draggedPieceName == boardPiece.name){
+                    desiredPiece = boardPiece;
+                    return false;
+                }
+                return true;
+            }
+        );
+        return desiredPiece;
+    }
+
     // check if the piece can be put into the table by making a temporary locations table of the current piece
     checkPieceLocation(){
         // make sure we aren't calculating the same dragged over piece again and again
@@ -86,18 +107,16 @@ class BsrLogic{
             this.lastDraggedOntoPiece = this.draggedOntoPiece;
             let pieceLocations = [];
             // get the size of the piece for looping
-            let desiredPiece;
-            this.pieces.forEach(
-                boardPiece => {
-                    if(this.draggedPieceName == boardPiece.name){
-                        desiredPiece = boardPiece;
-                    }
-                }
-            );
-            console.log(desiredPiece.size);
+            let desiredPiece = this.#getPieceType();
+            if (desiredPiece.count <= 0){
+                this.canUseTemporaryLocations = false;
+                return false;
+            }
             //checking if given piece can be placed in horizontally
             if (this.pieceRotation == this.horizontal){
                 // find starting positions
+                // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
+                // corresponds to the actual table locations
                 var draggedPieceFirstLocation = this.draggedOntoPiece[1] - this.draggedPiece[1] + 1;
                 var draggedPieceLastLocation = this.draggedOntoPiece[1] + (desiredPiece.size - Number(this.draggedPiece[1]));
                 //console.log('piece first location', draggedPieceFirstLocation,'piece last location', draggedPieceLastLocation);
@@ -127,7 +146,6 @@ class BsrLogic{
             }
             //console.log(pieceLocations);
             if(this.#checkPieceForDataTableOverlap(pieceLocations)){
-                console.log('bad tlocation');
                 this.canUseTemporaryLocations = false;
                 return false;
             }
@@ -137,15 +155,59 @@ class BsrLogic{
 
     // if the piece can be set in the table, then do so
     setPieceLocation(){
-        console.log(this.canUseTemporaryLocations);
-        if(this.canUseTemporaryLocations){
+        if(this.canUseTemporaryLocations && this.draggedPieceName){
             this.piecesDataTable.push({'id' : this.pieceCounter, 'name' : this.draggedPieceName, 'locations' : this.temporaryLocations})
             this.pieceCounter = this.pieceCounter + 1;
+            this.desiredPiece = this.#getPieceType();
+            this.desiredPiece.count = this.desiredPiece.count - 1;
         }
         console.log(this.piecesDataTable);
     }
 
-
+    getPiecesUpdatedOnPlacement(){
+        //let containerDiv = bsrPieceInteractors.dragAndDropPiecesContainer;
+        let piecesCombined = '';
+        let currentPiece = '';
+        // if we can use the current location
+        if (this.canUseTemporaryLocations){
+            if (this.pieceRotation == this.horizontal){
+                // create a string of all the useable pieces and check if they can be used (draggable)
+                this.temporaryDraggablePieces = '';
+                this.pieces.every(piece => {
+                    currentPiece = piece;
+                    //console.log(piece);
+                    if (piece.count <= 0){
+                        // set draggable or not
+                        currentPiece[this.horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.horizontal], 'draggable="true"', 'draggable="false"');
+                    }
+                    piecesCombined = piecesCombined + currentPiece[this.horizontal];
+                    //console.log(piecesCombined);
+                    return true;
+                });
+                //containerDiv = Helper.getHtmlInsertInternalContent(containerDiv, piecesCombined, bsrPieceInteractors.dragAndDropPiecesContainerId);
+                //console.log(containerDiv);
+                this.temporaryDraggablePieces = piecesCombined;
+                return this.temporaryDraggablePieces;
+            }
+            if (this.pieceRotation == this.vertical){
+                // create a string of all the useable pieces and check if they can be used (draggable)
+                this.temporaryDraggablePieces = '';
+                this.pieces.every(piece => {
+                    currentPiece = piece;
+                    if (piece.count <= 0){
+                        // set draggable or not
+                        currentPiece[this.vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.vertical], 'draggable="true"', 'draggable="false"');
+                    }
+                    piecesCombined = piecesCombined + currentPiece[this.vertical];
+                    return true;
+                });
+                this.temporaryDraggablePieces = piecesCombined;
+                return this.temporaryDraggablePieces;
+            }
+        }
+        // if we cannot use the piece just simply return the current pieces we already had
+        return this.temporaryDraggablePieces;
+    }
 
 
 

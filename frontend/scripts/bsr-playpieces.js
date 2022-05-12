@@ -47,12 +47,12 @@ class BsrPlayPieces{
 
     // return horizontal grid pieces
     getPiecesHorizontal(){
-        return { carrier : this.bsrCarrierHorizontal, battleship : this.bsrBattleshipHorizontal, destroyer : this.bsrDestroyerHorizontal, submarine : this.bsrSubmarineHorizontal, patrolBoat : this.bsrPatrolBoatHorizontal};
+        return { carrier : this.bsrCarrierHorizontal, battleship : this.bsrBattleshipHorizontal, destroyer : this.bsrDestroyerHorizontal, submarine : this.bsrSubmarineHorizontal, patrolboat : this.bsrPatrolBoatHorizontal};
     }
 
     // return vertical grid pieces
     getPiecesVertical(){
-        return { carrier : this.bsrCarrierVertical, battleship : this.bsrBattleshipVertical, destroyer : this.bsrDestroyerVertical, submarine : this.bsrSubmarineVertical, patrolBoat : this.bsrPatrolBoatVertical};
+        return { carrier : this.bsrCarrierVertical, battleship : this.bsrBattleshipVertical, destroyer : this.bsrDestroyerVertical, submarine : this.bsrSubmarineVertical, patrolboat : this.bsrPatrolBoatVertical};
     }
 
 }

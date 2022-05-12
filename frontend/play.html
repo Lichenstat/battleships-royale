@@ -76,6 +76,7 @@
     </script>
     -->
     <script>
+
         function allowDropBoardPiece(event) {
           event.preventDefault();
         }
@@ -89,6 +90,7 @@
           var data = event.dataTransfer.getData("text");
           event.target.appendChild(document.getElementById(data));
         }
+
     </script>
     <script type="module">
         import {BsrGrid} from "./scripts/bsr-grid.js";
@@ -122,19 +124,28 @@
         let grid = new BsrGrid();
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
         logic.changeBoardPieceRotation('horizontal');
-        // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
-        let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [1,5], 'localPortionIndex' : [3,11]}
-        //let logictest = {'name' : 'carrier', 'draggedPortionIndex' : [5,1], 'localPortionIndex' : [7,2]}
-        //let bsrPlot = document.querySelectorAll("[id='bsr__boardpiece--carrier-(1,1)']");
-        //console.log(bsrPlot);
-        //bsrPlot.forEach(item => {item.addEventListener('click', event => {console.log(grid.onGridPositionClicked(item.parentElement.id))})});
-        let playPieces = new BsrPlayPieces();
-        document.getElementById("bsr__options").innerHTML = (playPieces.getPiecesHorizontal())['carrier'];
-        document.getElementById("test__drag").ondragend = () => {console.log('asdfadf')}
-        //document.addEventListener('', item => {console.log(item)});
-        document.addEventListener('dragstart', item => {logic.setDraggedPiece(item.originalTarget.id)});
-        document.addEventListener('dragover', (item) => {logic.setDraggedOntoPiece(item.target.parentNode.id); logic.checkPieceLocation()});
-        document.addEventListener('drop', item => {logic.setPieceLocation()});
+        document.getElementById("bsr__options").innerHTML = logic.getPiecesUpdatedOnPlacement();
+
+        let canPlacePiece;
+        document.addEventListener('dragstart', item => {
+            grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
+            if ((Helper.parseElementIdForMatrixLocation(item.originalTarget.id)).length == 2){
+                logic.setDraggedPiece(item.originalTarget.id)
+            }
+        });
+        document.addEventListener('dragover', item => {
+            logic.setDraggedOntoPiece(item.target.parentNode.id); 
+            logic.checkPieceLocation();
+            canPlacePiece = logic.canUseCurrentLocation();
+        });
+        document.addEventListener('drop', item => {
+            logic.setPieceLocation();
+            document.getElementById("bsr__options").innerHTML = logic.getPiecesUpdatedOnPlacement();
+            if(!canPlacePiece){
+                console.log('use old table');
+                document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+            }
+        });
 
 
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
@@ -155,7 +166,8 @@
         //console.log('getting back tags', Helper.getHtmlEndingAttributesOfElements(teststring));
         //console.log('getting interal contents', Helper.getHtmlInternalContents(teststring));
         //console.log(Helper.getHtmlCleanedCopy(teststring));
-        //console.log(Helper.setHtmlInternalContent(teststring, '-inseted content-', 'enabled'));
+        //console.log(Helper.setHtmlInternalContent(teststring, '-inseted content-', 'test__drag'));
+        console.log(Helper.getHtmlRemoveContent(teststring, 'tater'));
         //Helper.setHtmlStringInternalContent(teststring, 'test__drag', 'foobars');
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
         //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));

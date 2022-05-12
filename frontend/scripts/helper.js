@@ -187,12 +187,63 @@ class Helper{
         return finalizedHtmlReduction;
     }
 
+    // get the tag of the current desired html element if it has  amatch case
+    static getHtmlStartingAndEndingTagOfAttribute(string, classOrId){
+        // beginning portion of this is simply to get get proper tag to begin indexing
+        let elementTag = string.match(new RegExp('<.*' + classOrId, 'g'));
+        elementTag = elementTag.toString();
+        elementTag = elementTag.slice(elementTag.lastIndexOf('<'));
+        elementTag = elementTag.match(/<\w+/g);
+        let beginningTag = elementTag.toString();
+        let endingTag = beginningTag.replace(/</g, '</');
+        endingTag = endingTag.toString().replace(/ /g, '');
+        endingTag = endingTag.toString();
+        return [beginningTag, endingTag];
+    }
+
+    // get indexes of a tags beginning and ending
+    static getHtmlTagStartingAndEndingIndexes(htmlString, classOrId){
+        let tags = this.getHtmlStartingAndEndingTagOfAttribute(htmlString, classOrId);
+        let beginningTag = tags[0];
+        let endingTag = tags[1];
+        // get array of tag index locations, as well as make combined tag array to check for pattern matching
+        let beginningTagIndexes = this.getIndexLocationsOfMatchCase(beginningTag, htmlString);
+        let endingTagIndexes = this.getIndexLocationsOfMatchCase(endingTag, htmlString);
+        let allTags = this.getStringsInOrderViaIndexArray(beginningTagIndexes, beginningTag, endingTagIndexes, endingTag);
+        let allTagIndexes = beginningTagIndexes.concat(endingTagIndexes).sort();
+        // get our indexed tag directly to know where to slice tag array
+        var firstTagIndex = (htmlString.split(classOrId)[0]).lastIndexOf(beginningTag);
+        var tagIndexLocation = allTagIndexes.indexOf(firstTagIndex) + 1;
+        let tagToRest = allTags.slice(tagIndexLocation);
+        //console.log('tag: ', beginningTag, beginningTagIndexes, endingTag, endingTagIndexes, allTags, allTagIndexes);
+        // check the amount of tags we throw away to help later in the placement of our content
+        var tagCountAfterSplice = allTags.length - tagToRest.length;
+        var marker = 0;
+        // get to ending tag of the element and mark the locations ending tag index
+        for (var i in tagToRest){
+            if(tagToRest[i] == beginningTag){
+                marker = marker + 1;
+            }
+            if(tagToRest[i] == endingTag){
+                marker = marker - 1;
+            }
+            if(marker <= -1){
+                marker = tagCountAfterSplice + Number(i);
+                break;
+            }
+        }
+        // get the index of the location of the ending tag and append internal contents to html string
+        let lastTagIndex = htmlString.indexOf(endingTag, allTagIndexes[marker]);
+        //console.log(htmlString.substring(firstTagIndex, lastTagIndex));
+        return [firstTagIndex, lastTagIndex];
+    }
+
     // get the tags in an html element
     static getHtmlTagsOfElements(string){
         let partiallyCleaned = string.match(/<{1}\/{0,1}\w+/g);
         return partiallyCleaned;
     }
-    
+
     // get the end case of the attributes of html elements
     static getHtmlEndingAttributesOfElements(string){
         let changedString = this.getHtmlCleanedTagAttributes(string);
@@ -411,46 +462,24 @@ class Helper{
     // add internal contents of a certain html string made in javascript using it's class or id at the end of the tag
     // assumes a js html string exists in such a format of <div class.. id=..><e></e><f></f></div>
     // will add content to very back of element (queue style). Maybe implement a stack style of appending later?
-    static setHtmlInternalContent(htmlString, contentToInsert, classOrId = null){
-        // beginning portion of this is simply to get get proper tag to begin indexing
-        let elementTag = htmlString.match(new RegExp('<.*' + classOrId, 'g'));
-        elementTag = elementTag.toString();
-        elementTag = elementTag.slice(elementTag.lastIndexOf('<'));
-        elementTag = elementTag.match(/<\w+/g);
-        let beginningTag = elementTag.toString();
-        let endingTag = beginningTag.replace(/</g, '</');
-        endingTag = endingTag.toString().replace(/ /g, '');
-        endingTag = endingTag.toString();
-        // get array of tag index locations, as well as make combined tag array to check for pattern matching
-        let beginningTagIndexes = this.getIndexLocationsOfMatchCase(beginningTag, htmlString);
-        let endingTagIndexes = this.getIndexLocationsOfMatchCase(endingTag, htmlString);
-        let allTags = this.getStringsInOrderViaIndexArray(beginningTagIndexes, beginningTag, endingTagIndexes, endingTag);
-        let allTagIndexes = beginningTagIndexes.concat(endingTagIndexes).sort();
-        // get our indexed tag directly to know where to slice tag array
-        let tagLocation = (htmlString.split(classOrId)[0]).lastIndexOf(beginningTag);
-        tagLocation = allTagIndexes.indexOf(tagLocation) + 1;
-        let tagToRest = allTags.slice(tagLocation);
-        //console.log('tag: ', beginningTag, beginningTagIndexes, endingTag, endingTagIndexes, allTags, allTagIndexes);
-        // check the amount of tags we throw away to help later in the placement of our content
-        var tagCountAfterSplice = allTags.length - tagToRest.length;
-        var marker = 0;
-        // get to ending tag of the element and mark the locations ending tag index
-        for (var i in tagToRest){
-            if(tagToRest[i] == beginningTag){
-                marker = marker + 1;
-            }
-            if(tagToRest[i] == endingTag){
-                marker = marker - 1;
-            }
-            if(marker <= -1){
-                marker = tagCountAfterSplice + Number(i);
-                break;
-            }
-        }
-        // get the index of the location of the ending tag and append internal contents to html string
-        let indexOfInsertion = htmlString.indexOf(endingTag, allTagIndexes[marker]);
-        htmlString = htmlString.slice(0, indexOfInsertion) + contentToInsert + htmlString.slice(indexOfInsertion, htmlString.length);
-        return htmlString;
+    static getHtmlInsertInternalContent(htmlString, contentToInsert, classOrId){
+        let endingTagIndex = this.getHtmlTagStartingAndEndingIndexes(htmlString, classOrId)[1];
+        let modifiedHtmlString = htmlString.slice(0, endingTagIndex) + contentToInsert + htmlString.slice(endingTagIndex, htmlString.length);
+        return modifiedHtmlString;
     }
+
+    // remove html content within some form of html element given a class or id of some type
+    // *** appears to be broken for larger strings at the moment, keep in mind, will test later ***
+    static getHtmlRemoveContent(htmlString, classOrId){
+        // get tag indexes
+        let tagIndexes = this.getHtmlTagStartingAndEndingIndexes(htmlString, classOrId);
+        console.log(tagIndexes);
+        console.log(htmlString.substring(tagIndexes[0], tagIndexes[1]));
+        // get tag ending index by getting eind tag index beginning + tag ending + '>'
+        var endingTagIndex = tagIndexes[1] + (this.getHtmlStartingAndEndingTagOfAttribute(htmlString, classOrId)[1].length) + 1;
+        let modifiedHtmlString = htmlString.slice(0, tagIndexes[0]) + htmlString.slice(endingTagIndex, htmlString.length);
+        return modifiedHtmlString;
+    }
+
 
 }

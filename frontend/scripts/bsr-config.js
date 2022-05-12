@@ -1,6 +1,6 @@
 // bsr properties to use with various other bsr files
 
-export { bsrGridProperties, bsrPlotProperties, bsrGridPieces, bsrGridInternals }
+export { bsrGridProperties, bsrPlotProperties, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
 
 // for the bsr tables
 const bsrGridProperties = {
@@ -31,7 +31,7 @@ const bsrPlotProperties = {
     internalText : ''
 }
 
-// information on play pieces
+// for information on play pieces
 const bsrGridPieces = {
     carrierHorizontal : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-horizontal', id: 'bsr__table--carrier', rows : 1, columns : 5, content : '' },
     carrierVertical : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-vertical', id: 'bsr__table--carrier', rows : 5, columns : 1, content : '' },
@@ -45,9 +45,17 @@ const bsrGridPieces = {
     patrolboatVertical : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-vertical', id: 'bsr__table--patrolboat', rows : 2, columns : 1, content : '' },
 }
 
+// for the various grid internals
 const bsrGridInternals = {
-    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--enabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
-    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--enabled" id="bsr__boardpiece" draggable="true" ondragstart="dragBoardPiece(event)">Drag Text</div>'
+    dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--disabled" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
+    dragAndDropItemId : 'bsr__boardpiece',
+    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--enabled" id="bsr__boardpiece" draggable="true" ondragstart="dragBoardPiece(event)">test drag</div>'
+}
+
+// for interacting with various grid pieces
+const bsrPieceInteractors = {
+    dragAndDropPiecesContainerId : 'bsr__piececontainer',
+    dragAndDropPiecesContainer : '<div class="bsr__piececontainer bsr__piececontainer--disabled" id="bsr__piececontainer" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>'
 }
 
 // for the bsr menu

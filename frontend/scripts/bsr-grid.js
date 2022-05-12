@@ -18,6 +18,10 @@ class BsrGrid{
 
         this.currentGameGridDefault = this.#createGameGridDefault();
         this.currentGameGridDragAndDrop = this.#createGameGridDragAndDrop();
+
+        // save a used grid for later on use
+        this.saveGrid;
+        this.saveDragAndDropGrid;
     }
 
     // generate the game grid
@@ -30,6 +34,16 @@ class BsrGrid{
         return this.currentGameGridDefault;
     }
 
+    // save game grid
+    saveGameGrid(tableString){
+        this.saveGrid = tableString;
+    }
+
+    // return the saved game grid
+    getSavedGameGrid(tableString){
+        this.saveGrid = tableString;
+    }
+
     // generate drag and drop grid
     #createGameGridDragAndDrop(){
         return this.gamePlacementTable;
@@ -38,6 +52,16 @@ class BsrGrid{
     // get drag and drop table
     getGameGridDragAndDrop(){
         return this.currentGameGridDragAndDrop;
+    }
+
+    // save a game grid drag and drop
+    saveGameGridDragAndDrop(tableString){
+        this.saveDragAndDropGrid = tableString
+    }
+
+    // return the saved drag and drop grid
+    getSavedGameGridDragAndDrop(){
+        return this.saveDragAndDropGrid;
     }
 
     // get grid position of clicked plot

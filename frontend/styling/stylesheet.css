@@ -61,6 +61,14 @@ body{
   background-color: rosybrown;
 }
 
+.bsr__piecesshell{
+  border: 2px solid peachpuff;
+  overflow: auto;
+  table-layout: fixed;
+  width: 400px;
+  height: 300px;
+}
+
 table{
     border: 1px solid;
 }

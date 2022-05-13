@@ -51,6 +51,10 @@
                     </div>
                 </div>
             </div>
+            <button type="button" id="bsr__rotate">Rotate pieces</button>
+            <div class="bsr__piecesshell" id="bsr__piecesshell">
+
+            </div>
             <div class="bsr__options" id="bsr__options">
 
             </div>
@@ -119,28 +123,36 @@
 
 
         //--------------------------------------------------------------
-        let logic = new BsrLogic();
-        console.log(logic);
         let grid = new BsrGrid();
+        let logic = new BsrLogic();
+        let gridUpdateDragAndDrop = () => {document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces();}
+        gridUpdateDragAndDrop();
+        //console.log(logic);
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
-        logic.changeBoardPieceRotation('horizontal');
-        document.getElementById("bsr__options").innerHTML = logic.getPiecesUpdatedOnPlacement();
+        document.getElementById('bsr__rotate').onclick = function(){
+            console.log('clicked');
+            console.log(logic.canUseCurrentLocation());
+            logic.changeBoardPieceRotation();
+            gridUpdateDragAndDrop();
+        }
 
         let canPlacePiece;
         document.addEventListener('dragstart', item => {
             grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
             if ((Helper.parseElementIdForMatrixLocation(item.originalTarget.id)).length == 2){
-                logic.setDraggedPiece(item.originalTarget.id)
+                logic.setDraggedPiece(item.originalTarget.id);
+                logic.setLocalPiece(item.originalTarget.parentNode.parentNode.id);
+                console.log(item.originalTarget.parentNode.parentNode.id);
             }
         });
         document.addEventListener('dragover', item => {
-            logic.setDraggedOntoPiece(item.target.parentNode.id); 
-            logic.checkPieceLocation();
+            logic.setDraggedOverPiece(item.target.parentNode.id); 
+            logic.checkPieceLocations();
             canPlacePiece = logic.canUseCurrentLocation();
         });
         document.addEventListener('drop', item => {
             logic.setPieceLocation();
-            document.getElementById("bsr__options").innerHTML = logic.getPiecesUpdatedOnPlacement();
+            gridUpdateDragAndDrop();
             if(!canPlacePiece){
                 console.log('use old table');
                 document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
@@ -167,7 +179,7 @@
         //console.log('getting interal contents', Helper.getHtmlInternalContents(teststring));
         //console.log(Helper.getHtmlCleanedCopy(teststring));
         //console.log(Helper.setHtmlInternalContent(teststring, '-inseted content-', 'test__drag'));
-        console.log(Helper.getHtmlRemoveContent(teststring, 'tater'));
+        //console.log(Helper.getHtmlRemoveContent(teststring, 'tater'));
         //Helper.setHtmlStringInternalContent(teststring, 'test__drag', 'foobars');
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
         //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));

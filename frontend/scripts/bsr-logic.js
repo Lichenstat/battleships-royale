@@ -30,15 +30,22 @@ class BsrLogic{
         ];
         this.pieceCounter = 1;
         this.desiredPiecesType = {};
+
         this.draggedPieceName = '';
         this.draggedPieceClickedLocation = [];
         this.draggedPieceFirstLocation = [];
         this.draggedPieceLastLocation = [];
+
         this.gridPieceClickedLocation = [];
         this.draggedOverGridPiece = [];
         this.previousDraggedOverGridPiece = [];
+        
         this.possiblePlacementLocations = [];
+
         this.canUpdatePieces = true;
+        this.isUsingPlacedPiece = false;
+        this.usingPlacedPiece = {};
+        
         this.draggablePieces = '';
         console.log(this.tableRowsOffset, this.tableColumnsOffset);
     }
@@ -65,19 +72,28 @@ class BsrLogic{
         let name = pieceId.match(/--.*-/g);
         name = name.toString().replace(/--|-/g, '');
         this.draggedPieceName = name.toString();
-        console.log(this.draggedPieceClickedLocation, this.draggedPieceName);
+        console.log("dragged piece", this.draggedPieceClickedLocation, this.draggedPieceName);
     }
 
     // set local gotten from grid piece
     setLocalPiece(pieceId){
         this.gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
-        console.log(this.gridPieceClickedLocation);
+        console.log("local click", this.gridPieceClickedLocation);
     }
 
     // get content that piece was dragged onto
     setDraggedOverPiece(pieceId){
         this.draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceId);
         //console.log(this.draggedOverGridPiece);
+    }
+
+    // reset id of pieces in a pieces data table
+    #resetIdsOfPiecesDataTable(){
+        this.piecesDataTable.every(
+            (piece, index) => {
+                piece.id = index + 1;
+            }
+        )
     }
 
     // return the desired piece from pieces
@@ -95,33 +111,33 @@ class BsrLogic{
         return desiredPiece;
     }
 
-    // return the desired piece from pieces
-    #getDataTablePieceByLocation(location){
-        let desiredPiece;
-        // first loop gets to piece
-        this.pieces.every(
-            boardPiece => {
-                // second loop compares data locations to a given location
-                boardPiece.location.every(
-                    dataLocation => {
-                        if (Helper.checkIfArraysAreEqual(dataLocation, location)){
-                            desiredPiece = boardPiece;
-                            return false;
-                        }
-                    }
-                )
-                // if a desired piece has been found, we can return;
-                if (desiredPiece){return false;}
-                return true;
-            }
-        );
-        return desiredPiece;
-    }
+    //// return the desired piece from pieces
+    //#getDataTablePieceByLocation(location){
+    //    let desiredPiece;
+    //    // first loop gets to piece
+    //    this.pieces.every(
+    //        boardPiece => {
+    //            // second loop compares data locations to a given location
+    //            boardPiece.location.every(
+    //                dataLocation => {
+    //                    if (Helper.checkIfArraysAreEqual(dataLocation, location)){
+    //                        desiredPiece = boardPiece;
+    //                        return false;
+    //                    }
+    //                }
+    //            )
+    //            // if a desired piece has been found, we can return;
+    //            if (desiredPiece){return false;}
+    //            return true;
+    //        }
+    //    );
+    //    return desiredPiece;
+    //}
 
     // check if the current piece will overlap with any currently set pieces in the data table
     #getPieceHavingDataTableOverlap(pieceLocations){
-        //console.log(this.piecesDataTable);
-        //console.log(pieceLocations);
+        //console.log('data table', this.piecesDataTable);
+        //console.log('desired piece locations', pieceLocations);
         let pieceDataLength = this.piecesDataTable.length;
         let pieceLocationsLength = pieceLocations.length;
         for (var i = 0; i < pieceDataLength; i++){
@@ -198,6 +214,24 @@ class BsrLogic{
         this.possiblePlacementLocations = pieceLocations;
     }
 
+    // check to see if a piece will overlap a placed piece or not
+    #checkIfPieceWillOverlapPlacedPiece(){
+        if(this.#getPieceHavingDataTableOverlap(this.possiblePlacementLocations)){
+            this.canUpdatePieces = false;
+        }
+    }
+
+    // simply check if a piece was already placed on the board (we will have to update the pieces new location then)
+    #checkIfPieceWasAlreadyPlaced(){
+        this.isUsingPlacedPiece = false;
+        this.usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.gridPieceClickedLocation]);
+        console.log(this.usingPlacedPiece);
+        if(this.usingPlacedPiece){
+            this.isUsingPlacedPiece = true;
+            this.canUpdatePieces = true;
+        }
+    }
+
     // check if the piece can be put into the table by filling a temporary locations array of the current piece
     // and set the pieces to be able to be updated or not
     checkPieceLocations(){
@@ -210,18 +244,56 @@ class BsrLogic{
             this.#checkIfPieceCanBeUsed();
             this.#checkAndSetIfPieceLocationsAreInGridBoundries();
             this.#setPossiblePlacementLocations();
-            if(this.#getPieceHavingDataTableOverlap(this.possiblePlacementLocations)){
-                this.canUpdatePieces = false;
-            }
+            this.#checkIfPieceWillOverlapPlacedPiece();
+            this.#checkIfPieceWasAlreadyPlaced();
         }
     }
 
+    // remove an undesired piece from the piecesdatatable
+    removePiece(){
+        this.piecesDataTable.every(
+            (piece, index) => {
+                if (piece.id == this.usingPlacedPiece.id){
+                    this.piecesDataTable.splice(index, 1);
+                    return false;
+                }
+                return true;
+            }
+        )
+        this.pieceCounter = this.pieceCounter - 1;
+        this.desiredPiecesType.count = this.desiredPiecesType.count + 1;
+        this.#resetIdsOfPiecesDataTable();
+    }
+
+    // reset an already placed piece slocation
+    #relocatePlacedPiece(){
+        this.piecesDataTable.every(
+            piece => {
+                if (piece.id == this.usingPlacedPiece.id){
+                    piece.locations = this.possiblePlacementLocations;
+                    return false;
+                }
+                return true;
+            }
+        )
+    }
+
+    #setNewlyPlacedPiece(){
+        this.piecesDataTable.push({'id' : this.pieceCounter, 'name' : this.draggedPieceName, 'locations' : this.possiblePlacementLocations})
+        this.pieceCounter = this.pieceCounter + 1;
+        this.desiredPiecesType.count = this.desiredPiecesType.count - 1;
+    }
+
     // if the piece can be set in the table, then do so
-    setPieceLocation(){
+    setPieceLocations(){
         if(this.canUpdatePieces && this.draggedPieceName){
-            this.piecesDataTable.push({'id' : this.pieceCounter, 'name' : this.draggedPieceName, 'locations' : this.possiblePlacementLocations})
-            this.pieceCounter = this.pieceCounter + 1;
-            this.desiredPiecesType.count = this.desiredPiecesType.count - 1;
+            if(this.usingPlacedPiece){
+                console.log('relocating piece');
+                this.#relocatePlacedPiece();
+            }
+            if(!this.usingPlacedPiece){
+                this.#setNewlyPlacedPiece()
+            }
         }
         console.log(this.piecesDataTable);
     }
@@ -271,10 +343,6 @@ class BsrLogic{
         }
         // if we cannot use the piece just simply return the current pieces we already had
         return this.draggablePieces;
-    }
-
-    removePieces(){
-
     }
 
 }

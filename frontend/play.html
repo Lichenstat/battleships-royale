@@ -142,7 +142,7 @@
             if ((Helper.parseElementIdForMatrixLocation(item.originalTarget.id)).length == 2){
                 logic.setDraggedPiece(item.originalTarget.id);
                 logic.setLocalPiece(item.originalTarget.parentNode.parentNode.id);
-                console.log(item.originalTarget.parentNode.parentNode.id);
+                //console.log(item.originalTarget.parentNode.parentNode.id);
             }
         });
         document.addEventListener('dragover', item => {
@@ -151,7 +151,7 @@
             canPlacePiece = logic.canUseCurrentLocation();
         });
         document.addEventListener('drop', item => {
-            logic.setPieceLocation();
+            logic.setPieceLocations();
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
                 console.log('use old table');

@@ -1,4 +1,4 @@
-// Methods for interacting with the players (player interaction on clientside)
+// Methods for interacting with the players using grid pieces and grid (player interaction on clientside)
 
 export { BsrLogic };
 
@@ -8,88 +8,110 @@ import { Helper } from "./helper.js";
 import { bsrGridProperties, bsrGridPieces, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
 
 class BsrLogic{
+
+    #bsrPlayPieces;
+    #piecesDataTable;
+
+    #tableRowsCount;
+    #tableRowsOffset;
+    #tableColumnsCount;
+    #tableColumnsOffset;
+    #pieceRotation;
+    #horizontal;
+    #vertical;
+
+    #pieceCounter;
+    #desiredPiecesType;
+
+    #draggedPieceName;
+    #draggedPieceClickedLocation;
+    #draggedPieceFirstLocation;
+    #draggedPieceLastLocation;
+
+    #gridPieceClickedLocation;
+    #draggedOverGridPiece;
+    #previousDraggedOverGridPiece;
+
+    #possiblePlacementLocations;
+    
+    #canUpdatePieces;
+    #isUsingPlacedPiece;
+    #usingPlacedPiece;
+
     constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
-        this.bsrPlayPieces = new BsrPlayPieces();
-        this.horizontalPlayPieces = this.bsrPlayPieces.getPiecesHorizontal();
-        this.verticalPlayPieces = this.bsrPlayPieces.getPiecesVertical();
-        this.tableRowsCount = tableRowsCount;
-        this.tableRowsOffset = Math.abs(this.tableRowsCount - (bsrGridProperties.rows + Number(bsrGridProperties.tableHeadColumnCount > 0) + Number(bsrGridProperties.tableFootColumnCount > 0) + 1));
-        this.tableColumnsCount = tableColumnsCount;
-        this.tableColumnsOffset = Math.abs(this.tableColumnsCount - (bsrGridProperties.columns + 1));
-        this.pieceRotation = pieceRotation;
-        this.horizontal = 'horizontal';
-        this.vertical = 'vertical';
-        this.piecesDataTable = [];// Array(this.tableRowsCount).fill().map(() => Array(this.tableColumnsCount).fill(0));
         // create and assign pieces objects to be used with the grid
-        this.pieces = [
-            { 'name' : bsrGridPieces.carrierHorizontal.name,    'count' : bsrGridPieces.carrierHorizontal.count,    'size' : bsrGridPieces.carrierHorizontal.size,    'placed' : bsrGridPieces.carrierHorizontal.count, [this.horizontal] : this.horizontalPlayPieces[bsrGridPieces.carrierHorizontal.name], [this.vertical] : this.verticalPlayPieces[bsrGridPieces.carrierVertical.name]},
-            { 'name' : bsrGridPieces.battleshipHorizontal.name, 'count' : bsrGridPieces.battleshipHorizontal.count, 'size' : bsrGridPieces.battleshipHorizontal.size, 'placed' : bsrGridPieces.battleshipHorizontal.count, [this.horizontal] : this.horizontalPlayPieces[bsrGridPieces.battleshipHorizontal.name], [this.vertical] : this.verticalPlayPieces[bsrGridPieces.battleshipVertical.name]},
-            { 'name' : bsrGridPieces.destroyerHorizontal.name,  'count' : bsrGridPieces.destroyerHorizontal.count,  'size' : bsrGridPieces.destroyerHorizontal.size,  'placed' : bsrGridPieces.destroyerHorizontal.count, [this.horizontal] : this.horizontalPlayPieces[bsrGridPieces.destroyerHorizontal.name], [this.vertical] : this.verticalPlayPieces[bsrGridPieces.destroyerVertical.name]},
-            { 'name' : bsrGridPieces.submarineHorizontal.name,  'count' : bsrGridPieces.submarineHorizontal.count,  'size' : bsrGridPieces.submarineHorizontal.size,  'placed' : bsrGridPieces.submarineHorizontal.count, [this.horizontal] : this.horizontalPlayPieces[bsrGridPieces.submarineHorizontal.name], [this.vertical] : this.verticalPlayPieces[bsrGridPieces.submarineVertical.name]},
-            { 'name' : bsrGridPieces.patrolboatHorizontal.name, 'count' : bsrGridPieces.patrolboatHorizontal.count, 'size' : bsrGridPieces.patrolboatHorizontal.size, 'placed' : bsrGridPieces.patrolboatHorizontal.count, [this.horizontal] : this.horizontalPlayPieces[bsrGridPieces.patrolboatHorizontal.name], [this.vertical] : this.verticalPlayPieces[bsrGridPieces.patrolboatVertical.name]}
-        ];
-        this.pieceCounter = 1;
-        this.desiredPiecesType = {};
+        this.#bsrPlayPieces = new BsrPlayPieces();
+        this.#piecesDataTable = [];
 
-        this.draggedPieceName = '';
-        this.draggedPieceClickedLocation = [];
-        this.draggedPieceFirstLocation = [];
-        this.draggedPieceLastLocation = [];
+        this.#tableRowsCount = tableRowsCount;
+        this.#tableRowsOffset = Math.abs(this.#tableRowsCount - (bsrGridProperties.rows + Number(bsrGridProperties.tableHeadColumnCount > 0) + Number(bsrGridProperties.tableFootColumnCount > 0) + 1));
+        this.#tableColumnsCount = tableColumnsCount;
+        this.#tableColumnsOffset = Math.abs(this.#tableColumnsCount - (bsrGridProperties.columns + 1));
+        this.#pieceRotation = pieceRotation;
+        this.#horizontal = bsrGridPieces.horizontal;
+        this.#vertical = bsrGridPieces.vertical;
 
-        this.gridPieceClickedLocation = [];
-        this.draggedOverGridPiece = [];
-        this.previousDraggedOverGridPiece = [];
+        this.#pieceCounter = 1;
+        this.#desiredPiecesType = {};
+
+        this.#draggedPieceName = '';
+        this.#draggedPieceClickedLocation = [];
+        this.#draggedPieceFirstLocation = [];
+        this.#draggedPieceLastLocation = [];
+
+        this.#gridPieceClickedLocation = [];
+        this.#draggedOverGridPiece = [];
+        this.#previousDraggedOverGridPiece = [];
         
-        this.possiblePlacementLocations = [];
+        this.#possiblePlacementLocations = [];
 
-        this.canUpdatePieces = true;
-        this.isUsingPlacedPiece = false;
-        this.usingPlacedPiece = {};
+        this.#canUpdatePieces = true;
+        this.#isUsingPlacedPiece = false;
+        this.#usingPlacedPiece = {};
         
-        this.draggablePieces = '';
-        console.log(this.tableRowsOffset, this.tableColumnsOffset);
+        console.log(this.#tableRowsOffset, this.#tableColumnsOffset);
     }
 
     // set rotation of pieces during grid setup
     changeBoardPieceRotation(){
-        if(this.pieceRotation == this.vertical ? this.pieceRotation = this.horizontal : this.pieceRotation = this.vertical);
-        this.canUpdatePieces = true;
+        if(this.#pieceRotation == this.#vertical ? this.#pieceRotation = this.#horizontal : this.#pieceRotation = this.#vertical);
+        this.#canUpdatePieces = true;
     }
 
     // a return to see if the current location can be used
     canUseCurrentLocation(){
-        return this.canUpdatePieces;
+        return this.#canUpdatePieces;
     }
 
     // return currently used table
     getCurrentlyPlaceablePiece(){
-        return this.possiblePlacementLocations;
+        return this.#possiblePlacementLocations;
     }
 
     // set dragged content
     setDraggedPiece(pieceId){
-        this.draggedPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
+        this.#draggedPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
         let name = pieceId.match(/--.*-/g);
         name = name.toString().replace(/--|-/g, '');
-        this.draggedPieceName = name.toString();
-        console.log("dragged piece", this.draggedPieceClickedLocation, this.draggedPieceName);
+        this.#draggedPieceName = name.toString();
+        console.log("dragged piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
     }
 
     // set local gotten from grid piece
     setLocalPiece(pieceId){
-        this.gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
-        console.log("local click", this.gridPieceClickedLocation);
+        this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
+        console.log("local click", this.#gridPieceClickedLocation);
     }
 
     // get content that piece was dragged onto
     setDraggedOverPiece(pieceId){
-        this.draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceId);
-        //console.log(this.draggedOverGridPiece);
+        this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceId);
+        //console.log(this.#draggedOverGridPiece);
     }
 
     // reset id of pieces in a pieces data table
     #resetIdsOfPiecesDataTable(){
-        this.piecesDataTable.every(
+        this.#piecesDataTable.every(
             (piece, index) => {
                 piece.id = index + 1;
             }
@@ -99,9 +121,9 @@ class BsrLogic{
     // return the desired piece from pieces
     #getPieceTypeByName(){
         let desiredPiece;
-        this.pieces.every(
+        this.#bsrPlayPieces.pieces.every(
             boardPiece => {
-                if(this.draggedPieceName == boardPiece.name){
+                if(this.#draggedPieceName == boardPiece.name){
                     desiredPiece = boardPiece;
                     return false;
                 }
@@ -111,42 +133,19 @@ class BsrLogic{
         return desiredPiece;
     }
 
-    //// return the desired piece from pieces
-    //#getDataTablePieceByLocation(location){
-    //    let desiredPiece;
-    //    // first loop gets to piece
-    //    this.pieces.every(
-    //        boardPiece => {
-    //            // second loop compares data locations to a given location
-    //            boardPiece.location.every(
-    //                dataLocation => {
-    //                    if (Helper.checkIfArraysAreEqual(dataLocation, location)){
-    //                        desiredPiece = boardPiece;
-    //                        return false;
-    //                    }
-    //                }
-    //            )
-    //            // if a desired piece has been found, we can return;
-    //            if (desiredPiece){return false;}
-    //            return true;
-    //        }
-    //    );
-    //    return desiredPiece;
-    //}
-
     // check if the current piece will overlap with any currently set pieces in the data table
     #getPieceHavingDataTableOverlap(pieceLocations){
-        //console.log('data table', this.piecesDataTable);
+        //console.log('data table', this.#piecesDataTable);
         //console.log('desired piece locations', pieceLocations);
-        let pieceDataLength = this.piecesDataTable.length;
+        let pieceDataLength = this.#piecesDataTable.length;
         let pieceLocationsLength = pieceLocations.length;
         for (var i = 0; i < pieceDataLength; i++){
-            var currentData = this.piecesDataTable[i].locations;
+            var currentData = this.#piecesDataTable[i].locations;
             var currentDataLength = currentData.length;
             for (var j = 0; j < currentDataLength; j++){
                 for (var k = 0; k < pieceLocationsLength; k++){
                     if (Helper.checkIfArraysAreEqual(currentData[j], pieceLocations[k])){
-                        return this.piecesDataTable[i];
+                        return this.#piecesDataTable[i];
                     }
                 }
             }
@@ -158,38 +157,38 @@ class BsrLogic{
     #checkAndSetIfPieceLocationsAreInGridBoundries(){
         var draggedPieceFirstLocationMatch;
         var draggedPieceLastLocationMatch;
-        if (this.pieceRotation == this.horizontal){
+        if (this.#pieceRotation == this.#horizontal){
             // find starting positions
             // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
             // corresponds to the actual table locations
-            draggedPieceFirstLocationMatch = this.draggedOverGridPiece[1] - this.draggedPieceClickedLocation[1] + 1;
-            draggedPieceLastLocationMatch = this.draggedOverGridPiece[1] + (this.desiredPiecesType.size - Number(this.draggedPieceClickedLocation[1]));
+            draggedPieceFirstLocationMatch = this.#draggedOverGridPiece[1] - this.#draggedPieceClickedLocation[1] + 1;
+            draggedPieceLastLocationMatch = this.#draggedOverGridPiece[1] + (this.#desiredPiecesType.size - Number(this.#draggedPieceClickedLocation[1]));
             //console.log('piece first location', draggedPieceFirstLocationMatch,'piece last location', draggedPieceLastLocationMatch);
-            if (draggedPieceFirstLocationMatch < this.tableColumnsOffset || draggedPieceLastLocationMatch > this.tableColumnsCount + bsrGridProperties.columnsIndexSize){
-                this.canUpdatePieces = false;
+            if (draggedPieceFirstLocationMatch < this.#tableColumnsOffset || draggedPieceLastLocationMatch > this.#tableColumnsCount + bsrGridProperties.columnsIndexSize){
+                this.#canUpdatePieces = false;
             }
-            this.draggedPieceFirstLocation = [this.draggedOverGridPiece[0], draggedPieceFirstLocationMatch];
-            this.draggedPieceLastLocation = [this.draggedOverGridPiece[0], draggedPieceLastLocationMatch];
-            //console.log(this.draggedPieceFirstLocation, this.draggedPieceLastLocation);
+            this.#draggedPieceFirstLocation = [this.#draggedOverGridPiece[0], draggedPieceFirstLocationMatch];
+            this.#draggedPieceLastLocation = [this.#draggedOverGridPiece[0], draggedPieceLastLocationMatch];
+            //console.log(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation);
         }
-        if (this.pieceRotation == this.vertical){
+        if (this.#pieceRotation == this.#vertical){
             // find starting positions
-            draggedPieceFirstLocationMatch = this.draggedOverGridPiece[0] - this.draggedPieceClickedLocation[0] + 1;
-            draggedPieceLastLocationMatch = this.draggedOverGridPiece[0] + (this.desiredPiecesType.size - this.draggedPieceClickedLocation[0]);
+            draggedPieceFirstLocationMatch = this.#draggedOverGridPiece[0] - this.#draggedPieceClickedLocation[0] + 1;
+            draggedPieceLastLocationMatch = this.#draggedOverGridPiece[0] + (this.#desiredPiecesType.size - this.#draggedPieceClickedLocation[0]);
             //console.log('piece first location', draggedPieceFirstLocationMatch,'piece last location', draggedPieceLastLocationMatch);
-            if (draggedPieceFirstLocationMatch < this.tableRowsOffset || draggedPieceLastLocationMatch > this.tableRowsCount + bsrGridProperties.rowsNameAndIndexSize){
-                this.canUpdatePieces = false;
+            if (draggedPieceFirstLocationMatch < this.#tableRowsOffset || draggedPieceLastLocationMatch > this.#tableRowsCount + bsrGridProperties.rowsNameAndIndexSize){
+                this.#canUpdatePieces = false;
             }
-            this.draggedPieceFirstLocation = [draggedPieceFirstLocationMatch, this.draggedOverGridPiece[1]];
-            this.draggedPieceLastLocation = [draggedPieceLastLocationMatch, this.draggedOverGridPiece[1]];
-            //console.log(this.draggedPieceFirstLocation, this.draggedPieceLastLocation);
+            this.#draggedPieceFirstLocation = [draggedPieceFirstLocationMatch, this.#draggedOverGridPiece[1]];
+            this.#draggedPieceLastLocation = [draggedPieceLastLocationMatch, this.#draggedOverGridPiece[1]];
+            //console.log(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation);
         }
     }
 
     // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
     #checkIfPieceCanBeUsed(){
-        if (this.desiredPiecesType.count <= 0){
-            this.canUpdatePieces = false;
+        if (this.#desiredPiecesType.count <= 0){
+            this.#canUpdatePieces = false;
         }
     }
 
@@ -197,38 +196,49 @@ class BsrLogic{
     #setPossiblePlacementLocations(){
         let pieceLocations = [];
         //checking if given piece can be placed in horizontally
-        if (this.pieceRotation == this.horizontal){
-            var size = this.desiredPiecesType.size + this.draggedPieceFirstLocation[1];
-            for(var i = this.draggedPieceFirstLocation[1]; i < size; i++){
-                pieceLocations.push([this.draggedOverGridPiece[0], i]);
+        if (this.#pieceRotation == this.#horizontal){
+            var size = this.#desiredPiecesType.size + this.#draggedPieceFirstLocation[1];
+            for(var i = this.#draggedPieceFirstLocation[1]; i < size; i++){
+                pieceLocations.push([this.#draggedOverGridPiece[0], i]);
             }
         }
         //checking if given piece can be placed in vertically
-        if (this.pieceRotation == this.vertical){
-            var size = this.desiredPiecesType.size + this.draggedPieceFirstLocation[0];
-            for(var i = this.draggedPieceFirstLocation[0]; i < size; i++){
-                pieceLocations.push([i, this.draggedOverGridPiece[1]]);
+        if (this.#pieceRotation == this.#vertical){
+            var size = this.#desiredPiecesType.size + this.#draggedPieceFirstLocation[0];
+            for(var i = this.#draggedPieceFirstLocation[0]; i < size; i++){
+                pieceLocations.push([i, this.#draggedOverGridPiece[1]]);
             }
         }
         //console.log(pieceLocations);
-        this.possiblePlacementLocations = pieceLocations;
+        this.#possiblePlacementLocations = pieceLocations;
     }
 
     // check to see if a piece will overlap a placed piece or not
     #checkIfPieceWillOverlapPlacedPiece(){
-        if(this.#getPieceHavingDataTableOverlap(this.possiblePlacementLocations)){
-            this.canUpdatePieces = false;
+        let overlap = this.#getPieceHavingDataTableOverlap(this.#possiblePlacementLocations)
+        if(overlap){
+            if(this.#usingPlacedPiece){
+                let isSamePiece = Helper.checkIfArraysAreEqual(overlap.locations, this.#usingPlacedPiece.locations);
+                if(isSamePiece){
+                    this.#canUpdatePieces = true;
+                }
+                else{
+                    this.#canUpdatePieces = false;
+                }
+            }
+            if(!this.#usingPlacedPiece){
+                this.#canUpdatePieces = false;
+                }
         }
     }
 
     // simply check if a piece was already placed on the board (we will have to update the pieces new location then)
     #checkIfPieceWasAlreadyPlaced(){
-        this.isUsingPlacedPiece = false;
-        this.usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.gridPieceClickedLocation]);
-        console.log(this.usingPlacedPiece);
-        if(this.usingPlacedPiece){
-            this.isUsingPlacedPiece = true;
-            this.canUpdatePieces = true;
+        this.#isUsingPlacedPiece = false;
+        this.#usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.#gridPieceClickedLocation]);
+        if(this.#usingPlacedPiece){
+            this.#isUsingPlacedPiece = true;
+            this.#canUpdatePieces = true;
         }
     }
 
@@ -236,41 +246,41 @@ class BsrLogic{
     // and set the pieces to be able to be updated or not
     checkPieceLocations(){
         // make sure we aren't calculating the same dragged over piece again and again
-        if (!Helper.checkIfArraysAreEqual(this.previousDraggedOverGridPiece, this.draggedOverGridPiece)){
-            this.canUpdatePieces = true;
-            this.previousDraggedOverGridPiece = this.draggedOverGridPiece;
+        if (!Helper.checkIfArraysAreEqual(this.#previousDraggedOverGridPiece, this.#draggedOverGridPiece)){
+            this.#canUpdatePieces = true;
+            this.#previousDraggedOverGridPiece = this.#draggedOverGridPiece;
             // get the desired piece type for checking and setting
-            this.desiredPiecesType = this.#getPieceTypeByName();
+            this.#desiredPiecesType = this.#getPieceTypeByName();
             this.#checkIfPieceCanBeUsed();
+            this.#checkIfPieceWasAlreadyPlaced();
             this.#checkAndSetIfPieceLocationsAreInGridBoundries();
             this.#setPossiblePlacementLocations();
             this.#checkIfPieceWillOverlapPlacedPiece();
-            this.#checkIfPieceWasAlreadyPlaced();
         }
     }
 
     // remove an undesired piece from the piecesdatatable
     removePiece(){
-        this.piecesDataTable.every(
+        this.#piecesDataTable.every(
             (piece, index) => {
-                if (piece.id == this.usingPlacedPiece.id){
-                    this.piecesDataTable.splice(index, 1);
+                if (piece.id == this.#usingPlacedPiece.id){
+                    this.#piecesDataTable.splice(index, 1);
                     return false;
                 }
                 return true;
             }
         )
-        this.pieceCounter = this.pieceCounter - 1;
-        this.desiredPiecesType.count = this.desiredPiecesType.count + 1;
+        this.#pieceCounter = this.#pieceCounter - 1;
+        this.#desiredPiecesType.count = this.#desiredPiecesType.count + 1;
         this.#resetIdsOfPiecesDataTable();
     }
 
     // reset an already placed piece slocation
     #relocatePlacedPiece(){
-        this.piecesDataTable.every(
+        this.#piecesDataTable.every(
             piece => {
-                if (piece.id == this.usingPlacedPiece.id){
-                    piece.locations = this.possiblePlacementLocations;
+                if (piece.id == this.#usingPlacedPiece.id){
+                    piece.locations = this.#possiblePlacementLocations;
                     return false;
                 }
                 return true;
@@ -279,70 +289,67 @@ class BsrLogic{
     }
 
     #setNewlyPlacedPiece(){
-        this.piecesDataTable.push({'id' : this.pieceCounter, 'name' : this.draggedPieceName, 'locations' : this.possiblePlacementLocations})
-        this.pieceCounter = this.pieceCounter + 1;
-        this.desiredPiecesType.count = this.desiredPiecesType.count - 1;
+        this.#piecesDataTable.push({'id' : this.#pieceCounter, 'name' : this.#draggedPieceName, 'locations' : this.#possiblePlacementLocations})
+        this.#pieceCounter = this.#pieceCounter + 1;
+        this.#desiredPiecesType.count = this.#desiredPiecesType.count - 1;
     }
 
     // if the piece can be set in the table, then do so
     setPieceLocations(){
-        if(this.canUpdatePieces && this.draggedPieceName){
-            if(this.usingPlacedPiece){
-                console.log('relocating piece');
+        if(this.#canUpdatePieces && this.#draggedPieceName){
+            if(this.#usingPlacedPiece){
                 this.#relocatePlacedPiece();
             }
-            if(!this.usingPlacedPiece){
+            if(!this.#usingPlacedPiece){
                 this.#setNewlyPlacedPiece()
             }
         }
-        console.log(this.piecesDataTable);
+        console.log(this.#piecesDataTable);
     }
 
     // update the drag pieces that could be put on the grid
     #updatePossiblePieces(){
+        // create a string of all the useable pieces and set what can be used (draggables)
         let piecesCombined = '';
         let currentPiece = '';
-        // create a string of all the useable pieces and check if they can be used (draggable)
-        this.draggablePieces = '';
         // if these pieces are going to be horizontal
-        if (this.pieceRotation == this.horizontal){
-            this.pieces.every(piece => {
+        if (this.#pieceRotation == this.#horizontal){
+            this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
                 //console.log(piece);
                 if (piece.count <= 0){
                     // set draggable or not
-                    currentPiece[this.horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.horizontal], 'draggable="true"', 'draggable="false"');
+                    currentPiece[this.#horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.#horizontal], 'draggable="true"', 'draggable="false"');
                 }
-                piecesCombined = piecesCombined + currentPiece[this.horizontal];
+                piecesCombined = piecesCombined + currentPiece[this.#horizontal];
                 //console.log(piecesCombined);
                 return true;
             });
-            this.draggablePieces = piecesCombined;
+            this.#bsrPlayPieces.savePiecesString(piecesCombined);
         }
         // if these pieces are going to be vertical
-        if (this.pieceRotation == this.vertical){
+        if (this.#pieceRotation == this.#vertical){
             // create a string of all the useable pieces and check if they can be used (draggable)
-            this.draggablePieces = '';
-            this.pieces.every(piece => {
+            this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
                 if (piece.count <= 0){
                     // set draggable or not
-                    currentPiece[this.vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.vertical], 'draggable="true"', 'draggable="false"');
+                    currentPiece[this.#vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.#vertical], 'draggable="true"', 'draggable="false"');
                 }
-                piecesCombined = piecesCombined + currentPiece[this.vertical];
+                piecesCombined = piecesCombined + currentPiece[this.#vertical];
                 return true;
             });
-            this.draggablePieces = piecesCombined;
+            this.#bsrPlayPieces.savePiecesString(piecesCombined);
         }
     }
 
     getUpdatedPieces(){
         // if we can use the current location
-        if (this.canUpdatePieces){
+        if (this.#canUpdatePieces){
             this.#updatePossiblePieces();
         }
         // if we cannot use the piece just simply return the current pieces we already had
-        return this.draggablePieces;
+        return this.#bsrPlayPieces.loadPiecesString();
     }
 
 }

@@ -7,42 +7,67 @@ import { bsrGridPieces, bsrGridInternals } from './bsr-config.js';
 import { Helper } from './helper.js';
 
 class BsrPlayPieces{
-    
+
     #bsrTable;
     #bsrCarrierHorizontal;
+    #bsrCarrierHorizontalContent;
     #bsrCarrierVertical;
+    #bsrCarrierVerticalContent;
     #bsrBattleshipHorizontal;
+    #bsrBattleshipHorizontalContent;
     #bsrBattleshipVertical;
+    #bsrBattleshipVerticalContent;
     #bsrDestroyerHorizontal;
+    #bsrDestroyerHorizontalContent;
     #bsrDestroyerVertical;
+    #bsrDestroyerVerticalContent;
     #bsrSubmarineHorizontal;
+    #bsrSubmarineHorizontalContent;
     #bsrSubmarineVertical;
+    #bsrSubmarineVerticalContent;
     #bsrPatrolBoatHorizontal;
+    #bsrPatrolBoatHorizontalContent;
     #bsrPatrolBoatVertical;
+    #bsrPatrolBoatVerticalContent;
     #savePieces;
 
     constructor(){
         // generate and set grid game pieces
         this.#bsrTable = new CreateTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.carrierHorizontal.class,    bsrGridPieces.carrierHorizontal.id,    0, 0, bsrGridPieces.carrierHorizontal.rows,    bsrGridPieces.carrierHorizontal.columns,    this.#createGridPieceContents(bsrGridPieces.carrierHorizontal.name,    bsrGridPieces.carrierHorizontal.rows,    bsrGridPieces.carrierHorizontal.columns));
+
+        this.#bsrCarrierHorizontalContent = this.#createGridPieceContents(bsrGridPieces.carrierHorizontal.name, bsrGridPieces.carrierHorizontal.rows, bsrGridPieces.carrierHorizontal.columns);
+        this.#bsrCarrierVerticalContent = this.#createGridPieceContents(bsrGridPieces.carrierVertical.name, bsrGridPieces.carrierVertical.rows, bsrGridPieces.carrierVertical.columns);
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.carrierHorizontal.class,    bsrGridPieces.carrierHorizontal.id,    0, 0, bsrGridPieces.carrierHorizontal.rows,    bsrGridPieces.carrierHorizontal.columns,    this.#bsrCarrierHorizontalContent);
         this.#bsrCarrierHorizontal = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.carrierVertical.class,      bsrGridPieces.carrierVertical.id,      0, 0, bsrGridPieces.carrierVertical.rows,      bsrGridPieces.carrierVertical.columns,      this.#createGridPieceContents(bsrGridPieces.carrierVertical.name,      bsrGridPieces.carrierVertical.rows,      bsrGridPieces.carrierVertical.columns));
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.carrierVertical.class,      bsrGridPieces.carrierVertical.id,      0, 0, bsrGridPieces.carrierVertical.rows,      bsrGridPieces.carrierVertical.columns,      this.#bsrCarrierVerticalContent);
         this.#bsrCarrierVertical = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.battleshipHorizontal.class, bsrGridPieces.battleshipHorizontal.id, 0, 0, bsrGridPieces.battleshipHorizontal.rows, bsrGridPieces.battleshipHorizontal.columns, this.#createGridPieceContents(bsrGridPieces.battleshipHorizontal.name, bsrGridPieces.battleshipHorizontal.rows, bsrGridPieces.battleshipHorizontal.columns));
+        
+        this.#bsrBattleshipHorizontalContent = this.#createGridPieceContents(bsrGridPieces.battleshipHorizontal.name, bsrGridPieces.battleshipHorizontal.rows, bsrGridPieces.battleshipHorizontal.columns);
+        this.#bsrBattleshipVerticalContent = this.#createGridPieceContents(bsrGridPieces.battleshipVertical.name, bsrGridPieces.battleshipVertical.rows, bsrGridPieces.battleshipVertical.columns);
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.battleshipHorizontal.class, bsrGridPieces.battleshipHorizontal.id, 0, 0, bsrGridPieces.battleshipHorizontal.rows, bsrGridPieces.battleshipHorizontal.columns, this.#bsrBattleshipHorizontalContent);
         this.#bsrBattleshipHorizontal = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.battleshipVertical.class,   bsrGridPieces.battleshipVertical.id,   0, 0, bsrGridPieces.battleshipVertical.rows,   bsrGridPieces.battleshipVertical.columns,   this.#createGridPieceContents(bsrGridPieces.battleshipVertical.name,   bsrGridPieces.battleshipVertical.rows,   bsrGridPieces.battleshipVertical.columns));
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.battleshipVertical.class,   bsrGridPieces.battleshipVertical.id,   0, 0, bsrGridPieces.battleshipVertical.rows,   bsrGridPieces.battleshipVertical.columns,   this.#bsrBattleshipVerticalContent);
         this.#bsrBattleshipVertical = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.destroyerHorizontal.class,  bsrGridPieces.destroyerHorizontal.id,  0, 0, bsrGridPieces.destroyerHorizontal.rows,  bsrGridPieces.destroyerHorizontal.columns,  this.#createGridPieceContents(bsrGridPieces.destroyerHorizontal.name,  bsrGridPieces.destroyerHorizontal.rows,  bsrGridPieces.destroyerHorizontal.columns));
+        
+        this.#bsrDestroyerHorizontalContent = this.#createGridPieceContents(bsrGridPieces.destroyerHorizontal.name, bsrGridPieces.destroyerHorizontal.rows, bsrGridPieces.destroyerHorizontal.columns);
+        this.#bsrDestroyerVerticalContent = this.#createGridPieceContents(bsrGridPieces.destroyerVertical.name, bsrGridPieces.destroyerVertical.rows, bsrGridPieces.destroyerVertical.columns);
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.destroyerHorizontal.class,  bsrGridPieces.destroyerHorizontal.id,  0, 0, bsrGridPieces.destroyerHorizontal.rows,  bsrGridPieces.destroyerHorizontal.columns,  this.#bsrDestroyerHorizontalContent);
         this.#bsrDestroyerHorizontal = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.destroyerVertical.class,    bsrGridPieces.destroyerVertical.id,    0, 0, bsrGridPieces.destroyerVertical.rows,    bsrGridPieces.destroyerVertical.columns,    this.#createGridPieceContents(bsrGridPieces.destroyerVertical.name,    bsrGridPieces.destroyerVertical.rows,    bsrGridPieces.destroyerVertical.columns));
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.destroyerVertical.class,    bsrGridPieces.destroyerVertical.id,    0, 0, bsrGridPieces.destroyerVertical.rows,    bsrGridPieces.destroyerVertical.columns,    this.#bsrDestroyerVerticalContent);
         this.#bsrDestroyerVertical = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.submarineHorizontal.class,  bsrGridPieces.submarineHorizontal.id,  0, 0, bsrGridPieces.submarineHorizontal.rows,  bsrGridPieces.submarineHorizontal.columns,  this.#createGridPieceContents(bsrGridPieces.submarineHorizontal.name,  bsrGridPieces.submarineHorizontal.rows,  bsrGridPieces.submarineHorizontal.columns));
+        
+        this.#bsrSubmarineHorizontalContent = this.#createGridPieceContents(bsrGridPieces.submarineHorizontal.name, bsrGridPieces.submarineHorizontal.rows, bsrGridPieces.submarineHorizontal.columns);
+        this.#bsrSubmarineVerticalContent = this.#createGridPieceContents(bsrGridPieces.submarineVertical.name, bsrGridPieces.submarineVertical.rows, bsrGridPieces.submarineVertical.columns);
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.submarineHorizontal.class,  bsrGridPieces.submarineHorizontal.id,  0, 0, bsrGridPieces.submarineHorizontal.rows,  bsrGridPieces.submarineHorizontal.columns,  this.#bsrSubmarineHorizontalContent);
         this.#bsrSubmarineHorizontal = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.submarineVertical.class,    bsrGridPieces.submarineVertical.id,    0, 0, bsrGridPieces.submarineVertical.rows,    bsrGridPieces.submarineVertical.columns,    this.#createGridPieceContents(bsrGridPieces.submarineVertical.name,    bsrGridPieces.submarineVertical.rows,    bsrGridPieces.submarineVertical.columns));
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.submarineVertical.class,    bsrGridPieces.submarineVertical.id,    0, 0, bsrGridPieces.submarineVertical.rows,    bsrGridPieces.submarineVertical.columns,    this.#bsrSubmarineVerticalContent);
         this.#bsrSubmarineVertical = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.patrolboatHorizontal.class, bsrGridPieces.patrolboatHorizontal.id, 0, 0, bsrGridPieces.patrolboatHorizontal.rows, bsrGridPieces.patrolboatHorizontal.columns, this.#createGridPieceContents(bsrGridPieces.patrolboatHorizontal.name, bsrGridPieces.patrolboatHorizontal.rows, bsrGridPieces.patrolboatHorizontal.columns));
+        
+        this.#bsrPatrolBoatHorizontalContent = this.#createGridPieceContents(bsrGridPieces.patrolboatHorizontal.name, bsrGridPieces.patrolboatHorizontal.rows, bsrGridPieces.patrolboatHorizontal.columns);
+        this.#bsrPatrolBoatVerticalContent = this.#createGridPieceContents(bsrGridPieces.patrolboatVertical.name, bsrGridPieces.patrolboatVertical.rows, bsrGridPieces.patrolboatVertical.columns);
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.patrolboatHorizontal.class, bsrGridPieces.patrolboatHorizontal.id, 0, 0, bsrGridPieces.patrolboatHorizontal.rows, bsrGridPieces.patrolboatHorizontal.columns, this.#bsrPatrolBoatHorizontalContent);
         this.#bsrPatrolBoatHorizontal = this.#bsrTable.getHTMLTable();
-        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.patrolboatVertical.class,   bsrGridPieces.patrolboatVertical.id,   0, 0, bsrGridPieces.patrolboatVertical.rows,   bsrGridPieces.patrolboatVertical.columns,   this.#createGridPieceContents(bsrGridPieces.patrolboatVertical.name,   bsrGridPieces.patrolboatVertical.rows,   bsrGridPieces.patrolboatVertical.columns));
+        this.#bsrTable.setHTMLTableProperties(bsrGridPieces.patrolboatVertical.class,   bsrGridPieces.patrolboatVertical.id,   0, 0, bsrGridPieces.patrolboatVertical.rows,   bsrGridPieces.patrolboatVertical.columns,   this.#bsrPatrolBoatVerticalContent);
         this.#bsrPatrolBoatVertical = this.#bsrTable.getHTMLTable();
 
         // be able to get useable pieces
@@ -86,6 +111,33 @@ class BsrPlayPieces{
             { 'name' : bsrGridPieces.patrolboatHorizontal.name, 'count' : bsrGridPieces.patrolboatHorizontal.count, 'size' : bsrGridPieces.patrolboatHorizontal.size, 'placed' : bsrGridPieces.patrolboatHorizontal.count, [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.patrolboatHorizontal.name], [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.patrolboatVertical.name]}
         ]
         return useablePieces;
+    }
+
+    getInternalsOfPiece(pieceName, rotation){
+        if(rotation == bsrGridPieces.horizontal){
+            if(pieceName == bsrGridPieces.carrierHorizontal.name)
+                return this.#bsrCarrierHorizontalContent;
+            if(pieceName == bsrGridPieces.battleshipHorizontal.name)
+                return this.#bsrBattleshipHorizontalContent;
+            if(pieceName == bsrGridPieces.destroyerHorizontal.name)
+                return this.#bsrDestroyerHorizontalContent;
+            if(pieceName == bsrGridPieces.submarineHorizontal.name)
+                return this.#bsrSubmarineHorizontalContent;
+            if(pieceName == bsrGridPieces.patrolboatHorizontal.name)
+                return this.#bsrPatrolBoatHorizontalContent;
+        }
+        if (rotation == bsrGridPieces.vertical){
+            if(pieceName == bsrGridPieces.carrierVertical.name)
+                return this.#bsrCarrierVerticalContent;
+            if(pieceName == bsrGridPieces.battleshipVertical.name)
+                return this.#bsrBattleshipVerticalContent;
+            if(pieceName == bsrGridPieces.destroyerVertical.name)
+                return this.#bsrDestroyerVerticalContent;
+            if(pieceName == bsrGridPieces.submarineVertical.name)
+                return this.#bsrSubmarineVerticalContent;
+            if(pieceName == bsrGridPieces.patrolboatVertical.name)
+                return this.#bsrPatrolBoatVerticalContent;
+        }
     }
 
     // for saving grid pieces

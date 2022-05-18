@@ -81,6 +81,7 @@
     -->
     <script>
 
+        // set data to transfer over on the use of the drag and drop api
         function allowDropBoardPiece(event) {
           event.preventDefault();
         }
@@ -126,6 +127,7 @@
         let grid = new BsrGrid();
         let logic = new BsrLogic();
         let gridUpdateDragAndDrop = () => {document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces();}
+        let reloadDragAndDrop = () => document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
         gridUpdateDragAndDrop();
         //console.log(logic);
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
@@ -137,25 +139,65 @@
         }
 
         let canPlacePiece;
+        let removedPreviousPiece = false;
+
         document.addEventListener('dragstart', item => {
             grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
-            if ((Helper.parseElementIdForMatrixLocation(item.originalTarget.id)).length == 2){
-                logic.setDraggedPiece(item.originalTarget.id);
-                logic.setLocalPiece(item.originalTarget.parentNode.parentNode.id);
+            if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
+                logic.setDraggedPiece(item.target.id);
+                logic.setLocalPiece(item.target.parentNode.parentNode.id);
                 //console.log(item.originalTarget.parentNode.parentNode.id);
             }
         });
+
         document.addEventListener('dragover', item => {
-            logic.setDraggedOverPiece(item.target.parentNode.id); 
-            logic.checkPieceLocations();
-            canPlacePiece = logic.canUseCurrentLocation();
+            if(item.target.parentNode){
+                    logic.setDraggedOverPiece(item.target.parentNode.id); 
+                logic.checkPieceLocations();
+                canPlacePiece = logic.canUseCurrentLocation();
+                let currentPlacement = logic.getDraggedPieceIdsAndInternals();
+                //let previousPlacement = logic.getPlacedPieceIds();
+                console.log('current', currentPlacement);
+                //console.log('previous', previousPlacement);
+                //console.log(canPlacePiece);
+                // if we need to remove the last pieces we placed on the grid
+                //if (!removedPreviousPiece && canPlacePiece){
+                //    let currentPlacement = logic.getDraggedPieceIdsAndInternals();
+                //    console.log(currentPlacement);
+                //    let placementLength = currentPlacement[0].length;
+                //    for (var i = 0; i < placementLength; i++){
+                //        document.getElementById(currentPlacement[0][i]).children[0].innerHTML = currentPlacement[1][i];
+                //    }
+                //}
+                //removedPreviousPiece = true;
+            }
         });
+
+        // if the piece leaves any droppable position
+        document.addEventListener('dragleave', item => {
+            //console.log('ran');
+            //if (canPlacePiece){
+            //        let previousPlacement = logic.getPlacedPieceIds();
+            //        if(previousPlacement){
+            //            var previousPlacementLength = previousPlacement.length;
+            //            for (var i = 0; i < previousPlacementLength; i++){
+            //                document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
+            //            }
+            //        }
+            //        removedPreviousPiece = true;
+            //    }
+            //removedPreviousPiece = false;
+            if (!canPlacePiece){
+                reloadDragAndDrop();
+            }
+        });
+
         document.addEventListener('drop', item => {
+            //removedPreviousPiece = false;
             logic.setPieceLocations();
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
-                console.log('use old table');
-                document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+                reloadDragAndDrop();
             }
         });
 

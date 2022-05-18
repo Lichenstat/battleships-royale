@@ -71,12 +71,17 @@ class BsrGrid{
 
     // return the saved drag and drop grid
     getSavedGameGridDragAndDrop(){
+        //let moveablePieces = this.#saveDragAndDropGrid.replace(new RegExp('draggable="false"', 'g'), 'draggable="true"');
         return this.#saveDragAndDropGrid;
     }
 
     // get grid position of clicked plot
     onGridPositionClicked(elementId){
         return this.gamePlot.getSquareLocation(elementId);
+    }
+
+    getDragAndDropCleanInternal(){
+        return bsrGridInternals.dragAndDrop;
     }
 
 }

@@ -24,11 +24,18 @@ class BsrLogic{
     #desiredPiecesType;
 
     #draggedPieceName;
+    #draggedPieceIds;
+    #draggedPieceInternals;
     #draggedPieceClickedLocation;
     #draggedPieceFirstLocation;
     #draggedPieceLastLocation;
 
+    #gridPieceClickedId;
+    #gridPieceClickedIdDefault;
+    #gridPieceIds;
     #gridPieceClickedLocation;
+    #gridPieceLocationChecked;
+    #draggedOverGridPieceId;
     #draggedOverGridPiece;
     #previousDraggedOverGridPiece;
 
@@ -55,11 +62,18 @@ class BsrLogic{
         this.#desiredPiecesType = {};
 
         this.#draggedPieceName = '';
+        this.#draggedPieceIds = [];
+        this.#draggedPieceInternals = [];
         this.#draggedPieceClickedLocation = [];
         this.#draggedPieceFirstLocation = [];
         this.#draggedPieceLastLocation = [];
-
+        
+        this.#gridPieceClickedId = '';
+        this.#gridPieceClickedIdDefault = "bsr__table-cell-(0,0)";
+        this.#gridPieceIds = [];
         this.#gridPieceClickedLocation = [];
+        this.#gridPieceLocationChecked = false;
+        this.#draggedOverGridPieceId = '';
         this.#draggedOverGridPiece = [];
         this.#previousDraggedOverGridPiece = [];
         
@@ -80,12 +94,22 @@ class BsrLogic{
 
     // a return to see if the current location can be used
     canUseCurrentLocation(){
-        return this.#canUpdatePieces;
+        return (this.#canUpdatePieces);
     }
 
     // return currently used table
     getCurrentlyPlaceablePiece(){
         return this.#possiblePlacementLocations;
+    }
+
+    // return the already placed piece id's
+    getPlacedPieceIds(){
+        return this.#gridPieceIds;
+    }
+    
+    // return the dragged piece ids
+    getDraggedPieceIdsAndInternals(){
+        return [this.#draggedPieceIds, this.#draggedPieceInternals];
     }
 
     // set dragged content
@@ -99,14 +123,17 @@ class BsrLogic{
 
     // set local gotten from grid piece
     setLocalPiece(pieceId){
+        this.#gridPieceClickedId = pieceId;
         this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
+        this.#gridPieceLocationChecked = false;
         console.log("local click", this.#gridPieceClickedLocation);
     }
 
     // get content that piece was dragged onto
     setDraggedOverPiece(pieceId){
+        this.#draggedOverGridPieceId = pieceId;
         this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceId);
-        //console.log(this.#draggedOverGridPiece);
+        //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
     // reset id of pieces in a pieces data table
@@ -220,7 +247,7 @@ class BsrLogic{
             if(this.#usingPlacedPiece){
                 let isSamePiece = Helper.checkIfArraysAreEqual(overlap.locations, this.#usingPlacedPiece.locations);
                 if(isSamePiece){
-                    this.#canUpdatePieces = true;
+                    this.#checkAndSetIfPieceLocationsAreInGridBoundries();
                 }
                 else{
                     this.#canUpdatePieces = false;
@@ -235,11 +262,55 @@ class BsrLogic{
     // simply check if a piece was already placed on the board (we will have to update the pieces new location then)
     #checkIfPieceWasAlreadyPlaced(){
         this.#isUsingPlacedPiece = false;
+        this.#draggedPieceIds = [];
         this.#usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.#gridPieceClickedLocation]);
         if(this.#usingPlacedPiece){
             this.#isUsingPlacedPiece = true;
             this.#canUpdatePieces = true;
         }
+    }
+
+    // get the local piece ids that are formed around the grid piece being dragged
+    #getDraggedOverPieceIds(locations){
+        let gridPiecesIds = [];
+        if (this.#draggedOverGridPieceId.lastIndexOf('(') != -1){
+            let starting = this.#draggedOverGridPieceId.lastIndexOf('(') + 1;
+            let ending = this.#draggedOverGridPieceId.lastIndexOf(')');
+            locations.every(
+                piece => {
+                    gridPiecesIds.push(this.#draggedOverGridPieceId.slice(0, starting) + piece[0] + ',' + piece[1] + this.#draggedOverGridPieceId.slice(ending, this.#gridPieceClickedId.length));
+                    return true;
+            })
+        }
+        //console.log('local ids', gridPiecesIds);
+        return gridPiecesIds;
+    }
+
+    // gets ids of the placed grid piece that was clicked on
+    #getPlacedPieceIds(locations){
+        let gridPiecesIds = [];
+        if (this.#gridPieceClickedId.lastIndexOf('(') != -1){
+            let starting = this.#gridPieceClickedId.lastIndexOf('(') + 1;
+            let ending = this.#gridPieceClickedId.lastIndexOf(')');
+            console.log(starting, ending);
+            locations.every(
+                piece => {
+                    gridPiecesIds.push(this.#gridPieceClickedId.slice(0, starting) + piece[0] + ',' + piece[1] + this.#gridPieceClickedId.slice(ending, this.#gridPieceClickedId.length));
+                    return true;
+            })
+        }
+        //console.log('placed ids', gridPiecesIds);
+        return gridPiecesIds;
+    }
+
+    // set piece internals that would belong in the dragged piece
+    #setPieceInternals(){
+        let pieceInternals = [];
+        let internals = this.#bsrPlayPieces.getInternalsOfPiece(this.#draggedPieceName, this.#pieceRotation);
+        for(const [key, value] of Object.entries(internals)){
+            pieceInternals.push(value);
+        }
+        this.#draggedPieceInternals = pieceInternals;
     }
 
     // check if the piece can be put into the table by filling a temporary locations array of the current piece
@@ -251,11 +322,17 @@ class BsrLogic{
             this.#previousDraggedOverGridPiece = this.#draggedOverGridPiece;
             // get the desired piece type for checking and setting
             this.#desiredPiecesType = this.#getPieceTypeByName();
+            this.#setPieceInternals();
             this.#checkIfPieceCanBeUsed();
             this.#checkIfPieceWasAlreadyPlaced();
             this.#checkAndSetIfPieceLocationsAreInGridBoundries();
             this.#setPossiblePlacementLocations();
+            this.#draggedPieceIds = this.#getDraggedOverPieceIds(this.#possiblePlacementLocations);
+            if (!this.#gridPieceLocationChecked && this.#isUsingPlacedPiece){
+                this.#gridPieceIds = this.#getPlacedPieceIds(this.#usingPlacedPiece.locations);
+            }
             this.#checkIfPieceWillOverlapPlacedPiece();
+            this.#gridPieceLocationChecked = true;
         }
     }
 
@@ -317,10 +394,10 @@ class BsrLogic{
             this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
                 //console.log(piece);
-                if (piece.count <= 0){
-                    // set draggable or not
-                    currentPiece[this.#horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.#horizontal], 'draggable="true"', 'draggable="false"');
-                }
+                //if (piece.count <= 0){
+                //    // set draggable or not
+                //    currentPiece[this.#horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.#horizontal], 'draggable="true"', 'draggable="false"');
+                //}
                 piecesCombined = piecesCombined + currentPiece[this.#horizontal];
                 //console.log(piecesCombined);
                 return true;
@@ -332,10 +409,10 @@ class BsrLogic{
             // create a string of all the useable pieces and check if they can be used (draggable)
             this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
-                if (piece.count <= 0){
-                    // set draggable or not
-                    currentPiece[this.#vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.#vertical], 'draggable="true"', 'draggable="false"');
-                }
+                //if (piece.count <= 0){
+                //    // set draggable or not
+                //    currentPiece[this.#vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.#vertical], 'draggable="true"', 'draggable="false"');
+                //}
                 piecesCombined = piecesCombined + currentPiece[this.#vertical];
                 return true;
             });
@@ -351,5 +428,7 @@ class BsrLogic{
         // if we cannot use the piece just simply return the current pieces we already had
         return this.#bsrPlayPieces.loadPiecesString();
     }
+
+
 
 }

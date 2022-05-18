@@ -127,7 +127,7 @@
         let grid = new BsrGrid();
         let logic = new BsrLogic();
         let gridUpdateDragAndDrop = () => {document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces();}
-        let reloadDragAndDrop = () => document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+        let reloadDragAndDropGrid = () => document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
         gridUpdateDragAndDrop();
         //console.log(logic);
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
@@ -152,43 +152,43 @@
 
         document.addEventListener('dragover', item => {
             if(item.target.parentNode){
-                    logic.setDraggedOverPiece(item.target.parentNode.id); 
+                logic.setDraggedOverPiece(item.target.parentNode.id); 
                 logic.checkPieceLocations();
                 canPlacePiece = logic.canUseCurrentLocation();
+                //console.log('can place piece', canPlacePiece)
                 let currentPlacement = logic.getDraggedPieceIdsAndInternals();
-                //let previousPlacement = logic.getPlacedPieceIds();
-                console.log('current', currentPlacement);
-                //console.log('previous', previousPlacement);
-                //console.log(canPlacePiece);
+                //console.log('current', currentPlacement);
+                if (!removedPreviousPiece && canPlacePiece){
+                    let previousPlacement = logic.getPlacedPieceIds();
+                    //console.log(previousPlacement);
+                    if(previousPlacement){
+                        var previousPlacementLength = previousPlacement.length;
+                        for (var i = 0; i < previousPlacementLength; i++){
+                            document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
+                        }
+                    }
+                    console.log('removed');
+                    removedPreviousPiece = true;
+                }
                 // if we need to remove the last pieces we placed on the grid
-                //if (!removedPreviousPiece && canPlacePiece){
+                //if (removedPreviousPiece && canPlacePiece){
                 //    let currentPlacement = logic.getDraggedPieceIdsAndInternals();
                 //    console.log(currentPlacement);
                 //    let placementLength = currentPlacement[0].length;
                 //    for (var i = 0; i < placementLength; i++){
                 //        document.getElementById(currentPlacement[0][i]).children[0].innerHTML = currentPlacement[1][i];
                 //    }
+                //    console.log('making pieces')
                 //}
-                //removedPreviousPiece = true;
             }
         });
 
         // if the piece leaves any droppable position
         document.addEventListener('dragleave', item => {
             //console.log('ran');
-            //if (canPlacePiece){
-            //        let previousPlacement = logic.getPlacedPieceIds();
-            //        if(previousPlacement){
-            //            var previousPlacementLength = previousPlacement.length;
-            //            for (var i = 0; i < previousPlacementLength; i++){
-            //                document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
-            //            }
-            //        }
-            //        removedPreviousPiece = true;
-            //    }
-            //removedPreviousPiece = false;
+            removedPreviousPiece = false;
             if (!canPlacePiece){
-                reloadDragAndDrop();
+                reloadDragAndDropGrid();
             }
         });
 
@@ -197,7 +197,8 @@
             logic.setPieceLocations();
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
-                reloadDragAndDrop();
+                console.log('using old table');
+                reloadDragAndDropGrid();
             }
         });
 

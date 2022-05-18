@@ -94,7 +94,7 @@ class BsrLogic{
 
     // a return to see if the current location can be used
     canUseCurrentLocation(){
-        return (this.#canUpdatePieces);
+        return this.#canUpdatePieces;
     }
 
     // return currently used table
@@ -126,6 +126,7 @@ class BsrLogic{
         this.#gridPieceClickedId = pieceId;
         this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
         this.#gridPieceLocationChecked = false;
+        this.#gridPieceIds = [];
         console.log("local click", this.#gridPieceClickedLocation);
     }
 
@@ -143,6 +144,37 @@ class BsrLogic{
                 piece.id = index + 1;
             }
         )
+    }
+
+    // get all possible data table pieces that consist of the same locations
+    #getPiecesByLocation(locations){
+        // console.log('checking locations', locations);
+        // console.log('printing data table', this.#piecesDataTable);
+        let pieces = [];
+        let piecesDataTableLength = Object.keys(this.#piecesDataTable).length;
+        // for data table pieces
+        for (var i = 0; i < piecesDataTableLength; i++){
+            var dataTableLocation = this.#piecesDataTable[i].locations;
+            var dtll = dataTableLocation.length;
+            // for data table pieces locations
+            for (var j = 0; j < dtll; j++){
+                let foundPiece = false;
+                let currentLocaion = dataTableLocation[j];
+                var locaionsLength = locations.length
+                // for checking our passed by value pieces
+                for (var k = 0; k < locaionsLength; k++){
+                    if (Helper.checkIfArraysAreEqual(currentLocaion, locations[k])){
+                        pieces.push(dataTableLocation);
+                        foundPiece = true;
+                        break;
+                    }
+                }
+                if (foundPiece){
+                    break;
+                }
+            }
+        }
+        return pieces;
     }
 
     // return the desired piece from pieces
@@ -242,12 +274,22 @@ class BsrLogic{
 
     // check to see if a piece will overlap a placed piece or not
     #checkIfPieceWillOverlapPlacedPiece(){
-        let overlap = this.#getPieceHavingDataTableOverlap(this.#possiblePlacementLocations)
+        // check if there is an overlap in possible placements
+        let overlap = this.#getPieceHavingDataTableOverlap(this.#possiblePlacementLocations);
         if(overlap){
             if(this.#usingPlacedPiece){
                 let isSamePiece = Helper.checkIfArraysAreEqual(overlap.locations, this.#usingPlacedPiece.locations);
+                // if the overlap is coming from the same placed piece that we are dragging
                 if(isSamePiece){
+                    // check and see if the overlap would go out of bounds or would be accidentally overlapping another seperate piece
                     this.#checkAndSetIfPieceLocationsAreInGridBoundries();
+                    let overallPossibleOverlapLocations = this.#possiblePlacementLocations.concat(this.#usingPlacedPiece.locations);
+                    //console.log('checking placement locations', overallPossibles);
+                    let overlappingPieces = this.#getPiecesByLocation(overallPossibleOverlapLocations);
+                    //console.log('overlap', overlappingPieces);
+                    if (overlappingPieces.length > 1){
+                        this.#canUpdatePieces = false;
+                    }
                 }
                 else{
                     this.#canUpdatePieces = false;
@@ -292,7 +334,6 @@ class BsrLogic{
         if (this.#gridPieceClickedId.lastIndexOf('(') != -1){
             let starting = this.#gridPieceClickedId.lastIndexOf('(') + 1;
             let ending = this.#gridPieceClickedId.lastIndexOf(')');
-            console.log(starting, ending);
             locations.every(
                 piece => {
                     gridPiecesIds.push(this.#gridPieceClickedId.slice(0, starting) + piece[0] + ',' + piece[1] + this.#gridPieceClickedId.slice(ending, this.#gridPieceClickedId.length));

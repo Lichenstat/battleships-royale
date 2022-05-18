@@ -155,9 +155,9 @@ class BsrLogic{
         // for data table pieces
         for (var i = 0; i < piecesDataTableLength; i++){
             var dataTableLocation = this.#piecesDataTable[i].locations;
-            var dtll = dataTableLocation.length;
+            var dataTableLocationLength = dataTableLocation.length;
             // for data table pieces locations
-            for (var j = 0; j < dtll; j++){
+            for (var j = 0; j < dataTableLocationLength; j++){
                 let foundPiece = false;
                 let currentLocaion = dataTableLocation[j];
                 var locaionsLength = locations.length
@@ -287,8 +287,8 @@ class BsrLogic{
                     //console.log('checking placement locations', overallPossibles);
                     let overlappingPieces = this.#getPiecesByLocation(overallPossibleOverlapLocations);
                     //console.log('overlap', overlappingPieces);
-                    if (overlappingPieces.length > 1){
-                        this.#canUpdatePieces = false;
+                    if (overlappingPieces.length < 2){
+                        this.#canUpdatePieces = true;
                     }
                 }
                 else{
@@ -316,11 +316,11 @@ class BsrLogic{
     #getDraggedOverPieceIds(locations){
         let gridPiecesIds = [];
         if (this.#draggedOverGridPieceId.lastIndexOf('(') != -1){
-            let starting = this.#draggedOverGridPieceId.lastIndexOf('(') + 1;
-            let ending = this.#draggedOverGridPieceId.lastIndexOf(')');
+            let starting = this.#draggedOverGridPieceId.slice(0, this.#draggedOverGridPieceId.lastIndexOf('(') + 1);
+            let ending = this.#draggedOverGridPieceId.slice(this.#draggedOverGridPieceId.lastIndexOf(')'), this.#draggedOverGridPieceId.length);
             locations.every(
                 piece => {
-                    gridPiecesIds.push(this.#draggedOverGridPieceId.slice(0, starting) + piece[0] + ',' + piece[1] + this.#draggedOverGridPieceId.slice(ending, this.#gridPieceClickedId.length));
+                    gridPiecesIds.push(starting + piece[0] + ',' + piece[1] + ending);
                     return true;
             })
         }
@@ -419,7 +419,7 @@ class BsrLogic{
                 this.#relocatePlacedPiece();
             }
             if(!this.#usingPlacedPiece){
-                this.#setNewlyPlacedPiece()
+                this.#setNewlyPlacedPiece();
             }
         }
         console.log(this.#piecesDataTable);
@@ -469,7 +469,5 @@ class BsrLogic{
         // if we cannot use the piece just simply return the current pieces we already had
         return this.#bsrPlayPieces.loadPiecesString();
     }
-
-
 
 }

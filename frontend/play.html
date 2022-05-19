@@ -101,7 +101,7 @@
         import {BsrGrid} from "./scripts/bsr-grid.js";
         import {Helper} from "./scripts/helper.js";
         import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
-        import {BsrLogic} from "./scripts/bsr-logic.js";
+        import {BsrSetup} from "./scripts/bsr-setup.js";
 
         //--------------------------------------------------------------
         let joinGame = document.getElementById('bsr__join');
@@ -125,24 +125,26 @@
 
         //--------------------------------------------------------------
         let grid = new BsrGrid();
-        let logic = new BsrLogic();
-        let gridUpdateDragAndDrop = () => {document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces();}
-        let reloadDragAndDropGrid = () => document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+        let logic = new BsrSetup();
+        let gridUpdateDragAndDrop = function(){document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces() + logic.getPieceRemover()}
+        let saveDragAndDropGrid = function(){grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML)};
+        let reloadDragAndDropGrid = function(){document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop()};
         gridUpdateDragAndDrop();
         //console.log(logic);
         document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
-        document.getElementById('bsr__rotate').onclick = function(){
+        document.getElementById('bsr__rotate').onclick = () => {
             console.log('clicked');
-            console.log(logic.canUseCurrentLocation());
+            //console.log(logic.canUseCurrentLocation());
             logic.changeBoardPieceRotation();
             gridUpdateDragAndDrop();
         }
 
         let canPlacePiece;
+        let checkPieces = [[],[]];
         let removedPreviousPiece = false;
 
         document.addEventListener('dragstart', item => {
-            grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
+            saveDragAndDropGrid();
             if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
                 logic.setDraggedPiece(item.target.id);
                 logic.setLocalPiece(item.target.parentNode.parentNode.id);
@@ -152,22 +154,27 @@
 
         document.addEventListener('dragover', item => {
             if(item.target.parentNode){
-                logic.setDraggedOverPiece(item.target.parentNode.id); 
+                logic.setDraggedOverPiece(item.target.parentNode.id);
+                logic.setDraggedOverDirectId(item.target.id);
                 logic.checkPieceLocations();
                 canPlacePiece = logic.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
                 let currentPlacement = logic.getDraggedPieceIdsAndInternals();
+                //console.log(currentPlacement);
+                if (currentPlacement[0].length != 0){
+                    checkPieces = currentPlacement;
+                }
                 //console.log('current', currentPlacement);
-                if (!removedPreviousPiece && canPlacePiece){
+                if (!removedPreviousPiece){
                     let previousPlacement = logic.getPlacedPieceIds();
-                    //console.log(previousPlacement);
+                    //console.log('previous placement',previousPlacement);
                     if(previousPlacement){
                         var previousPlacementLength = previousPlacement.length;
                         for (var i = 0; i < previousPlacementLength; i++){
                             document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
                         }
                     }
-                    console.log('removed');
+                    //console.log('removed');
                     removedPreviousPiece = true;
                 }
                 // if we need to remove the last pieces we placed on the grid
@@ -185,21 +192,41 @@
 
         // if the piece leaves any droppable position
         document.addEventListener('dragleave', item => {
-            //console.log('ran');
+            //console.log('ran dragleave');
             removedPreviousPiece = false;
+            //checkPieces = [];
             if (!canPlacePiece){
                 reloadDragAndDropGrid();
             }
         });
 
         document.addEventListener('drop', item => {
-            //removedPreviousPiece = false;
+            logic.removePieceIfNeeded();
             logic.setPieceLocations();
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
-                console.log('using old table');
+                //console.log('using old table');
                 reloadDragAndDropGrid();
             }
+            if(canPlacePiece){
+                let placementLength = checkPieces[0].length;
+                for (var i = 0; i < placementLength; i++){
+                    //console.log(checkPieces[0][i])
+                    document.getElementById(checkPieces[0][i]).children[0].innerHTML = checkPieces[1][i];
+                }
+            }
+            //if(logic.getIfPieceWasRemoved()){
+            //    let previousPlacement = logic.getPlacedPieceIds();
+            //    //console.log('previous placement',previousPlacement);
+            //    if(previousPlacement){
+            //        var previousPlacementLength = previousPlacement.length;
+            //        for (var i = 0; i < previousPlacementLength; i++){
+            //            document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
+            //        }
+            //    }
+            //}
+
+            removedPreviousPiece = false;
         });
 
 

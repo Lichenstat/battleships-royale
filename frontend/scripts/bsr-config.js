@@ -55,7 +55,8 @@ const bsrGridInternals = {
 
 // for interacting with various grid pieces
 const bsrPieceInteractors = {
-    dragAndDropPiecesContainer : '<div class="bsr__piececontainer bsr__piececontainer--disabled" id="bsr__piececontainer" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>'
+    dragAndDropPieceRemoverId : "bsr__pieceremover",
+    dragAndDropPieceRemover : '<div class="bsr__pieceremover bsr__pieceremover--disabled" id="bsr__pieceremover" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>'
 }
 
 // for the bsr menu

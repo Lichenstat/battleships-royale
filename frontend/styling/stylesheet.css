@@ -76,6 +76,12 @@ body{
   height: 300px;
 }
 
+.bsr__pieceremover{
+  width:auto;
+  height: 60px;
+  border: 2px solid darkblue;
+}
+
 table{
     border: 1px solid;
 }

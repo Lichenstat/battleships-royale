@@ -1,13 +1,13 @@
 // Methods for interacting with the players using grid pieces and grid (player interaction on clientside)
 
-export { BsrLogic };
+export { BsrSetup };
 
 import { BsrPlayPieces } from "./bsr-playpieces.js";
 import { BsrGrid } from "./bsr-grid.js";
 import { Helper } from "./helper.js";
 import { bsrGridProperties, bsrGridPieces, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
 
-class BsrLogic{
+class BsrSetup{
 
     #bsrPlayPieces;
     #piecesDataTable;
@@ -38,12 +38,14 @@ class BsrLogic{
     #draggedOverGridPieceId;
     #draggedOverGridPiece;
     #previousDraggedOverGridPiece;
+    #draggedOverDirectId;
 
     #possiblePlacementLocations;
     
     #canUpdatePieces;
     #isUsingPlacedPiece;
     #usingPlacedPiece;
+    #willPieceBeRemoved;
 
     constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
         // create and assign pieces objects to be used with the grid
@@ -76,12 +78,14 @@ class BsrLogic{
         this.#draggedOverGridPieceId = '';
         this.#draggedOverGridPiece = [];
         this.#previousDraggedOverGridPiece = [];
+        this.#draggedOverDirectId = '';
         
         this.#possiblePlacementLocations = [];
 
         this.#canUpdatePieces = true;
         this.#isUsingPlacedPiece = false;
         this.#usingPlacedPiece = {};
+        this.#willPieceBeRemoved = false;
         
         console.log(this.#tableRowsOffset, this.#tableColumnsOffset);
     }
@@ -112,6 +116,16 @@ class BsrLogic{
         return [this.#draggedPieceIds, this.#draggedPieceInternals];
     }
 
+    // return the remover div for removing pieces from the board
+    getPieceRemover(){
+        return bsrPieceInteractors.dragAndDropPieceRemover;
+    }
+
+    // return if the piece was removed or not
+    getIfPieceWasRemoved(){
+        return this.#willPieceBeRemoved;
+    }
+
     // set dragged content
     setDraggedPiece(pieceId){
         this.#draggedPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
@@ -137,11 +151,18 @@ class BsrLogic{
         //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
+    // set direct element id of the dragged over element
+    setDraggedOverDirectId(pieceId){
+        this.#draggedOverDirectId = pieceId;
+        //console.log('dragged over direct', this.#draggedOverDirectId);
+    }
+
     // reset id of pieces in a pieces data table
     #resetIdsOfPiecesDataTable(){
         this.#piecesDataTable.every(
             (piece, index) => {
                 piece.id = index + 1;
+                return true;
             }
         )
     }
@@ -212,6 +233,47 @@ class BsrLogic{
         return false;
     }
 
+    // set piece internals that would belong in the dragged piece
+    #setPieceInternals(){
+        let pieceInternals = [];
+        let internals = this.#bsrPlayPieces.getInternalsOfPiece(this.#draggedPieceName, this.#pieceRotation);
+        for(const [key, value] of Object.entries(internals)){
+            pieceInternals.push(value);
+        }
+        this.#draggedPieceInternals = pieceInternals;
+    }
+
+    // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
+    #checkIfPieceCanBeUsed(){
+        if (this.#desiredPiecesType.count <= 0){
+            this.#canUpdatePieces = false;
+        }
+    }
+
+    // simply check if a piece was already placed on the board (we will have to update the pieces new location then)
+    #checkIfPieceWasAlreadyPlaced(){
+        this.#isUsingPlacedPiece = false;
+        this.#draggedPieceIds = [];
+        this.#usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.#gridPieceClickedLocation]);
+        if(this.#usingPlacedPiece){
+            this.#isUsingPlacedPiece = true;
+            this.#canUpdatePieces = true;
+        }
+    }
+
+    // will check and set the rotation and locations of the chosen piece (will keep already placed piece rotations)
+    #checkAndSetRotationAndLocationsOfChosenPiece(){
+        let oldRotation = this.#pieceRotation;
+        if(this.#isUsingPlacedPiece){
+            this.#pieceRotation = this.#usingPlacedPiece.rotation;
+            //this.#updatePossiblePieces();
+        }
+        this.#checkAndSetIfPieceLocationsAreInGridBoundries();
+        this.#setPossiblePlacementLocations();
+        this.#pieceRotation = oldRotation;
+        //this.#updatePossiblePieces();
+    }
+
     // check if a piece location can be in the grid
     #checkAndSetIfPieceLocationsAreInGridBoundries(){
         var draggedPieceFirstLocationMatch;
@@ -244,13 +306,6 @@ class BsrLogic{
         }
     }
 
-    // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
-    #checkIfPieceCanBeUsed(){
-        if (this.#desiredPiecesType.count <= 0){
-            this.#canUpdatePieces = false;
-        }
-    }
-
     // set the placement locations of the piece in correspondence to the grid
     #setPossiblePlacementLocations(){
         let pieceLocations = [];
@@ -270,46 +325,6 @@ class BsrLogic{
         }
         //console.log(pieceLocations);
         this.#possiblePlacementLocations = pieceLocations;
-    }
-
-    // check to see if a piece will overlap a placed piece or not
-    #checkIfPieceWillOverlapPlacedPiece(){
-        // check if there is an overlap in possible placements
-        let overlap = this.#getPieceHavingDataTableOverlap(this.#possiblePlacementLocations);
-        if(overlap){
-            if(this.#usingPlacedPiece){
-                let isSamePiece = Helper.checkIfArraysAreEqual(overlap.locations, this.#usingPlacedPiece.locations);
-                // if the overlap is coming from the same placed piece that we are dragging
-                if(isSamePiece){
-                    // check and see if the overlap would go out of bounds or would be accidentally overlapping another seperate piece
-                    this.#checkAndSetIfPieceLocationsAreInGridBoundries();
-                    let overallPossibleOverlapLocations = this.#possiblePlacementLocations.concat(this.#usingPlacedPiece.locations);
-                    //console.log('checking placement locations', overallPossibles);
-                    let overlappingPieces = this.#getPiecesByLocation(overallPossibleOverlapLocations);
-                    //console.log('overlap', overlappingPieces);
-                    if (overlappingPieces.length < 2){
-                        this.#canUpdatePieces = true;
-                    }
-                }
-                else{
-                    this.#canUpdatePieces = false;
-                }
-            }
-            if(!this.#usingPlacedPiece){
-                this.#canUpdatePieces = false;
-                }
-        }
-    }
-
-    // simply check if a piece was already placed on the board (we will have to update the pieces new location then)
-    #checkIfPieceWasAlreadyPlaced(){
-        this.#isUsingPlacedPiece = false;
-        this.#draggedPieceIds = [];
-        this.#usingPlacedPiece = this.#getPieceHavingDataTableOverlap([this.#gridPieceClickedLocation]);
-        if(this.#usingPlacedPiece){
-            this.#isUsingPlacedPiece = true;
-            this.#canUpdatePieces = true;
-        }
     }
 
     // get the local piece ids that are formed around the grid piece being dragged
@@ -344,19 +359,46 @@ class BsrLogic{
         return gridPiecesIds;
     }
 
-    // set piece internals that would belong in the dragged piece
-    #setPieceInternals(){
-        let pieceInternals = [];
-        let internals = this.#bsrPlayPieces.getInternalsOfPiece(this.#draggedPieceName, this.#pieceRotation);
-        for(const [key, value] of Object.entries(internals)){
-            pieceInternals.push(value);
+    // check to see if a piece will overlap a placed piece or not
+    #checkIfPieceWillOverlapPlacedPiece(){
+        // check if there is an overlap in possible placements
+        let overlap = this.#getPieceHavingDataTableOverlap(this.#possiblePlacementLocations);
+        if(overlap){
+            if(this.#usingPlacedPiece){
+                let isSamePiece = Helper.checkIfArraysAreEqual(overlap.locations, this.#usingPlacedPiece.locations);
+                // if the overlap is coming from the same placed piece that we are dragging
+                if(isSamePiece){
+                    // check and see if the overlap would go out of bounds or would be accidentally overlapping another seperate piece
+                    this.#checkAndSetIfPieceLocationsAreInGridBoundries();
+                    let overallPossibleOverlapLocations = this.#possiblePlacementLocations.concat(this.#usingPlacedPiece.locations);
+                    //console.log('checking placement locations', overallPossibleOverlapLocations);
+                    let overlappingPieces = this.#getPiecesByLocation(overallPossibleOverlapLocations);
+                    //console.log('overlap', overlappingPieces);
+                    (overlappingPieces.length < 2 ? this.#canUpdatePieces = true : this.#canUpdatePieces = false);
+                }
+                else{
+                    this.#canUpdatePieces = false;
+                }
+            }
+            if(!this.#usingPlacedPiece){
+                this.#canUpdatePieces = false;
+                }
         }
-        this.#draggedPieceInternals = pieceInternals;
+    }
+
+    // check if the piece will be removed or not (once thrown into a remover div)
+    #checkIfPieceWillBeRemoved(){
+        this.#willPieceBeRemoved = false;
+        if(this.#draggedOverDirectId == bsrPieceInteractors.dragAndDropPieceRemoverId && this.#isUsingPlacedPiece){
+            //console.log('will be removed');
+            this.#willPieceBeRemoved = true;
+        }
     }
 
     // check if the piece can be put into the table by filling a temporary locations array of the current piece
     // and set the pieces to be able to be updated or not
     checkPieceLocations(){
+        this.#checkIfPieceWillBeRemoved();
         // make sure we aren't calculating the same dragged over piece again and again
         if (!Helper.checkIfArraysAreEqual(this.#previousDraggedOverGridPiece, this.#draggedOverGridPiece)){
             this.#canUpdatePieces = true;
@@ -366,8 +408,7 @@ class BsrLogic{
             this.#setPieceInternals();
             this.#checkIfPieceCanBeUsed();
             this.#checkIfPieceWasAlreadyPlaced();
-            this.#checkAndSetIfPieceLocationsAreInGridBoundries();
-            this.#setPossiblePlacementLocations();
+            this.#checkAndSetRotationAndLocationsOfChosenPiece();
             this.#draggedPieceIds = this.#getDraggedOverPieceIds(this.#possiblePlacementLocations);
             if (!this.#gridPieceLocationChecked && this.#isUsingPlacedPiece){
                 this.#gridPieceIds = this.#getPlacedPieceIds(this.#usingPlacedPiece.locations);
@@ -378,19 +419,21 @@ class BsrLogic{
     }
 
     // remove an undesired piece from the piecesdatatable
-    removePiece(){
-        this.#piecesDataTable.every(
-            (piece, index) => {
-                if (piece.id == this.#usingPlacedPiece.id){
-                    this.#piecesDataTable.splice(index, 1);
-                    return false;
+    removePieceIfNeeded(){
+        if(this.#willPieceBeRemoved){
+            this.#piecesDataTable.every(
+                (piece, index) => {
+                    if (piece.id == this.#usingPlacedPiece.id){
+                        this.#piecesDataTable.splice(index, 1);
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
-            }
-        )
-        this.#pieceCounter = this.#pieceCounter - 1;
-        this.#desiredPiecesType.count = this.#desiredPiecesType.count + 1;
-        this.#resetIdsOfPiecesDataTable();
+            )
+            this.#pieceCounter = this.#pieceCounter - 1;
+            this.#desiredPiecesType.count = this.#desiredPiecesType.count + 1;
+            this.#resetIdsOfPiecesDataTable();
+        }
     }
 
     // reset an already placed piece slocation
@@ -407,7 +450,7 @@ class BsrLogic{
     }
 
     #setNewlyPlacedPiece(){
-        this.#piecesDataTable.push({'id' : this.#pieceCounter, 'name' : this.#draggedPieceName, 'locations' : this.#possiblePlacementLocations})
+        this.#piecesDataTable.push({'id' : this.#pieceCounter, 'name' : this.#draggedPieceName, 'rotation' : this.#pieceRotation, 'locations' : this.#possiblePlacementLocations})
         this.#pieceCounter = this.#pieceCounter + 1;
         this.#desiredPiecesType.count = this.#desiredPiecesType.count - 1;
     }
@@ -423,6 +466,7 @@ class BsrLogic{
             }
         }
         console.log(this.#piecesDataTable);
+        //console.log(this.#bsrPlayPieces);
     }
 
     // update the drag pieces that could be put on the grid

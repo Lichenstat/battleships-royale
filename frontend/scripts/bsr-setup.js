@@ -11,6 +11,7 @@ class BsrSetup{
 
     #bsrPlayPieces;
     #piecesDataTable;
+    #piecesIdsAndInternals;
 
     #tableRowsCount;
     #tableRowsOffset;
@@ -51,6 +52,7 @@ class BsrSetup{
         // create and assign pieces objects to be used with the grid
         this.#bsrPlayPieces = new BsrPlayPieces();
         this.#piecesDataTable = [];
+        this.#piecesIdsAndInternals = [];
 
         this.#tableRowsCount = tableRowsCount;
         this.#tableRowsOffset = Math.abs(this.#tableRowsCount - (bsrGridProperties.rows + Number(bsrGridProperties.tableHeadColumnCount > 0) + Number(bsrGridProperties.tableFootColumnCount > 0) + 1));
@@ -116,13 +118,18 @@ class BsrSetup{
         return [this.#draggedPieceIds, this.#draggedPieceInternals];
     }
 
+    // get the overall placed pieces ids and internals
+    getPiecesIdsAndInternals(){
+        return this.#piecesIdsAndInternals;
+    }
+
     // return the remover div for removing pieces from the board
     getPieceRemover(){
         return bsrPieceInteractors.dragAndDropPieceRemover;
     }
 
     // return if the piece was removed or not
-    getIfPieceWasRemoved(){
+    checkIfPieceWasRemoved(){
         return this.#willPieceBeRemoved;
     }
 
@@ -455,6 +462,23 @@ class BsrSetup{
         this.#desiredPiecesType.count = this.#desiredPiecesType.count - 1;
     }
 
+    // get the current board pieces ids and internals (presumably being used for replacing pieces)
+    #getPiecesWithIdsAndInternals(){
+        let collectedPieces = [];
+        var piecesDataTableLength = this.#piecesDataTable.length;
+        for (var i = 0; i < piecesDataTableLength; i++){
+            // set dragged pieces ids with the dragged element ids
+            let ids = this.#getDraggedOverPieceIdsViaLocation(this.#piecesDataTable[i].locations);
+            // if there is no dragged element ids then simply switch to placed piece element ids
+            if(!ids.length){
+                ids = this.#getPlacedPieceIdsViaLocation(this.#piecesDataTable[i].locations);
+            }
+            let internals = this.#piecesDataTable[i].internals;
+            collectedPieces.push([ids, internals]);
+        }
+        return collectedPieces;
+    }
+
     // if the piece can be set in the table, then do so
     setPieceLocations(){
         if(this.#canUpdatePieces && this.#draggedPieceName){
@@ -465,6 +489,7 @@ class BsrSetup{
                 this.#setNewlyPlacedPiece();
             }
         }
+        this.#piecesIdsAndInternals = this.#getPiecesWithIdsAndInternals();
         console.log(this.#piecesDataTable);
         //console.log(this.#bsrPlayPieces);
     }
@@ -506,25 +531,13 @@ class BsrSetup{
     }
 
     // get the updated board pieces with their ids and internals
-    getUpdatedPieces(){
+    getUpdatedRotatedPieces(){
         // if we can use the current location
         if (this.#canUpdatePieces){
             this.#updatePossiblePieces();
         }
         // if we cannot use the piece just simply return the current pieces we already had
         return this.#bsrPlayPieces.loadPiecesString();
-    }
-
-    // get the current board pieces ids and internals (presumably being used for replacing pieces)
-    getPiecesWithIdsAndInternals(){
-        let collectedPieces = [];
-        var piecesDataTableLength = this.#piecesDataTable.length;
-        for (var i = 0; i < piecesDataTableLength; i++){
-            let ids = this.#getDraggedOverPieceIdsViaLocation(this.#piecesDataTable[i].locations);
-            let internals = this.#piecesDataTable[i].internals;
-            collectedPieces.push([ids, internals]);
-        }
-        return collectedPieces;
     }
 
 }

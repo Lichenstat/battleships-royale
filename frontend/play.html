@@ -126,12 +126,40 @@
         //--------------------------------------------------------------
         let grid = new BsrGrid();
         let logic = new BsrSetup();
-        let gridUpdateDragAndDrop = function(){document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedPieces() + logic.getPieceRemover()}
-        let saveDragAndDropGrid = function(){grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML)};
-        let reloadDragAndDropGrid = function(){document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop()};
+        let blankGrid = grid.getGameGridDragAndDrop();
+
+        let gridUpdateDragAndDrop = function(){
+            document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedRotatedPieces() + logic.getPieceRemover();
+        }
+
+        let loadBlankGrid = function(){
+            document.getElementById('test').innerHTML = blankGrid;
+        }
+
+        let saveDragAndDropGrid = function(){
+            grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
+        }
+
+        let reloadDragAndDropGrid = function(){
+            document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+        };
+
+        let loadSetPieces = function(){
+            loadBlankGrid();
+                let piecesAndPlacement = logic.getPiecesIdsAndInternals();
+                var piecesAndPlacementLength = piecesAndPlacement.length;
+                for (var i = 0; i < piecesAndPlacementLength; i++){
+                    let piece = piecesAndPlacement[i];
+                    var pieceLength = piece[0].length;
+                    for (var j = 0; j < pieceLength; j++){
+                        document.getElementById(piece[0][j]).children[0].innerHTML = piece[1][j];
+                    }
+                }
+        }
+
         gridUpdateDragAndDrop();
         //console.log(logic);
-        document.getElementById('test').innerHTML = grid.getGameGridDragAndDrop();
+        loadBlankGrid();
         document.getElementById('bsr__rotate').onclick = () => {
             console.log('clicked');
             //console.log(logic.canUseCurrentLocation());
@@ -140,7 +168,7 @@
         }
 
         let canPlacePiece;
-        let checkPieces = [[],[]];
+        //let checkPieces = [[],[]];
         let removedPreviousPiece = false;
 
         document.addEventListener('dragstart', item => {
@@ -160,10 +188,6 @@
                 canPlacePiece = logic.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
                 let currentPlacement = logic.getDraggedPieceIdsAndInternals();
-                //console.log(currentPlacement);
-                if (currentPlacement[0].length != 0){
-                    checkPieces = currentPlacement;
-                }
                 //console.log('current', currentPlacement);
                 if (!removedPreviousPiece){
                     let previousPlacement = logic.getPlacedPieceIds();
@@ -208,24 +232,9 @@
                 //console.log('using old table');
                 reloadDragAndDropGrid();
             }
-            if(canPlacePiece){
-                let placementLength = checkPieces[0].length;
-                for (var i = 0; i < placementLength; i++){
-                    //console.log(checkPieces[0][i])
-                    document.getElementById(checkPieces[0][i]).children[0].innerHTML = checkPieces[1][i];
-                }
+            if(canPlacePiece || logic.checkIfPieceWasRemoved()){
+                loadSetPieces();
             }
-            //if(logic.getIfPieceWasRemoved()){
-            //    let previousPlacement = logic.getPlacedPieceIds();
-            //    //console.log('previous placement',previousPlacement);
-            //    if(previousPlacement){
-            //        var previousPlacementLength = previousPlacement.length;
-            //        for (var i = 0; i < previousPlacementLength; i++){
-            //            document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
-            //        }
-            //    }
-            //}
-
             removedPreviousPiece = false;
         });
 

@@ -328,7 +328,7 @@ class BsrSetup{
     }
 
     // get the local piece ids that are formed around the grid piece being dragged
-    #getDraggedOverPieceIds(locations){
+    #getDraggedOverPieceIdsViaLocation(locations){
         let gridPiecesIds = [];
         if (this.#draggedOverGridPieceId.lastIndexOf('(') != -1){
             let starting = this.#draggedOverGridPieceId.slice(0, this.#draggedOverGridPieceId.lastIndexOf('(') + 1);
@@ -344,14 +344,14 @@ class BsrSetup{
     }
 
     // gets ids of the placed grid piece that was clicked on
-    #getPlacedPieceIds(locations){
+    #getPlacedPieceIdsViaLocation(locations){
         let gridPiecesIds = [];
         if (this.#gridPieceClickedId.lastIndexOf('(') != -1){
-            let starting = this.#gridPieceClickedId.lastIndexOf('(') + 1;
-            let ending = this.#gridPieceClickedId.lastIndexOf(')');
+            let starting = this.#gridPieceClickedId.slice(0, this.#gridPieceClickedId.lastIndexOf('(') + 1);
+            let ending = this.#gridPieceClickedId.slice(this.#gridPieceClickedId.lastIndexOf(')'), this.#gridPieceClickedId.length);
             locations.every(
                 piece => {
-                    gridPiecesIds.push(this.#gridPieceClickedId.slice(0, starting) + piece[0] + ',' + piece[1] + this.#gridPieceClickedId.slice(ending, this.#gridPieceClickedId.length));
+                    gridPiecesIds.push(starting + piece[0] + ',' + piece[1] + ending);
                     return true;
             })
         }
@@ -409,9 +409,9 @@ class BsrSetup{
             this.#checkIfPieceCanBeUsed();
             this.#checkIfPieceWasAlreadyPlaced();
             this.#checkAndSetRotationAndLocationsOfChosenPiece();
-            this.#draggedPieceIds = this.#getDraggedOverPieceIds(this.#possiblePlacementLocations);
+            this.#draggedPieceIds = this.#getDraggedOverPieceIdsViaLocation(this.#possiblePlacementLocations);
             if (!this.#gridPieceLocationChecked && this.#isUsingPlacedPiece){
-                this.#gridPieceIds = this.#getPlacedPieceIds(this.#usingPlacedPiece.locations);
+                this.#gridPieceIds = this.#getPlacedPieceIdsViaLocation(this.#usingPlacedPiece.locations);
             }
             this.#checkIfPieceWillOverlapPlacedPiece();
             this.#gridPieceLocationChecked = true;
@@ -450,7 +450,7 @@ class BsrSetup{
     }
 
     #setNewlyPlacedPiece(){
-        this.#piecesDataTable.push({'id' : this.#pieceCounter, 'name' : this.#draggedPieceName, 'rotation' : this.#pieceRotation, 'locations' : this.#possiblePlacementLocations})
+        this.#piecesDataTable.push({'id' : this.#pieceCounter, 'name' : this.#draggedPieceName, 'rotation' : this.#pieceRotation, 'locations' : this.#possiblePlacementLocations, 'internals' : this.#draggedPieceInternals})
         this.#pieceCounter = this.#pieceCounter + 1;
         this.#desiredPiecesType.count = this.#desiredPiecesType.count - 1;
     }
@@ -505,6 +505,7 @@ class BsrSetup{
         }
     }
 
+    // get the updated board pieces with their ids and internals
     getUpdatedPieces(){
         // if we can use the current location
         if (this.#canUpdatePieces){
@@ -512,6 +513,18 @@ class BsrSetup{
         }
         // if we cannot use the piece just simply return the current pieces we already had
         return this.#bsrPlayPieces.loadPiecesString();
+    }
+
+    // get the current board pieces ids and internals (presumably being used for replacing pieces)
+    getPiecesWithIdsAndInternals(){
+        let collectedPieces = [];
+        var piecesDataTableLength = this.#piecesDataTable.length;
+        for (var i = 0; i < piecesDataTableLength; i++){
+            let ids = this.#getDraggedOverPieceIdsViaLocation(this.#piecesDataTable[i].locations);
+            let internals = this.#piecesDataTable[i].internals;
+            collectedPieces.push([ids, internals]);
+        }
+        return collectedPieces;
     }
 
 }

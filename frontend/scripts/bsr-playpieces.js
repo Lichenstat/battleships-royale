@@ -141,12 +141,12 @@ class BsrPlayPieces{
     }
 
     // for saving grid pieces
-    savePiecesString(piecesString){
-        this.#savePieces = piecesString;
+    savePlacementPieces(pieces){
+        this.#savePieces = pieces;
     }
 
     // for loading grid pieces
-    loadPiecesString(){
+    loadPlacementPieces(){
         return this.#savePieces;
     }
 

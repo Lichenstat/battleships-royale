@@ -10,6 +10,7 @@ import { bsrGridProperties, bsrGridPieces, bsrPieceInteractors, bsrGridInternals
 class BsrSetup{
 
     #bsrPlayPieces;
+    #bsrPlayPiecesCount;
     #piecesDataTable;
     #piecesIdsAndInternals;
 
@@ -51,6 +52,7 @@ class BsrSetup{
     constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
         // create and assign pieces objects to be used with the grid
         this.#bsrPlayPieces = new BsrPlayPieces();
+        this.#bsrPlayPiecesCount = {};
         this.#piecesDataTable = [];
         this.#piecesIdsAndInternals = [];
 
@@ -121,6 +123,11 @@ class BsrSetup{
     // get the overall placed pieces ids and internals
     getPiecesIdsAndInternals(){
         return this.#piecesIdsAndInternals;
+    }
+
+    //get number of play pieces left
+    getNumberOfPlayablePiecesLeft(){
+        return this.#bsrPlayPiecesCount;
     }
 
     // return the remover div for removing pieces from the board
@@ -479,8 +486,16 @@ class BsrSetup{
         return collectedPieces;
     }
 
+    // get count of remaining pieces left to place on teh game board
+    #setNumberOfPlayablePiecesLeft(){
+        let bsrPiecesLength = this.#bsrPlayPieces.pieces.length;
+        for (var i = 0; i < bsrPiecesLength; i++){
+            this.#bsrPlayPiecesCount[this.#bsrPlayPieces.pieces[i].name] = this.#bsrPlayPieces.pieces[i].count;
+        }
+    }
+
     // if the piece can be set in the table, then do so
-    setPieceLocations(){
+    setPieceLocationsAndCount(){
         if(this.#canUpdatePieces && this.#draggedPieceName){
             if(this.#usingPlacedPiece){
                 this.#relocatePlacedPiece();
@@ -489,44 +504,34 @@ class BsrSetup{
                 this.#setNewlyPlacedPiece();
             }
         }
+        this.#setNumberOfPlayablePiecesLeft();
         this.#piecesIdsAndInternals = this.#getPiecesWithIdsAndInternals();
         console.log(this.#piecesDataTable);
-        //console.log(this.#bsrPlayPieces);
     }
 
     // update the drag pieces that could be put on the grid
     #updatePossiblePieces(){
         // create a string of all the useable pieces and set what can be used (draggables)
-        let piecesCombined = '';
+        let piecesCombined = {};
         let currentPiece = '';
         // if these pieces are going to be horizontal
         if (this.#pieceRotation == this.#horizontal){
             this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
-                //console.log(piece);
-                //if (piece.count <= 0){
-                //    // set draggable or not
-                //    currentPiece[this.#horizontal] = Helper.parsePartOfStringToReplace(currentPiece[this.#horizontal], 'draggable="true"', 'draggable="false"');
-                //}
-                piecesCombined = piecesCombined + currentPiece[this.#horizontal];
-                //console.log(piecesCombined);
+                piecesCombined[piece.name] = piece[this.#horizontal];
                 return true;
             });
-            this.#bsrPlayPieces.savePiecesString(piecesCombined);
+            this.#bsrPlayPieces.savePlacementPieces(piecesCombined);
         }
         // if these pieces are going to be vertical
         if (this.#pieceRotation == this.#vertical){
             // create a string of all the useable pieces and check if they can be used (draggable)
             this.#bsrPlayPieces.pieces.every(piece => {
                 currentPiece = piece;
-                //if (piece.count <= 0){
-                //    // set draggable or not
-                //    currentPiece[this.#vertical] = Helper.parsePartOfStringToReplace(currentPiece[this.#vertical], 'draggable="true"', 'draggable="false"');
-                //}
-                piecesCombined = piecesCombined + currentPiece[this.#vertical];
+                piecesCombined[piece.name] = piece[this.#vertical];
                 return true;
             });
-            this.#bsrPlayPieces.savePiecesString(piecesCombined);
+            this.#bsrPlayPieces.savePlacementPieces(piecesCombined);
         }
     }
 
@@ -537,7 +542,7 @@ class BsrSetup{
             this.#updatePossiblePieces();
         }
         // if we cannot use the piece just simply return the current pieces we already had
-        return this.#bsrPlayPieces.loadPiecesString();
+        return this.#bsrPlayPieces.loadPlacementPieces();
     }
 
 }

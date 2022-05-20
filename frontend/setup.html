@@ -72,6 +72,9 @@
             </div>
         </div>
     </div>
+    <div id="bsr__remover">
+
+    </div>
     <div class='test' id="test">
 
     </div>
@@ -128,8 +131,20 @@
         let logic = new BsrSetup();
         let blankGrid = grid.getGameGridDragAndDrop();
 
+        document.getElementById("bsr__remover").innerHTML = logic.getPieceRemover();
+
+        let combinedPieces = function(){
+            let combined = '';
+            let pieces = logic.getUpdatedRotatedPieces();
+            for (const [key, item] of Object.entries(pieces)){
+                combined = combined + item;
+            }
+            return combined;
+        }
+
         let gridUpdateDragAndDrop = function(){
-            document.getElementById("bsr__piecesshell").innerHTML = logic.getUpdatedRotatedPieces() + logic.getPieceRemover();
+            document.getElementById("bsr__piecesshell").innerHTML = combinedPieces();
+            
         }
 
         let loadBlankGrid = function(){
@@ -162,7 +177,6 @@
         loadBlankGrid();
         document.getElementById('bsr__rotate').onclick = () => {
             console.log('clicked');
-            //console.log(logic.canUseCurrentLocation());
             logic.changeBoardPieceRotation();
             gridUpdateDragAndDrop();
         }
@@ -226,7 +240,8 @@
 
         document.addEventListener('drop', item => {
             logic.removePieceIfNeeded();
-            logic.setPieceLocations();
+            logic.setPieceLocationsAndCount();
+            console.log(logic.getNumberOfPlayablePiecesLeft())
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
                 //console.log('using old table');

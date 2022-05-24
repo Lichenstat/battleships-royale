@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Battleships Royale</title>
+    <title>Battleships Royale - Setup</title>
     <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
     <!--<meta name="author" content="SitePoint">-->
     <!--<base href=".">-->
@@ -247,6 +247,7 @@
         document.addEventListener('drop', item => {
             logic.removePieceIfNeeded();
             logic.setPieceLocationsAndCount();
+            document.getElementById("bsr__count").innerHTML = logic.getNumberOfPlayablePiecesLeft().patrolboat;
             console.log(logic.getNumberOfPlayablePiecesLeft());
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
@@ -270,17 +271,6 @@
         //let testObj3 = {'one' : {'two': 2 ,'three' : {'four' : 4 }}};
         //let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
 
-        //let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2) {}"  >  <div> </div> <div class="tater"> </div> <img id = "doo doo"> > <img id="doo doo"  > drag  1 > = wild= = 1 <i enabled >akka </i> stuff as well as e"e" </ /  ok<e>>><</</e><div class="garbo" id="garbo" max = 1 min =1>  10 )( =15 </div></div>';
-        //console.log(teststring);
-        //console.log('cleaned attributes',Helper.getHtmlCleanedTagAttributes(teststring));
-        //console.log('getting attributes',Helper.getHtmlAttributesOfElements(teststring));
-        //console.log('getting front tags', Helper.getHtmlTagsOfElements(teststring));
-        //console.log('getting back tags', Helper.getHtmlEndingAttributesOfElements(teststring));
-        //console.log('getting interal contents', Helper.getHtmlInternalContents(teststring));
-        //console.log(Helper.getHtmlCleanedCopy(teststring));
-        //console.log(Helper.setHtmlInternalContent(teststring, '-inseted content-', 'test__drag'));
-        //console.log(Helper.getHtmlRemoveContent(teststring, 'tater'));
-        //Helper.setHtmlStringInternalContent(teststring, 'test__drag', 'foobars');
         //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
         //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));
         

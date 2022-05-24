@@ -24,6 +24,7 @@ class BsrSetup{
 
     #pieceCounter;
     #desiredPiecesType;
+    #defaultDraggedOverLocation;
 
     #draggedPieceName;
     #draggedPieceIds;
@@ -33,11 +34,11 @@ class BsrSetup{
     #draggedPieceLastLocation;
 
     #gridPieceClickedId;
-    #gridPieceClickedIdDefault;
     #gridPieceIds;
     #gridPieceClickedLocation;
     #gridPieceLocationChecked;
     #draggedOverGridPieceId;
+    #draggedOverPieceClassName;
     #draggedOverGridPiece;
     #previousDraggedOverGridPiece;
     #draggedOverDirectId;
@@ -46,6 +47,7 @@ class BsrSetup{
     
     #canUpdatePieces;
     #isUsingPlacedPiece;
+    #setPieceClassName;
     #usingPlacedPiece;
     #willPieceBeRemoved;
 
@@ -66,6 +68,7 @@ class BsrSetup{
 
         this.#pieceCounter = 1;
         this.#desiredPiecesType = {};
+        this.#defaultDraggedOverLocation = 'bsr__table-cell-(0,0)';
 
         this.#draggedPieceName = '';
         this.#draggedPieceIds = [];
@@ -75,11 +78,11 @@ class BsrSetup{
         this.#draggedPieceLastLocation = [];
         
         this.#gridPieceClickedId = '';
-        this.#gridPieceClickedIdDefault = "bsr__table-cell-(0,0)";
         this.#gridPieceIds = [];
         this.#gridPieceClickedLocation = [];
         this.#gridPieceLocationChecked = false;
         this.#draggedOverGridPieceId = '';
+        this.#draggedOverPieceClassName = '';
         this.#draggedOverGridPiece = [];
         this.#previousDraggedOverGridPiece = [];
         this.#draggedOverDirectId = '';
@@ -88,6 +91,7 @@ class BsrSetup{
 
         this.#canUpdatePieces = true;
         this.#isUsingPlacedPiece = false;
+        this.#setPieceClassName = '';
         this.#usingPlacedPiece = {};
         this.#willPieceBeRemoved = false;
         
@@ -114,6 +118,11 @@ class BsrSetup{
     getPlacedPieceIds(){
         return this.#gridPieceIds;
     }
+
+    // return the dragged piece location
+    getDraggedPieceLocation(){
+        return this.#draggedOverGridPiece;
+    }
     
     // return the dragged piece ids
     getDraggedPieceIdsAndInternals(){
@@ -123,6 +132,11 @@ class BsrSetup{
     // get the overall placed pieces ids and internals
     getPiecesIdsAndInternals(){
         return this.#piecesIdsAndInternals;
+    }
+
+    // get the updated class name of the dragged over piece
+    getDraggedOverPieceClassName(){
+        return this.#setPieceClassName;
     }
 
     //get number of play pieces left
@@ -140,35 +154,36 @@ class BsrSetup{
         return this.#willPieceBeRemoved;
     }
 
-    // set dragged content
-    setDraggedPiece(pieceId){
-        this.#draggedPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
-        let name = pieceId.match(/--.*-/g);
+    // set clicked piece content
+    setClickedPieceInfo(piece){
+        let pieceDraggedId = piece.id;
+        this.#draggedPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceDraggedId);
+        let name = pieceDraggedId.match(/--.*-/g);
         name = name.toString().replace(/--|-/g, '');
         this.#draggedPieceName = name.toString();
         console.log("dragged piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
-    }
-
-    // set local gotten from grid piece
-    setLocalPiece(pieceId){
-        this.#gridPieceClickedId = pieceId;
-        this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceId);
+        
+        let pieceLocalId = piece.parentNode.parentNode.id;
+        this.#gridPieceClickedId = pieceLocalId;
+        this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceLocalId);
         this.#gridPieceLocationChecked = false;
         this.#gridPieceIds = [];
         console.log("local click", this.#gridPieceClickedLocation);
     }
 
-    // get content that piece was dragged onto
-    setDraggedOverPiece(pieceId){
-        this.#draggedOverGridPieceId = pieceId;
-        this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceId);
-        //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
-    }
+    // get content that piece was dragged over
+    setDraggedOverPieceInfo(piece){
+        let pieceDirectId = piece.id;
+        this.#draggedOverDirectId = pieceDirectId;
 
-    // set direct element id of the dragged over element
-    setDraggedOverDirectId(pieceId){
-        this.#draggedOverDirectId = pieceId;
-        //console.log('dragged over direct', this.#draggedOverDirectId);
+        let pieceDirectClassName = piece.className;
+        this.#draggedOverPieceClassName = pieceDirectClassName;
+        //console.log(this.#draggedOverPieceClassName);
+
+        let pieceCellId = piece.parentNode.id;
+        this.#draggedOverGridPieceId = pieceCellId;
+        this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceCellId);
+        console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
     // reset id of pieces in a pieces data table
@@ -388,7 +403,7 @@ class BsrSetup{
                     //console.log('checking placement locations', overallPossibleOverlapLocations);
                     let overlappingPieces = this.#getPiecesByLocation(overallPossibleOverlapLocations);
                     //console.log('overlap', overlappingPieces);
-                    (overlappingPieces.length < 2 ? this.#canUpdatePieces = true : this.#canUpdatePieces = false);
+                    (overlappingPieces.length < 2 && this.#canUpdatePieces ? this.#canUpdatePieces = true : this.#canUpdatePieces = false);
                 }
                 else{
                     this.#canUpdatePieces = false;
@@ -409,9 +424,21 @@ class BsrSetup{
         }
     }
 
+    #setPieceClassEnabledOrDisabled(){
+        if (this.#draggedOverPieceClassName.includes(bsrGridInternals.dragAndDropClassName)){
+            this.#setPieceClassName = this.#draggedOverPieceClassName + 'disabled';
+            if (this.#canUpdatePieces){
+                this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
+            }
+        }
+        else{
+            this.#setPieceClassName = this.#draggedOverPieceClassName;
+        }
+    }
+
     // check if the piece can be put into the table by filling a temporary locations array of the current piece
     // and set the pieces to be able to be updated or not
-    checkPieceLocations(){
+    checkAndSetPieceLocations(){
         this.#checkIfPieceWillBeRemoved();
         // make sure we aren't calculating the same dragged over piece again and again
         if (!Helper.checkIfArraysAreEqual(this.#previousDraggedOverGridPiece, this.#draggedOverGridPiece)){
@@ -428,6 +455,7 @@ class BsrSetup{
                 this.#gridPieceIds = this.#getPlacedPieceIdsViaLocation(this.#usingPlacedPiece.locations);
             }
             this.#checkIfPieceWillOverlapPlacedPiece();
+            this.#setPieceClassEnabledOrDisabled();
             this.#gridPieceLocationChecked = true;
         }
     }

@@ -96,7 +96,6 @@
         function dropBoardPiece(event) {
           event.preventDefault();
           var data = event.dataTransfer.getData("text");
-          event.target.appendChild(document.getElementById(data));
         }
 
     </script>
@@ -128,10 +127,11 @@
 
         //--------------------------------------------------------------
         let grid = new BsrGrid();
+        let gridElement = document.getElementById('test');
         let logic = new BsrSetup();
         let blankGrid = grid.getGameGridDragAndDrop();
 
-        document.getElementById("bsr__remover").innerHTML = logic.getPieceRemover();
+        let loadRemover = document.getElementById("bsr__remover").innerHTML = logic.getPieceRemover();
 
         let combinedPieces = function(){
             let combined = '';
@@ -144,24 +144,25 @@
 
         let gridUpdateDragAndDrop = function(){
             document.getElementById("bsr__piecesshell").innerHTML = combinedPieces();
-            
         }
 
         let loadBlankGrid = function(){
-            document.getElementById('test').innerHTML = blankGrid;
+            gridElement.innerHTML = blankGrid;
         }
 
         let saveDragAndDropGrid = function(){
-            grid.saveGameGridDragAndDrop(document.getElementById("test").innerHTML);
+            grid.saveGameGridDragAndDrop(gridElement.innerHTML);
         }
 
         let reloadDragAndDropGrid = function(){
-            document.getElementById("test").innerHTML = grid.getSavedGameGridDragAndDrop();
+            gridElement.innerHTML = grid.getSavedGameGridDragAndDrop();
         };
 
         let loadSetPieces = function(){
+            //loadRemover;
             loadBlankGrid();
                 let piecesAndPlacement = logic.getPiecesIdsAndInternals();
+                console.log(piecesAndPlacement);
                 var piecesAndPlacementLength = piecesAndPlacement.length;
                 for (var i = 0; i < piecesAndPlacementLength; i++){
                     let piece = piecesAndPlacement[i];
@@ -182,26 +183,21 @@
         }
 
         let canPlacePiece;
-        //let checkPieces = [[],[]];
         let removedPreviousPiece = false;
 
         document.addEventListener('dragstart', item => {
             saveDragAndDropGrid();
             if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
-                logic.setDraggedPiece(item.target.id);
-                logic.setLocalPiece(item.target.parentNode.parentNode.id);
-                //console.log(item.originalTarget.parentNode.parentNode.id);
+                logic.setClickedPieceInfo(item.target);
             }
         });
 
         document.addEventListener('dragover', item => {
             if(item.target.parentNode){
-                logic.setDraggedOverPiece(item.target.parentNode.id);
-                logic.setDraggedOverDirectId(item.target.id);
-                logic.checkPieceLocations();
+                logic.setDraggedOverPieceInfo(item.target);
+                logic.checkAndSetPieceLocations();
                 canPlacePiece = logic.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
-                let currentPlacement = logic.getDraggedPieceIdsAndInternals();
                 //console.log('current', currentPlacement);
                 if (!removedPreviousPiece){
                     let previousPlacement = logic.getPlacedPieceIds();
@@ -213,26 +209,32 @@
                         }
                     }
                     //console.log('removed');
+                    //saveDragAndDropGrid();
                     removedPreviousPiece = true;
                 }
                 // if we need to remove the last pieces we placed on the grid
-                //if (removedPreviousPiece && canPlacePiece){
-                //    let currentPlacement = logic.getDraggedPieceIdsAndInternals();
-                //    console.log(currentPlacement);
-                //    let placementLength = currentPlacement[0].length;
-                //    for (var i = 0; i < placementLength; i++){
-                //        document.getElementById(currentPlacement[0][i]).children[0].innerHTML = currentPlacement[1][i];
-                //    }
-                //    console.log('making pieces')
-                //}
+                if (removedPreviousPiece){
+                    let currentPlacement = logic.getDraggedPieceIdsAndInternals();
+                    //console.log(currentPlacement);
+                    let currentClassName = logic.getDraggedOverPieceClassName();
+                    //console.log(currentPlacement);
+                    let placementLength = currentPlacement[0].length;
+                    for (var i = 0; i < placementLength; i++){
+                        if(document.getElementById(currentPlacement[0][i]) != null){
+                            if(document.getElementById(currentPlacement[0][i]).children[0] != undefined)
+                                document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
+                        }
+                    }
+                    //console.log('making pieces')
+                }
             }
         });
 
         // if the piece leaves any droppable position
         document.addEventListener('dragleave', item => {
-            //console.log('ran dragleave');
+            console.log('ran dragleave');
+            //console.log(logic.getDraggedPieceLocation());
             removedPreviousPiece = false;
-            //checkPieces = [];
             if (!canPlacePiece){
                 reloadDragAndDropGrid();
             }
@@ -244,7 +246,7 @@
             console.log(logic.getNumberOfPlayablePiecesLeft())
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
-                //console.log('using old table');
+                console.log('using old table');
                 reloadDragAndDropGrid();
             }
             if(canPlacePiece || logic.checkIfPieceWasRemoved()){
@@ -264,7 +266,7 @@
         //let testObj3 = {'one' : {'two': 2 ,'three' : {'four' : 4 }}};
         //let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
 
-        let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2) {}"  >  <div> </div> <div class="tater"> </div> <img id = "doo doo"> > <img id="doo doo"  > drag  1 > = wild= = 1 <i enabled >akka </i> stuff as well as e"e" </ /  ok<e>>><</</e><div class="garbo" id="garbo" max = 1 min =1>  10 )( =15 </div></div>';
+        //let teststring = '<div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)" ondrag=" if ( 1 > 2) {}"  >  <div> </div> <div class="tater"> </div> <img id = "doo doo"> > <img id="doo doo"  > drag  1 > = wild= = 1 <i enabled >akka </i> stuff as well as e"e" </ /  ok<e>>><</</e><div class="garbo" id="garbo" max = 1 min =1>  10 )( =15 </div></div>';
         //console.log(teststring);
         //console.log('cleaned attributes',Helper.getHtmlCleanedTagAttributes(teststring));
         //console.log('getting attributes',Helper.getHtmlAttributesOfElements(teststring));

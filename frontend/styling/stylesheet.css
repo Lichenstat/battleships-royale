@@ -35,9 +35,17 @@ body{
 .bsr__placementplot{
   height: 40px;
   /*display: block;*/
-  border-collapse: collapse;
+  /*border-collapse: collapse;*/
   background-color: lightgrey;
   /*border: 2px solid black;*/
+}
+
+.bsr__placementplot--enabled{
+  background-color: greenyellow;
+}
+
+.bsr__placementplot--disabled{
+  background-color: red;
 }
 
 .bsr__boardpiece{
@@ -60,8 +68,8 @@ body{
 
 .bsr__table-cell{
   
-  border-collapse: collapse;
-  /*border: 2px solid red;*/
+  /*border-collapse: collapse;*/
+  border: 4px solid black;
 }
 
 .bsr__piececontainer{
@@ -77,7 +85,7 @@ body{
 }
 
 .bsr__pieceremover{
-  width:auto;
+  width: auto;
   height: 60px;
   border: 2px solid darkblue;
 }

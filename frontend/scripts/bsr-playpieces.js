@@ -83,7 +83,7 @@ class BsrPlayPieces{
         for (let i = 1; i <= rowCount; i++){
             for( let j = 1; j <= columnCount; j++){
                 let location = '(' + i + ',' + j + ')';
-                let newString = Helper.parsePartOfStringToReplace(bsrGridInternals.dragAndDropItem, 'bsr__boardpiece', 'bsr__boardpiece--' + pieceName + '-' + location);
+                let newString = Helper.parsePartOfStringToReplace(bsrGridInternals.dragAndDropItem, 'bsr__boardpiece--', 'bsr__boardpiece--' + pieceName + '-' + location);
                 bsrPiecesContent[location] = newString;
             }
         }

@@ -173,6 +173,10 @@ class BsrSetup{
 
     // get content that piece was dragged over
     setDraggedOverPieceInfo(piece){
+        // fix for showing if the piece can be placable or not over currently placed piece, replaice if time allows later
+        if (piece.className.includes(bsrGridInternals.dragAndDropItemClassName)){
+            piece = piece.parentNode;
+        }
         let pieceDirectId = piece.id;
         this.#draggedOverDirectId = pieceDirectId;
 
@@ -183,7 +187,7 @@ class BsrSetup{
         let pieceCellId = piece.parentNode.id;
         this.#draggedOverGridPieceId = pieceCellId;
         this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceCellId);
-        console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
+        //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
     // reset id of pieces in a pieces data table

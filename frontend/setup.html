@@ -55,6 +55,9 @@
             <div class="bsr__piecesshell" id="bsr__piecesshell">
 
             </div>
+            <div id="bsr__count">
+
+            </div>
             <div class="bsr__options" id="bsr__options">
 
             </div>
@@ -232,10 +235,11 @@
 
         // if the piece leaves any droppable position
         document.addEventListener('dragleave', item => {
-            console.log('ran dragleave');
-            //console.log(logic.getDraggedPieceLocation());
+            //console.log('ran dragleave');
             removedPreviousPiece = false;
-            if (!canPlacePiece){
+            //console.log(logic.getDraggedPieceLocation());
+            //console.log(canPlacePiece);
+            if (!canPlacePiece || !Helper.checkIfArraysAreEqual(logic.getDraggedPieceLocation(), [0,0])){
                 reloadDragAndDropGrid();
             }
         });
@@ -243,7 +247,7 @@
         document.addEventListener('drop', item => {
             logic.removePieceIfNeeded();
             logic.setPieceLocationsAndCount();
-            console.log(logic.getNumberOfPlayablePiecesLeft())
+            console.log(logic.getNumberOfPlayablePiecesLeft());
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
                 console.log('using old table');

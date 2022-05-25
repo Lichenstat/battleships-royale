@@ -149,6 +149,11 @@ class BsrSetup{
         return bsrPieceInteractors.dragAndDropPieceRemover;
     }
 
+    // return locally clicked grid piece location
+    getLocalClickedPiece(){
+        return this.#gridPieceClickedLocation;
+    }
+
     // return if the piece was removed or not
     checkIfPieceWasRemoved(){
         return this.#willPieceBeRemoved;
@@ -161,29 +166,25 @@ class BsrSetup{
         let name = pieceDraggedId.match(/--.*-/g);
         name = name.toString().replace(/--|-/g, '');
         this.#draggedPieceName = name.toString();
-        console.log("dragged piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
+        console.log("clicked piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
         
         let pieceLocalId = piece.parentNode.parentNode.id;
         this.#gridPieceClickedId = pieceLocalId;
         this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceLocalId);
         this.#gridPieceLocationChecked = false;
         this.#gridPieceIds = [];
-        console.log("local click", this.#gridPieceClickedLocation);
+        console.log("local click piece", this.#gridPieceClickedLocation);
     }
 
     // get content that piece was dragged over
     setDraggedOverPieceInfo(piece){
-        // fix for showing if the piece can be placable or not over currently placed piece, replaice if time allows later
-        if (piece.className.includes(bsrGridInternals.dragAndDropItemClassName)){
-            piece = piece.parentNode;
-        }
         let pieceDirectId = piece.id;
         this.#draggedOverDirectId = pieceDirectId;
-
+        
         let pieceDirectClassName = piece.className;
         this.#draggedOverPieceClassName = pieceDirectClassName;
         //console.log(this.#draggedOverPieceClassName);
-
+        
         let pieceCellId = piece.parentNode.id;
         this.#draggedOverGridPieceId = pieceCellId;
         this.#draggedOverGridPiece = Helper.parseElementIdForMatrixLocation(pieceCellId);

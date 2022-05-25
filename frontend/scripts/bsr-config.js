@@ -49,8 +49,10 @@ const bsrGridPieces = {
 
 // for the various grid internals
 const bsrGridInternals = {
+    dragAndDropId : "bsr__placementplot",
     dragAndDropClassName : "bsr__placementplot",
     dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
+    dragAndDropItemId : "bsr__boardpiece",
     dragAndDropItemClassName : "bsr__boardpiece",
     dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)">test drag</div>'
 }

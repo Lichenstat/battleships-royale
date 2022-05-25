@@ -68,8 +68,8 @@ body{
 
 .bsr__table-cell{
   
-  /*border-collapse: collapse;*/
-  border: 2px solid black;
+  border-collapse: collapse;
+  /*border: 2px solid black;*/
 }
 
 .bsr__piececontainer{

@@ -186,9 +186,13 @@
         }
 
         let canPlacePiece;
-        let removedPreviousPiece = false;
+        let removedPreviousPiece;
+        let tempGrid;
+        var time = 10;
+        let dragging = false;
 
         document.addEventListener('dragstart', item => {
+            //console.log('ran dragstart');
             saveDragAndDropGrid();
             if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
                 logic.setClickedPieceInfo(item.target);
@@ -196,12 +200,14 @@
         });
 
         document.addEventListener('dragover', item => {
+            //console.log('ran dragover');
+            dragging = true;
             if(item.target.parentNode){
                 logic.setDraggedOverPieceInfo(item.target);
                 logic.checkAndSetPieceLocations();
                 canPlacePiece = logic.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
-                //console.log('current', currentPlacement);
+                // if we havent removed previous pieces on pickup of an element
                 if (!removedPreviousPiece){
                     let previousPlacement = logic.getPlacedPieceIds();
                     //console.log('previous placement',previousPlacement);
@@ -211,11 +217,10 @@
                             document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
                         }
                     }
-                    //console.log('removed');
-                    //saveDragAndDropGrid();
+                    tempGrid = gridElement.innerHTML;
                     removedPreviousPiece = true;
                 }
-                // if we need to remove the last pieces we placed on the grid
+                // to update the last pieces we plan on placing on the grid
                 if (removedPreviousPiece){
                     let currentPlacement = logic.getDraggedPieceIdsAndInternals();
                     //console.log(currentPlacement);
@@ -228,7 +233,6 @@
                                 document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
                         }
                     }
-                    //console.log('making pieces')
                 }
             }
         });
@@ -236,14 +240,22 @@
         // if the piece leaves any droppable position
         document.addEventListener('dragleave', item => {
             //console.log('ran dragleave');
+            dragging = false;
             removedPreviousPiece = false;
             //console.log(logic.getDraggedPieceLocation());
             //console.log(canPlacePiece);
             if (!canPlacePiece || !Helper.checkIfArraysAreEqual(logic.getDraggedPieceLocation(), [0,0])){
-                reloadDragAndDropGrid();
+                    gridElement.innerHTML = tempGrid;
+                    // set a small timer to check if we have stopped dragging the piece or not
+                    setTimeout(() => {
+                        if (!dragging){
+                            reloadDragAndDropGrid();
+                        }
+                    }, time)
             }
         });
 
+        // on the drop of the piece
         document.addEventListener('drop', item => {
             logic.removePieceIfNeeded();
             logic.setPieceLocationsAndCount();
@@ -254,9 +266,11 @@
                 console.log('using old table');
                 reloadDragAndDropGrid();
             }
+            //console.log(item.target);
             if(canPlacePiece || logic.checkIfPieceWasRemoved()){
                 loadSetPieces();
             }
+            dragging = true;
             removedPreviousPiece = false;
         });
 

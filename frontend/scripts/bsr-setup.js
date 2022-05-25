@@ -50,6 +50,7 @@ class BsrSetup{
     #setPieceClassName;
     #usingPlacedPiece;
     #willPieceBeRemoved;
+    #pieceWasRemoved;
 
     constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
         // create and assign pieces objects to be used with the grid
@@ -94,6 +95,7 @@ class BsrSetup{
         this.#setPieceClassName = '';
         this.#usingPlacedPiece = {};
         this.#willPieceBeRemoved = false;
+        this.#pieceWasRemoved = false;
         
         console.log(this.#tableRowsOffset, this.#tableColumnsOffset);
     }
@@ -156,7 +158,7 @@ class BsrSetup{
 
     // return if the piece was removed or not
     checkIfPieceWasRemoved(){
-        return this.#willPieceBeRemoved;
+        return this.#pieceWasRemoved;
     }
 
     // set clicked piece content
@@ -178,6 +180,11 @@ class BsrSetup{
 
     // get content that piece was dragged over
     setDraggedOverPieceInfo(piece){
+        // fix for highlighting squares on already placed pieces plots, refactor later
+        if (piece.id.includes(bsrGridInternals.dragAndDropItemId)){
+            piece = piece.parentNode;
+        }
+
         let pieceDirectId = piece.id;
         this.#draggedOverDirectId = pieceDirectId;
         
@@ -467,7 +474,8 @@ class BsrSetup{
 
     // remove an undesired piece from the piecesdatatable
     removePieceIfNeeded(){
-        if(this.#willPieceBeRemoved){
+        this.#pieceWasRemoved = false;
+        if(this.#willPieceBeRemoved && !Helper.checkIfArraysAreEqual(this.#gridPieceClickedLocation, [0,0])){
             this.#piecesDataTable.every(
                 (piece, index) => {
                     if (piece.id == this.#usingPlacedPiece.id){
@@ -479,6 +487,7 @@ class BsrSetup{
             )
             this.#pieceCounter = this.#pieceCounter - 1;
             this.#desiredPiecesType.count = this.#desiredPiecesType.count + 1;
+            this.#pieceWasRemoved = true;
             this.#resetIdsOfPiecesDataTable();
         }
     }

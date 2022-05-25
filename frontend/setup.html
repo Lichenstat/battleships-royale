@@ -165,7 +165,7 @@
             //loadRemover;
             loadBlankGrid();
                 let piecesAndPlacement = logic.getPiecesIdsAndInternals();
-                console.log(piecesAndPlacement);
+                //console.log(piecesAndPlacement);
                 var piecesAndPlacementLength = piecesAndPlacement.length;
                 for (var i = 0; i < piecesAndPlacementLength; i++){
                     let piece = piecesAndPlacement[i];
@@ -207,7 +207,7 @@
                 logic.checkAndSetPieceLocations();
                 canPlacePiece = logic.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
-                // if we havent removed previous pieces on pickup of an element
+                // if we havent removed previous pieces on pickup of a board piece on the grid
                 if (!removedPreviousPiece){
                     let previousPlacement = logic.getPlacedPieceIds();
                     //console.log('previous placement',previousPlacement);
@@ -217,13 +217,13 @@
                             document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
                         }
                     }
+                    // set a temporary grid with the chosen piece removed to show for display
                     tempGrid = gridElement.innerHTML;
                     removedPreviousPiece = true;
                 }
                 // to update the last pieces we plan on placing on the grid
                 if (removedPreviousPiece){
                     let currentPlacement = logic.getDraggedPieceIdsAndInternals();
-                    //console.log(currentPlacement);
                     let currentClassName = logic.getDraggedOverPieceClassName();
                     //console.log(currentPlacement);
                     let placementLength = currentPlacement[0].length;
@@ -237,7 +237,7 @@
             }
         });
 
-        // if the piece leaves any droppable position
+        // if the piece leaves any droppable position, we will have to reload the grid with the temporary grid
         document.addEventListener('dragleave', item => {
             //console.log('ran dragleave');
             dragging = false;
@@ -266,7 +266,6 @@
                 console.log('using old table');
                 reloadDragAndDropGrid();
             }
-            //console.log(item.target);
             if(canPlacePiece || logic.checkIfPieceWasRemoved()){
                 loadSetPieces();
             }

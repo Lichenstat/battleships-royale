@@ -3,7 +3,7 @@
 export { BsrPlayPieces }
 
 import { CreateTable } from './create-table.js';
-import { bsrGridPieces, bsrGridInternals } from './bsr-config.js';
+import { bsrGridPieces, bsrGeneralInfo, bsrGridInternals } from './bsr-config.js';
 import { Helper } from './helper.js';
 
 class BsrPlayPieces{
@@ -104,17 +104,17 @@ class BsrPlayPieces{
         let horizontalPlayPieces = this.#getPiecesHorizontal();
         let verticalPlayPieces = this.#getPiecesVertical();
         let useablePieces = [
-            { 'name' : bsrGridPieces.carrierHorizontal.name,    'count' : bsrGridPieces.carrierHorizontal.count,    'size' : bsrGridPieces.carrierHorizontal.size,    'placed' : bsrGridPieces.carrierHorizontal.count,    [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.carrierHorizontal.name],    [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.carrierVertical.name]},
-            { 'name' : bsrGridPieces.battleshipHorizontal.name, 'count' : bsrGridPieces.battleshipHorizontal.count, 'size' : bsrGridPieces.battleshipHorizontal.size, 'placed' : bsrGridPieces.battleshipHorizontal.count, [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.battleshipHorizontal.name], [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.battleshipVertical.name]},
-            { 'name' : bsrGridPieces.destroyerHorizontal.name,  'count' : bsrGridPieces.destroyerHorizontal.count,  'size' : bsrGridPieces.destroyerHorizontal.size,  'placed' : bsrGridPieces.destroyerHorizontal.count,  [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.destroyerHorizontal.name],  [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.destroyerVertical.name]},
-            { 'name' : bsrGridPieces.submarineHorizontal.name,  'count' : bsrGridPieces.submarineHorizontal.count,  'size' : bsrGridPieces.submarineHorizontal.size,  'placed' : bsrGridPieces.submarineHorizontal.count,  [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.submarineHorizontal.name],  [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.submarineVertical.name]},
-            { 'name' : bsrGridPieces.patrolboatHorizontal.name, 'count' : bsrGridPieces.patrolboatHorizontal.count, 'size' : bsrGridPieces.patrolboatHorizontal.size, 'placed' : bsrGridPieces.patrolboatHorizontal.count, [bsrGridPieces.horizontal] : horizontalPlayPieces[bsrGridPieces.patrolboatHorizontal.name], [bsrGridPieces.vertical] : verticalPlayPieces[bsrGridPieces.patrolboatVertical.name]}
+            { 'name' : bsrGridPieces.carrierHorizontal.name,    'count' : bsrGridPieces.carrierHorizontal.count,    'size' : bsrGridPieces.carrierHorizontal.size,    'placed' : bsrGridPieces.carrierHorizontal.count,    [bsrGeneralInfo.horizontal] : horizontalPlayPieces[bsrGridPieces.carrierHorizontal.name],    [bsrGeneralInfo.vertical] : verticalPlayPieces[bsrGridPieces.carrierVertical.name]},
+            { 'name' : bsrGridPieces.battleshipHorizontal.name, 'count' : bsrGridPieces.battleshipHorizontal.count, 'size' : bsrGridPieces.battleshipHorizontal.size, 'placed' : bsrGridPieces.battleshipHorizontal.count, [bsrGeneralInfo.horizontal] : horizontalPlayPieces[bsrGridPieces.battleshipHorizontal.name], [bsrGeneralInfo.vertical] : verticalPlayPieces[bsrGridPieces.battleshipVertical.name]},
+            { 'name' : bsrGridPieces.destroyerHorizontal.name,  'count' : bsrGridPieces.destroyerHorizontal.count,  'size' : bsrGridPieces.destroyerHorizontal.size,  'placed' : bsrGridPieces.destroyerHorizontal.count,  [bsrGeneralInfo.horizontal] : horizontalPlayPieces[bsrGridPieces.destroyerHorizontal.name],  [bsrGeneralInfo.vertical] : verticalPlayPieces[bsrGridPieces.destroyerVertical.name]},
+            { 'name' : bsrGridPieces.submarineHorizontal.name,  'count' : bsrGridPieces.submarineHorizontal.count,  'size' : bsrGridPieces.submarineHorizontal.size,  'placed' : bsrGridPieces.submarineHorizontal.count,  [bsrGeneralInfo.horizontal] : horizontalPlayPieces[bsrGridPieces.submarineHorizontal.name],  [bsrGeneralInfo.vertical] : verticalPlayPieces[bsrGridPieces.submarineVertical.name]},
+            { 'name' : bsrGridPieces.patrolboatHorizontal.name, 'count' : bsrGridPieces.patrolboatHorizontal.count, 'size' : bsrGridPieces.patrolboatHorizontal.size, 'placed' : bsrGridPieces.patrolboatHorizontal.count, [bsrGeneralInfo.horizontal] : horizontalPlayPieces[bsrGridPieces.patrolboatHorizontal.name], [bsrGeneralInfo.vertical] : verticalPlayPieces[bsrGridPieces.patrolboatVertical.name]}
         ]
         return useablePieces;
     }
 
     getInternalsOfPiece(pieceName, rotation){
-        if(rotation == bsrGridPieces.horizontal){
+        if(rotation == bsrGeneralInfo.horizontal){
             if(pieceName == bsrGridPieces.carrierHorizontal.name)
                 return this.#bsrCarrierHorizontalContent;
             if(pieceName == bsrGridPieces.battleshipHorizontal.name)
@@ -126,7 +126,7 @@ class BsrPlayPieces{
             if(pieceName == bsrGridPieces.patrolboatHorizontal.name)
                 return this.#bsrPatrolBoatHorizontalContent;
         }
-        if (rotation == bsrGridPieces.vertical){
+        if (rotation == bsrGeneralInfo.vertical){
             if(pieceName == bsrGridPieces.carrierVertical.name)
                 return this.#bsrCarrierVerticalContent;
             if(pieceName == bsrGridPieces.battleshipVertical.name)

@@ -1,6 +1,6 @@
 // bsr properties to use with various other bsr files
 
-export { bsrGridProperties, bsrPlotProperties, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
+export { bsrGridProperties, bsrPlotProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
 
 // for the bsr tables
 const bsrGridProperties = {
@@ -31,10 +31,14 @@ const bsrPlotProperties = {
     internalText : ''
 }
 
-// for information on play pieces
-const bsrGridPieces = {
+// general info for bsr stuff
+const bsrGeneralInfo = {
     horizontal : 'horizontal',
     vertical : 'vertical',
+}
+
+// for information on play pieces
+const bsrGridPieces = {
     carrierHorizontal : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-horizontal', id: 'bsr__table--carrier', rows : 1, columns : 5, content : '' },
     carrierVertical : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-vertical', id: 'bsr__table--carrier', rows : 5, columns : 1, content : '' },
     battleshipHorizontal : { count : 2, size : 4, name : 'battleship', class : 'bsr__table bsr__table--enabled bsr__table--battleship-horizontal', id: 'bsr__table--battleship', rows : 1, columns : 4, content : '' },

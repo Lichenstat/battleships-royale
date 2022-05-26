@@ -131,14 +131,14 @@
         //--------------------------------------------------------------
         let grid = new BsrGrid();
         let gridElement = document.getElementById('test');
-        let logic = new BsrSetup();
+        let setup = new BsrSetup();
         let blankGrid = grid.getGameGridDragAndDrop();
 
-        let loadRemover = document.getElementById("bsr__remover").innerHTML = logic.getPieceRemover();
+        let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
 
         let combinedPieces = function(){
             let combined = '';
-            let pieces = logic.getUpdatedRotatedPieces();
+            let pieces = setup.getUpdatedRotatedPieces();
             for (const [key, item] of Object.entries(pieces)){
                 combined = combined + item;
             }
@@ -164,7 +164,7 @@
         let loadSetPieces = function(){
             //loadRemover;
             loadBlankGrid();
-                let piecesAndPlacement = logic.getPiecesIdsAndInternals();
+                let piecesAndPlacement = setup.getPiecesIdsAndInternals();
                 //console.log(piecesAndPlacement);
                 var piecesAndPlacementLength = piecesAndPlacement.length;
                 for (var i = 0; i < piecesAndPlacementLength; i++){
@@ -177,11 +177,11 @@
         }
 
         gridUpdateDragAndDrop();
-        //console.log(logic);
+        //console.log(setup);
         loadBlankGrid();
         document.getElementById('bsr__rotate').onclick = () => {
             console.log('clicked');
-            logic.changeBoardPieceRotation();
+            setup.changeBoardPieceRotation();
             gridUpdateDragAndDrop();
         }
 
@@ -191,25 +191,27 @@
         var time = 10;
         let dragging = false;
 
+        // event on the start of the drag
         document.addEventListener('dragstart', item => {
             //console.log('ran dragstart');
             saveDragAndDropGrid();
             if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
-                logic.setClickedPieceInfo(item.target);
+                setup.setClickedPieceInfo(item.target);
             }
         });
 
+        // event to take place on dragging over container pieces
         document.addEventListener('dragover', item => {
             //console.log('ran dragover');
             dragging = true;
             if(item.target.parentNode){
-                logic.setDraggedOverPieceInfo(item.target);
-                logic.checkAndSetPieceLocations();
-                canPlacePiece = logic.canUseCurrentLocation();
+                setup.setDraggedOverPieceInfo(item.target);
+                setup.checkAndSetPieceLocations();
+                canPlacePiece = setup.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)
                 // if we havent removed previous pieces on pickup of a board piece on the grid
                 if (!removedPreviousPiece){
-                    let previousPlacement = logic.getPlacedPieceIds();
+                    let previousPlacement = setup.getPlacedPieceIds();
                     //console.log('previous placement',previousPlacement);
                     if(previousPlacement){
                         var previousPlacementLength = previousPlacement.length;
@@ -223,8 +225,8 @@
                 }
                 // to update the last pieces we plan on placing on the grid
                 if (removedPreviousPiece){
-                    let currentPlacement = logic.getDraggedPieceIdsAndInternals();
-                    let currentClassName = logic.getDraggedOverPieceClassName();
+                    let currentPlacement = setup.getDraggedPieceIdsAndInternals();
+                    let currentClassName = setup.getDraggedOverPieceClassName();
                     //console.log(currentPlacement);
                     let placementLength = currentPlacement[0].length;
                     for (var i = 0; i < placementLength; i++){
@@ -242,9 +244,9 @@
             //console.log('ran dragleave');
             dragging = false;
             removedPreviousPiece = false;
-            //console.log(logic.getDraggedPieceLocation());
+            //console.log(setup.getDraggedPieceLocation());
             //console.log(canPlacePiece);
-            if (!canPlacePiece || !Helper.checkIfArraysAreEqual(logic.getDraggedPieceLocation(), [0,0])){
+            if (!canPlacePiece || !Helper.checkIfArraysAreEqual(setup.getDraggedPieceLocation(), [0,0])){
                     gridElement.innerHTML = tempGrid;
                     // set a small timer to check if we have stopped dragging the piece or not
                     setTimeout(() => {
@@ -257,16 +259,16 @@
 
         // on the drop of the piece
         document.addEventListener('drop', item => {
-            logic.removePieceIfNeeded();
-            logic.setPieceLocationsAndCount();
-            document.getElementById("bsr__count").innerHTML = logic.getNumberOfPlayablePiecesLeft().patrolboat;
-            console.log(logic.getNumberOfPlayablePiecesLeft());
+            setup.removePieceIfNeeded();
+            setup.setPieceLocationsAndCount();
+            document.getElementById("bsr__count").innerHTML = setup.getNumberOfPlayablePiecesLeft().patrolboat;
+            console.log(setup.getNumberOfPlayablePiecesLeft());
             gridUpdateDragAndDrop();
             if(!canPlacePiece){
                 console.log('using old table');
                 reloadDragAndDropGrid();
             }
-            if(canPlacePiece || logic.checkIfPieceWasRemoved()){
+            if(canPlacePiece || setup.checkIfPieceWasRemoved()){
                 loadSetPieces();
             }
             dragging = true;

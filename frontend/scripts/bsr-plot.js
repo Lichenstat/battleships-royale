@@ -1,5 +1,5 @@
 // Object class for creating/updating/interacting with bsr plots (squares) on a grid
-
+/*
 import { CreateButton } from "./create-button.js";
 import { Helper } from "./helper.js";
 import { bsrPlotProperties, bsrGridInternals } from "./bsr-config.js";
@@ -35,3 +35,4 @@ class BsrPlot extends CreateButton{
     }
 
 }
+*/

@@ -14,15 +14,14 @@ class BsrPiecesData extends BsrPlayPieces{
     #horizontal;
     #vertical;
 
-    constructor(piecesDataTable = []){
+    constructor(){
         super();
-        this.#piecesDataTable = piecesDataTable;
+        this.#piecesDataTable = [];
 
         this.#piecesCounter = this.#piecesDataTable.length;
 
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
-
     }
 
     // return the pieces data table

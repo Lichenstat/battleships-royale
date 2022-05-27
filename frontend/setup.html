@@ -103,7 +103,7 @@
 
     </script>
     <script type="module">
-        import {BsrGrid} from "./scripts/bsr-grid.js";
+        import {BsrDragAndDropGrid} from "./scripts/bsr-draganddropgrid.js";
         import {Helper} from "./scripts/helper.js";
         import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
         import {BsrSetup} from "./scripts/bsr-setup.js";
@@ -129,10 +129,10 @@
 
 
         //--------------------------------------------------------------
-        let grid = new BsrGrid();
+        let dragAndDropGrid = new BsrDragAndDropGrid();
         let gridElement = document.getElementById('test');
         let setup = new BsrSetup();
-        let blankGrid = grid.getGameGridDragAndDrop();
+        let blankDragAndDropGrid = dragAndDropGrid.getGrid();
 
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
 
@@ -150,15 +150,15 @@
         }
 
         let loadBlankGrid = function(){
-            gridElement.innerHTML = blankGrid;
+            gridElement.innerHTML = blankDragAndDropGrid;
         }
 
         let saveDragAndDropGrid = function(){
-            grid.saveGameGridDragAndDrop(gridElement.innerHTML);
+            dragAndDropGrid.saveGrid(gridElement.innerHTML);
         }
 
         let reloadDragAndDropGrid = function(){
-            gridElement.innerHTML = grid.getSavedGameGridDragAndDrop();
+            gridElement.innerHTML = dragAndDropGrid.loadGrid();
         };
 
         let loadSetPieces = function(){
@@ -216,7 +216,7 @@
                     if(previousPlacement){
                         var previousPlacementLength = previousPlacement.length;
                         for (var i = 0; i < previousPlacementLength; i++){
-                            document.getElementById(previousPlacement[i]).innerHTML = grid.getDragAndDropCleanInternal();
+                            document.getElementById(previousPlacement[i]).innerHTML = dragAndDropGrid.getDragAndDropCleanInternal();
                         }
                     }
                     // set a temporary grid with the chosen piece removed to show for display

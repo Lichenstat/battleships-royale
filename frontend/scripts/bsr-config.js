@@ -1,6 +1,6 @@
 // bsr properties to use with various other bsr files
 
-export { bsrGridProperties, bsrPlotProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
+export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
 
 // for the bsr tables
 const bsrGridProperties = {
@@ -17,18 +17,6 @@ const bsrGridProperties = {
     content : {'(1,1)' : 'name',
                '(2,1)' : ' ', '(2,2)' : 'A', '(2,3)' : 'B', '(2,4)' : 'C', '(2,5)' : 'D', '(2,6)' : 'E', '(2,7)' : 'F', '(2,8)' : 'G', '(2,9)' : 'H', '(2,10)' : 'I', '(2,11)' : 'J',
                '(3,1)' : '1', '(4,1)' : '2', '(5,1)' : '3', '(6,1)' : '4', '(7,1)' : '5', '(8,1)' : '6', '(9,1)' : '7', '(10,1)' : '8', '(11,1)' : '9', '(12,1)' : '10'} 
-}
-
-// for the bsr plots/squares
-const bsrPlotProperties = {
-    class : 'bsr__plot',
-    classEnabled : 'bsr__plot bsr__plot--enabled',
-    classDisabled : 'bsr__plot bsr__plot--disabled',
-    id : 'bsr__plot',
-    type : 'button',
-    enabled : true,
-    disabled : false,
-    internalText : ''
 }
 
 // general info for bsr stuff
@@ -51,14 +39,21 @@ const bsrGridPieces = {
     patrolboatVertical : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-vertical', id: 'bsr__table--patrolboat', rows : 2, columns : 1, content : '' },
 }
 
+
 // for the various grid internals
 const bsrGridInternals = {
+    // drag and drop pieces
     dragAndDropId : "bsr__placementplot",
     dragAndDropClassName : "bsr__placementplot",
     dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
     dragAndDropItemId : "bsr__boardpiece",
     dragAndDropItemClassName : "bsr__boardpiece",
-    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)">test drag</div>'
+    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)">test drag</div>',
+
+    // board button pieces
+    boardButtonId : "bsr__boardbutton",
+    boardButtonClass : "bsr__boardbutton",
+    boardButton : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button" disabled="false">*</button>'
 }
 
 // for interacting with various grid pieces
@@ -66,29 +61,3 @@ const bsrPieceInteractors = {
     dragAndDropPieceRemoverId : "bsr__pieceremover",
     dragAndDropPieceRemover : '<div class="bsr__pieceremover bsr__pieceremover--disabled" id="bsr__pieceremover" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>'
 }
-
-// for the bsr menu
-/*
-const bsrMenuProperties = {
-    classMenu : 'bsr__menu',
-    classEnabledMenu : 'bsr__menu--enabled',
-    classDisabledMenu : 'bsr__menu--disabled',
-    idMenu : 'bsr__menu',
-
-    classInput : 'bsr__input',
-    classEnabledInput : 'bsr__input--enabled',
-    classDisabledInput : 'bsr__input--disabled',
-    idInput : 'bsr__input',
-
-    classCheckbox : 'bsr__checkbox',
-    classCheckboxEnabled : 'bsr__checkbox--enabled',
-    classCheckboxDisabled : 'bsr__checkbox--disabled',
-    idCheckbox : 'bsr__checkbox',
-
-    classPlayerTable : 'bsr__playertable',
-    idPlayerTable : 'bsr__playertable',
-
-    minNumberPlayers : '2',
-    maxNumberPlayers : '9'
-}
-*/

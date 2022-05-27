@@ -1,10 +1,10 @@
 // Class for the set pieces that will be used in the bsr game (patrol boat, carrier, etc.)
 
-export { BsrPlayPieces }
-
 import { CreateTable } from './create-table.js';
 import { bsrGridPieces, bsrGeneralInfo, bsrGridInternals } from './bsr-config.js';
 import { Helper } from './helper.js';
+
+export { BsrPlayPieces }
 
 class BsrPlayPieces{
 
@@ -29,6 +29,9 @@ class BsrPlayPieces{
     #bsrPatrolBoatHorizontalContent;
     #bsrPatrolBoatVertical;
     #bsrPatrolBoatVerticalContent;
+
+    #playPiecesCount;
+
     #savePieces;
 
     constructor(){
@@ -73,6 +76,9 @@ class BsrPlayPieces{
         // be able to get useable pieces
         this.pieces = this.#getUseablePieces();
 
+        // get the number of playable pieces left
+        this.#playPiecesCount = {};
+
         // use this later on in case of needing to save draggable pieces
         this.#savePieces;
     }
@@ -113,8 +119,8 @@ class BsrPlayPieces{
         return useablePieces;
     }
 
-    getInternalsOfPiece(pieceName, rotation){
-        if(rotation == bsrGeneralInfo.horizontal){
+    getInternalsOfPiece(pieceName, pieceRotation){
+        if(pieceRotation == bsrGeneralInfo.horizontal){
             if(pieceName == bsrGridPieces.carrierHorizontal.name)
                 return this.#bsrCarrierHorizontalContent;
             if(pieceName == bsrGridPieces.battleshipHorizontal.name)
@@ -126,7 +132,7 @@ class BsrPlayPieces{
             if(pieceName == bsrGridPieces.patrolboatHorizontal.name)
                 return this.#bsrPatrolBoatHorizontalContent;
         }
-        if (rotation == bsrGeneralInfo.vertical){
+        if (pieceRotation == bsrGeneralInfo.vertical){
             if(pieceName == bsrGridPieces.carrierVertical.name)
                 return this.#bsrCarrierVerticalContent;
             if(pieceName == bsrGridPieces.battleshipVertical.name)
@@ -140,14 +146,62 @@ class BsrPlayPieces{
         }
     }
 
+    // get count of remaining pieces left to place on the game board
+    #setNumberOfPlayablePiecesLeft(){
+        let bsrPiecesLength = this.pieces.length;
+        for (var i = 0; i < bsrPiecesLength; i++){
+            this.#playPiecesCount[this.pieces[i].name] = this.pieces[i].count;
+        }
+    }
+
+    // return count of the number of playable pieces left
+    getNumberOfPlayablePiecesLeft(){
+        this.#setNumberOfPlayablePiecesLeft();
+        return this.#playPiecesCount;
+    }
+
+    // update the drag pieces that could be put on the grid
+    #updatePossiblePlaceablePieces(pieceRotation){
+        // create a string of all the useable pieces
+        let piecesCombined = {};
+        let currentPiece = '';
+        // if these pieces are going to be horizontal
+        if (pieceRotation == bsrGeneralInfo.horizontal){
+            this.pieces.every(piece => {
+                currentPiece = piece;
+                piecesCombined[piece.name] = piece[bsrGeneralInfo.horizontal];
+                return true;
+            });
+            // save pieces as playable placeable pieces
+            this.#savePlacementPieces(piecesCombined);
+        }
+        // if these pieces are going to be vertical
+        if (pieceRotation == bsrGeneralInfo.vertical){
+            // create a string of all the useable pieces
+            this.pieces.every(piece => {
+                currentPiece = piece;
+                piecesCombined[piece.name] = piece[bsrGeneralInfo.vertical];
+                return true;
+            });
+            // save pieces as playable placeable pieces
+            this.#savePlacementPieces(piecesCombined);
+        }
+    }
+
     // for saving grid pieces
-    savePlacementPieces(pieces){
-        this.#savePieces = pieces;
+    #savePlacementPieces(placeablePieces){
+        this.#savePieces = placeablePieces;
     }
 
     // for loading grid pieces
-    loadPlacementPieces(){
+    #loadPlacementPieces(pieceRotation){
+        this.#updatePossiblePlaceablePieces(pieceRotation);
         return this.#savePieces;
+    }
+
+    // get the unplaced pieces waiting to be placed on the board
+    getPlaceablePieces(pieceRotation){
+        return this.#loadPlacementPieces(pieceRotation)
     }
 
 }

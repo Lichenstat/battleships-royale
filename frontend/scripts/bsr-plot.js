@@ -6,18 +6,17 @@ import { bsrPlotProperties, bsrGridInternals } from "./bsr-config.js";
 
 export { BsrPlot }
 
-class BsrPlot{
+class BsrPlot extends CreateButton{
 
-    #gameButton;
     #enablePlotSquare;
     #disabledPlotSquare;
 
     constructor(){
-        this.#gameButton = new CreateButton();
-        this.#gameButton.setHTMLButtonProperties(bsrPlotProperties.classEnabled, bsrPlotProperties.id, bsrPlotProperties.type, bsrPlotProperties.enabled, bsrPlotProperties.internalText);
-        this.#enabledPlotSquare = this.#gameButton.getHTMLButton();
-        this.#gameButton.setHTMLButtonProperties(bsrPlotProperties.classDisabled, bsrPlotProperties.id, bsrPlotProperties.type, bsrPlotProperties.disabled, bsrPlotProperties.internalText);
-        this.#disabledPlotSquare = this.#gameButton.getHTMLButton();
+        super();
+        this.setHTMLButtonProperties(bsrPlotProperties.classEnabled, bsrPlotProperties.id, bsrPlotProperties.type, bsrPlotProperties.enabled, bsrPlotProperties.internalText);
+        this.#enabledPlotSquare = this.getHTMLButton();
+        this.setHTMLButtonProperties(bsrPlotProperties.classDisabled, bsrPlotProperties.id, bsrPlotProperties.type, bsrPlotProperties.disabled, bsrPlotProperties.internalText);
+        this.#disabledPlotSquare = this.getHTMLButton();
     }
 
     // get a enabled useable square plot to click

@@ -1,11 +1,11 @@
 // Methods for interacting with the players using grid pieces and grid (player interaction on clientside)
 
-export { BsrSetup };
-
 import { BsrGrid } from "./bsr-grid.js";
-import { PiecesData } from "./bsr-piecesdata.js";
+import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { Helper } from "./helper.js";
 import { bsrGridProperties, bsrGeneralInfo, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
+
+export { BsrSetup };
 
 class BsrSetup{
 
@@ -48,9 +48,9 @@ class BsrSetup{
     #willPieceBeRemoved;
     #pieceWasRemoved;
 
-    constructor(tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
+    constructor(piecesData = new BsrPiecesData(), tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
         // create and assign pieces objects to be used with the grid
-        this.#piecesData = new PiecesData();
+        this.#piecesData = piecesData;
         this.#piecesIdsAndInternals = [];
 
         this.#tableRowsCount = tableRowsCount;
@@ -391,7 +391,7 @@ class BsrSetup{
                 this.#setNewlyPlacedPiece();
             }
         }
-        this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse(this.#draggedOverGridPieceId));
+        this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
         console.log(this.#piecesData.getPieceDataTable());
     }
 

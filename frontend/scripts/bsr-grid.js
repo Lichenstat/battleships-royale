@@ -5,9 +5,8 @@ import { bsrGridProperties, bsrGridInternals } from "./bsr-config.js";
 
 export { BsrGrid }
 
-class BsrGrid{
+class BsrGrid extends CreateTable{
 
-    #gameTable;
     #gameGridDefault;
     #gamePlacementPlot;
     #gamePlacementTable;
@@ -17,14 +16,14 @@ class BsrGrid{
     #saveDragAndDropGrid;
 
     constructor(){
-        this.#gameTable = new CreateTable();
+        super();
         // default table that will be used
-        this.#gameTable.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, bsrGridProperties.content);
-        this.#gameGridDefault = this.#gameTable.getHTMLTable();
+        this.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, bsrGridProperties.content);
+        this.#gameGridDefault = this.getHTMLTable();
         // for creating a drag and drop table
         this.#gamePlacementPlot = Object.assign(bsrGridProperties.content , {'all' : bsrGridInternals.dragAndDrop});
-        this.#gameTable.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, this.#gamePlacementPlot);
-        this.#gamePlacementTable = this.#gameTable.getHTMLTable();
+        this.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, this.#gamePlacementPlot);
+        this.#gamePlacementTable = this.getHTMLTable();
 
         this.#currentGameGridDefault = this.#createGameGridDefault();
         this.#currentGameGridDragAndDrop = this.#createGameGridDragAndDrop();

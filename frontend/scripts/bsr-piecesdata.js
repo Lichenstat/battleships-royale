@@ -4,21 +4,18 @@ import { Helper } from './helper.js';
 import { BsrPlayPieces } from './bsr-playpieces.js';
 import { bsrGeneralInfo } from './bsr-config.js';
 
-export {PiecesData}
+export { BsrPiecesData }
 
-class PiecesData{
+class BsrPiecesData extends BsrPlayPieces{
 
-    #bsrPlayPieces;
-    #bsrPlayPiecesCount;
     #piecesDataTable;
     #piecesCounter;
 
     #horizontal;
     #vertical;
 
-    constructor(bsrPlayPieces = new BsrPlayPieces(), piecesDataTable = []){
-        this.#bsrPlayPieces = bsrPlayPieces;
-        this.#bsrPlayPiecesCount = {};
+    constructor(piecesDataTable = []){
+        super();
         this.#piecesDataTable = piecesDataTable;
 
         this.#piecesCounter = this.#piecesDataTable.length;
@@ -26,7 +23,6 @@ class PiecesData{
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
 
-        this.#setNumberOfPlayablePiecesLeft();
     }
 
     // return the pieces data table
@@ -36,13 +32,12 @@ class PiecesData{
 
     // get play pieces left
     getPlayPiecesLeft(){
-        return this.#bsrPlayPiecesCount;
+        return this.getNumberOfPlayablePiecesLeft();
     }
 
     // return placement pieces
     getPlacementPieces(rotation){
-        this.#updatePossiblePlaceablePieces(rotation);
-        return this.#bsrPlayPieces.loadPlacementPieces();
+        return this.getPlaceablePieces(rotation);
     }
 
     // reset ids of pieces in a pieces data table
@@ -58,7 +53,7 @@ class PiecesData{
     // return the desired piece from play pieces
     getPlayPieceTypeByName(pieceName){
         let desiredPiece = {};
-        this.#bsrPlayPieces.pieces.every(
+        this.pieces.every(
             boardPiece => {
                 if(pieceName == boardPiece.name){
                     desiredPiece = boardPiece;
@@ -96,7 +91,7 @@ class PiecesData{
     // get piece internals that would belong in the dragged piece
     getPieceInternals(pieceName, pieceRotation){
         let pieceInternals = [];
-        let internals = this.#bsrPlayPieces.getInternalsOfPiece(pieceName, pieceRotation);
+        let internals = this.getInternalsOfPiece(pieceName, pieceRotation);
         for(const [key, value] of Object.entries(internals)){
             pieceInternals.push(value);
         }
@@ -170,14 +165,6 @@ class PiecesData{
         return gridPiecesIds;
     }
 
-    // get count of remaining pieces left to place on the game board
-    #setNumberOfPlayablePiecesLeft(){
-        let bsrPiecesLength = this.#bsrPlayPieces.pieces.length;
-        for (var i = 0; i < bsrPiecesLength; i++){
-            this.#bsrPlayPiecesCount[this.#bsrPlayPieces.pieces[i].name] = this.#bsrPlayPieces.pieces[i].count;
-        }
-    }
-
     // remove an undesired piece from the pieces data table
     removePieceInDataTable(pieceId){
         let bsrPlayPiece = this.getPlayPieceTypeByDataTableId(pieceId);
@@ -193,7 +180,6 @@ class PiecesData{
         )
         this.#piecesCounter = this.#piecesCounter - 1;
         this.#resetIdsOfPiecesDataTable();
-        this.#setNumberOfPlayablePiecesLeft();
     }
 
     // relocate an already placed piece in the pieces data table
@@ -216,7 +202,6 @@ class PiecesData{
         this.#piecesCounter = this.#piecesCounter + 1;
         let bsrPlayPiece = this.getPlayPieceTypeByName(pieceName);
         bsrPlayPiece.count = bsrPlayPiece.count - 1;
-        this.#setNumberOfPlayablePiecesLeft();
     }
 
     // get the current board pieces ids and internals (presumably being used for replacing pieces in cells)
@@ -230,34 +215,6 @@ class PiecesData{
             collectedPieces.push([ids, internals]);
         }
         return collectedPieces;
-    }
-
-    // update the drag pieces that could be put on the grid
-    #updatePossiblePlaceablePieces(pieceRotation){
-        // create a string of all the useable pieces
-        let piecesCombined = {};
-        let currentPiece = '';
-        // if these pieces are going to be horizontal
-        if (pieceRotation == this.#horizontal){
-            this.#bsrPlayPieces.pieces.every(piece => {
-                currentPiece = piece;
-                piecesCombined[piece.name] = piece[this.#horizontal];
-                return true;
-            });
-            // save pieces as playable placeable pieces
-            this.#bsrPlayPieces.savePlacementPieces(piecesCombined);
-        }
-        // if these pieces are going to be vertical
-        if (pieceRotation == this.#vertical){
-            // create a string of all the useable pieces
-            this.#bsrPlayPieces.pieces.every(piece => {
-                currentPiece = piece;
-                piecesCombined[piece.name] = piece[this.#vertical];
-                return true;
-            });
-            // save pieces as playable placeable pieces
-            this.#bsrPlayPieces.savePlacementPieces(piecesCombined);
-        }
     }
 
 }

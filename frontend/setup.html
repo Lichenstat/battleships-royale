@@ -103,7 +103,7 @@
 
     </script>
     <script type="module">
-        import {BsrDragAndDropGrid} from "./scripts/bsr-draganddropgrid.js";
+        import {BsrGrids} from "./scripts/bsr-creategrids.js";
         import {Helper} from "./scripts/helper.js";
         import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
         import {BsrSetup} from "./scripts/bsr-setup.js";
@@ -129,7 +129,7 @@
 
 
         //--------------------------------------------------------------
-        let dragAndDropGrid = new BsrDragAndDropGrid();
+        let dragAndDropGrid = BsrGrids.getDragAndDropGrid();
         let gridElement = document.getElementById('test');
         let setup = new BsrSetup();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();

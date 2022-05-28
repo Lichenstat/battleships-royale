@@ -90,6 +90,7 @@ class BsrPlayPieces{
             for( let j = 1; j <= columnCount; j++){
                 let location = '(' + i + ',' + j + ')';
                 let newString = Helper.parsePartOfStringToReplace(bsrGridInternals.dragAndDropItem, 'bsr__boardpiece--', 'bsr__boardpiece--' + pieceName + '-' + location);
+                newString = Helper.parsePartOfStringToReplace(newString, 'src=""', 'src="./assets/mine.png"')// + pieceName + '-' + location + '.png"');
                 bsrPiecesContent[location] = newString;
             }
         }

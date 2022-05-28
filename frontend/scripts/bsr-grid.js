@@ -1,16 +1,13 @@
 // Class for creating and interacting with grids
 
-import { CreateTable } from "./create-table.js";
-
 export { BsrGrid }
 
-class BsrGrid extends CreateTable{
+class BsrGrid{
 
     #currentGameGrid;
     #saveGrid;
 
     constructor(grid){
-        super();
         // for setting a current game grid if there isnt one by default;
         this.#currentGameGrid = grid;
 

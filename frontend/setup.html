@@ -81,6 +81,10 @@
     <div class='test' id="test">
 
     </div>
+    <div id="testt">
+
+    </div>
+    <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
     </script>
@@ -103,7 +107,7 @@
 
     </script>
     <script type="module">
-        import {BsrGrids} from "./scripts/bsr-creategrids.js";
+        import {BsrCreateGrids} from "./scripts/bsr-creategrids.js";
         import {Helper} from "./scripts/helper.js";
         import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
         import {BsrSetup} from "./scripts/bsr-setup.js";
@@ -127,9 +131,11 @@
 
         //--------------------------------------------------------------
 
+        let buttonGrid = BsrCreateGrids.getButtonGrid();
+        document.getElementById("testt").innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
-        let dragAndDropGrid = BsrGrids.getDragAndDropGrid();
+        let dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid();
         let gridElement = document.getElementById('test');
         let setup = new BsrSetup();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();
@@ -193,10 +199,10 @@
 
         // event on the start of the drag
         document.addEventListener('dragstart', item => {
-            //console.log('ran dragstart');
+            console.log('ran dragstart');
             saveDragAndDropGrid();
-            if ((Helper.parseElementIdForMatrixLocation(item.target.id)).length == 2){
-                setup.setClickedPieceInfo(item.target);
+            if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
+                setup.setClickedPieceInfo(item.target.parentNode);
             }
         });
 
@@ -204,8 +210,18 @@
         document.addEventListener('dragover', item => {
             //console.log('ran dragover');
             dragging = true;
+            let setDraggedOver = false;
+            //console.log(item.target.parentNode.parentNode.parentNode)
             if(item.target.parentNode){
-                setup.setDraggedOverPieceInfo(item.target);
+                if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
+                    if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
+                        setup.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
+                        setDraggedOver = true;
+                    }
+                }
+                if(!setDraggedOver){
+                    setup.setDraggedOverPieceInfo(item.target);
+                }
                 setup.checkAndSetPieceLocations();
                 canPlacePiece = setup.canUseCurrentLocation();
                 //console.log('can place piece', canPlacePiece)

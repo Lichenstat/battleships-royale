@@ -48,12 +48,19 @@ const bsrGridInternals = {
     dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
     dragAndDropItemId : "bsr__boardpiece",
     dragAndDropItemClassName : "bsr__boardpiece",
-    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)">test drag</div>',
+    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)"><img class="bsr__boardimage" src=""></div>',
 
     // board button pieces
     boardButtonId : "bsr__boardbutton",
     boardButtonClass : "bsr__boardbutton",
-    boardButton : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button" disabled="false">*</button>'
+    boardButtonEnabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button"></button>',
+    boardButtonDisabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button" disabled></button>',
+
+    // player pieces
+    playerPieceId : "bsr__playerplot",
+    playerPieceClass : "bsr__playerplot",
+    //playerPiece : 
+
 }
 
 // for interacting with various grid pieces

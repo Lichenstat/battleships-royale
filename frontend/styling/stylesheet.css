@@ -72,6 +72,10 @@ body{
   /*border: 2px solid black;*/
 }
 
+.bsr__boardimage{
+  max-width: 100%;
+}
+
 .bsr__piececontainer{
   background-color: rosybrown;
 }

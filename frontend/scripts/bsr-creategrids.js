@@ -8,9 +8,9 @@ import { BsrPlayerGrid } from "./bsr-playergrid.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { bsrGridProperties, bsrGridInternals } from "./bsr-config.js";
 
-export { BsrGrids }
+export { BsrCreateGrids }
 
-class BsrGrids{
+class BsrCreateGrids{
 
     // method to return a default grid (mostly just used as a palceholder grid in this case)
     static getDefaultGrid(){
@@ -35,7 +35,7 @@ class BsrGrids{
     static getButtonGrid(){
         let table = new CreateTable();
         // for creating a game button table (user choice attacking enemy)
-        let gameButtonPlots = Object.assign(bsrGridProperties.content, {'all' : bsrGridInternals.boardButton});
+        let gameButtonPlots = Object.assign(bsrGridProperties.content, {'all' : bsrGridInternals.boardButtonEnabled});
         table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gameButtonPlots);
         let gameButtonTable = table.getHTMLTable();
         return new BsrButtonGrid(gameButtonTable);

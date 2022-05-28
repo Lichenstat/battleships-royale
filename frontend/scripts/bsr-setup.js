@@ -177,11 +177,6 @@ class BsrSetup{
 
     // get content that piece was dragged over
     setDraggedOverPieceInfo(piece){
-        // fix for highlighting squares on already placed pieces plots, refactor later
-        if (piece.id.includes(bsrGridInternals.dragAndDropItemId)){
-            piece = piece.parentNode;
-        }
-
         let pieceDirectId = piece.id;
         this.#draggedOverDirectId = pieceDirectId;
         

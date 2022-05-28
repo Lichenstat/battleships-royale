@@ -286,7 +286,7 @@ class BsrSetup{
                     // check and see if the overlap would go out of bounds or would be accidentally overlapping another seperate piece
                     this.#checkAndSetIfPieceLocationsAreInGridBoundries();
                     let overallPossibleOverlapLocations = this.#possiblePlacementLocations.concat(this.#usingPlacedPiece.locations);
-                    //console.log('checking placement locations', overallPossibleOverlapLocations);
+                    console.log('checking placement locations', overallPossibleOverlapLocations);
                     let overlappingPieces = this.#piecesData.getAllPiecesHavingDataTableOverlap(overallPossibleOverlapLocations);
                     //console.log('overlap', overlappingPieces);
                     (overlappingPieces.length < 2 && this.#canUpdatePieces ? this.#canUpdatePieces = true : this.#canUpdatePieces = false);

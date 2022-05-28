@@ -43,7 +43,11 @@ class BsrCreateGrids{
 
     // method to return a player grid with all the board pieces on it
     static getPlayerGrid(bsrPiecesData){
-        
+        let table = new CreateTable();
+        let gamePlayerPlots = Object.assign(bsrGridProperties.content, {'all' : bsrGridInternals.boardButtonEnabled});
+        table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gamePlayerPlots);
+        let gamePlayerTable = table.getHTMLTable();
+        return new BsrPlayerGrid(gamePlayerTable);
     }
 
     // method to create internals to use with the grid at hand

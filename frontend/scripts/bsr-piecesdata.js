@@ -194,13 +194,23 @@ class BsrPiecesData extends BsrPlayPieces{
         )
     }
 
+    // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
+    #checkIfPieceCanBeUsed(pieceName){
+        if (this.getNumberOfPlayablePiecesLeft()[pieceName] <= 0){
+            return false;
+        }
+        return true;
+    }
+
     // set the newly placed piece into the piece data table and increment the piece counter
     setNewlyPlacedPiece(pieceName, pieceRotation, pieceLocations){
-        let internals = this.getPieceInternals(pieceName, pieceRotation);
-        this.#piecesDataTable.push({'id' : this.#piecesCounter, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
-        this.#piecesCounter = this.#piecesCounter + 1;
-        let bsrPlayPiece = this.getPlayPieceTypeByName(pieceName);
-        bsrPlayPiece.count = bsrPlayPiece.count - 1;
+        if(this.#checkIfPieceCanBeUsed(pieceName)){
+            let internals = this.getPieceInternals(pieceName, pieceRotation);
+            this.#piecesDataTable.push({'id' : this.#piecesCounter, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
+            this.#piecesCounter = this.#piecesCounter + 1;
+            let bsrPlayPiece = this.getPlayPieceTypeByName(pieceName);
+            bsrPlayPiece.count = bsrPlayPiece.count - 1;
+        }
     }
 
     // get the current board pieces ids and internals (presumably being used for replacing pieces in cells)

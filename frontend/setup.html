@@ -93,16 +93,18 @@
 
         // set data to transfer over on the use of the drag and drop api
         function allowDropBoardPiece(event) {
-          event.preventDefault();
+            event.preventDefault();
         }
 
         function dragBoardPiece(event) {
-          event.dataTransfer.setData("text", event.target.id);
+            console.log(event.target.src);
+            //event.target.src = 'doodoo.png';
+            event.dataTransfer.setData("text", event.target.id);
         }
 
         function dropBoardPiece(event) {
-          event.preventDefault();
-          var data = event.dataTransfer.getData("text");
+            event.preventDefault();
+            var data = event.dataTransfer.getData("text");
         }
 
     </script>
@@ -135,9 +137,9 @@
         document.getElementById("testt").innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
-        let dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid();
-        let gridElement = document.getElementById('test');
         let setup = new BsrSetup();
+        let gridElement = document.getElementById('test');
+        let dragAndDropGrid = setup.getDragAndDropGrid();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();
 
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();

@@ -1,6 +1,6 @@
 // Methods for interacting with the players using grid pieces and grid (player interaction on clientside)
 
-import { BsrGrid } from "./bsr-grid.js";
+import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { Helper } from "./helper.js";
 import { bsrGridProperties, bsrGeneralInfo, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
@@ -11,11 +11,8 @@ class BsrSetup{
 
     #piecesData;
     #piecesIdsAndInternals;
+    #dragAndDropGrid;
 
-    #tableRowsCount;
-    #tableRowsOffset;
-    #tableColumnsCount;
-    #tableColumnsOffset;
     #pieceRotation;
     #horizontal;
     #vertical;
@@ -48,15 +45,12 @@ class BsrSetup{
     #willPieceBeRemoved;
     #pieceWasRemoved;
 
-    constructor(piecesData = new BsrPiecesData(), tableRowsCount = bsrGridProperties.rows - 1, tableColumnsCount = bsrGridProperties.columns - 1, pieceRotation = 'horizontal'){
+    constructor(piecesData = new BsrPiecesData(), dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid(), pieceRotation = 'horizontal'){
         // create and assign pieces objects to be used with the grid
         this.#piecesData = piecesData;
         this.#piecesIdsAndInternals = [];
+        this.#dragAndDropGrid = dragAndDropGrid;
 
-        this.#tableRowsCount = tableRowsCount;
-        this.#tableRowsOffset = Math.abs(this.#tableRowsCount - (bsrGridProperties.rows + Number(bsrGridProperties.tableHeadColumnCount > 0) + Number(bsrGridProperties.tableFootColumnCount > 0) + 1));
-        this.#tableColumnsCount = tableColumnsCount;
-        this.#tableColumnsOffset = Math.abs(this.#tableColumnsCount - (bsrGridProperties.columns + 1));
         this.#pieceRotation = pieceRotation;
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
@@ -101,6 +95,10 @@ class BsrSetup{
     // a return to see if the current location can be used
     canUseCurrentLocation(){
         return this.#canUpdatePieces;
+    }
+
+    getDragAndDropGrid(){
+        return this.#dragAndDropGrid;
     }
 
     // return currently used table
@@ -190,13 +188,6 @@ class BsrSetup{
         //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
-    // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
-    #checkIfPieceCanBeUsed(){
-        if (this.#desiredPiecesType.count <= 0){
-            this.#canUpdatePieces = false;
-        }
-    }
-
     // simply check if a piece was already placed on the board (we will have to update the pieces new location then)---
     #checkIfPieceWasAlreadyPlaced(){
         this.#isUsingPlacedPiece = false;
@@ -215,14 +206,15 @@ class BsrSetup{
             this.#pieceRotation = this.#usingPlacedPiece.rotation;
             //this.#updatePossiblePieces();
         }
-        this.#checkAndSetIfPieceLocationsAreInGridBoundries();
+        this.#setDraggedPieceFirstAndLastLocations();
+        this.#checkIfPieceFitsOnGrid();
         this.#setPossiblePlacementLocations();
         this.#pieceRotation = oldRotation;
         //this.#updatePossiblePieces();
     }
 
-    // check if a piece location can be in the grid
-    #checkAndSetIfPieceLocationsAreInGridBoundries(){
+    // set the dragged pieces first and last locations
+    #setDraggedPieceFirstAndLastLocations(){
         var draggedPieceFirstLocationMatch;
         var draggedPieceLastLocationMatch;
         if (this.#pieceRotation == this.#horizontal){
@@ -231,10 +223,6 @@ class BsrSetup{
             // corresponds to the actual table locations
             draggedPieceFirstLocationMatch = this.#draggedOverGridPiece[1] - this.#draggedPieceClickedLocation[1] + 1;
             draggedPieceLastLocationMatch = this.#draggedOverGridPiece[1] + (this.#desiredPiecesType.size - Number(this.#draggedPieceClickedLocation[1]));
-            //console.log('piece first location', draggedPieceFirstLocationMatch,'piece last location', draggedPieceLastLocationMatch);
-            if (draggedPieceFirstLocationMatch < this.#tableColumnsOffset || draggedPieceLastLocationMatch > this.#tableColumnsCount + bsrGridProperties.columnsIndexSize){
-                this.#canUpdatePieces = false;
-            }
             this.#draggedPieceFirstLocation = [this.#draggedOverGridPiece[0], draggedPieceFirstLocationMatch];
             this.#draggedPieceLastLocation = [this.#draggedOverGridPiece[0], draggedPieceLastLocationMatch];
             //console.log(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation);
@@ -243,13 +231,19 @@ class BsrSetup{
             // find starting positions
             draggedPieceFirstLocationMatch = this.#draggedOverGridPiece[0] - this.#draggedPieceClickedLocation[0] + 1;
             draggedPieceLastLocationMatch = this.#draggedOverGridPiece[0] + (this.#desiredPiecesType.size - this.#draggedPieceClickedLocation[0]);
-            //console.log('piece first location', draggedPieceFirstLocationMatch,'piece last location', draggedPieceLastLocationMatch);
-            if (draggedPieceFirstLocationMatch < this.#tableRowsOffset || draggedPieceLastLocationMatch > this.#tableRowsCount + bsrGridProperties.rowsNameAndIndexSize){
-                this.#canUpdatePieces = false;
-            }
             this.#draggedPieceFirstLocation = [draggedPieceFirstLocationMatch, this.#draggedOverGridPiece[1]];
             this.#draggedPieceLastLocation = [draggedPieceLastLocationMatch, this.#draggedOverGridPiece[1]];
             //console.log(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation);
+        }
+    }
+
+    // check if a piece fits on the drag and drop grid or not
+    #checkIfPieceFitsOnGrid(){
+        if(this.#usingPlacedPiece){
+            this.#canUpdatePieces = this.#dragAndDropGrid.checkIfPieceLocationsAreInGridBoundries(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation, this.#usingPlacedPiece.rotation);
+        }
+        else{
+            this.#canUpdatePieces = this.#dragAndDropGrid.checkIfPieceLocationsAreInGridBoundries(this.#draggedPieceFirstLocation, this.#draggedPieceLastLocation, this.#pieceRotation);
         }
     }
 
@@ -284,9 +278,9 @@ class BsrSetup{
                 // if the overlap is coming from the same placed piece that we are dragging
                 if(isSamePiece){
                     // check and see if the overlap would go out of bounds or would be accidentally overlapping another seperate piece
-                    this.#checkAndSetIfPieceLocationsAreInGridBoundries();
+                    this.#checkIfPieceFitsOnGrid();
                     let overallPossibleOverlapLocations = this.#possiblePlacementLocations.concat(this.#usingPlacedPiece.locations);
-                    console.log('checking placement locations', overallPossibleOverlapLocations);
+                    //console.log('checking placement locations', overallPossibleOverlapLocations);
                     let overlappingPieces = this.#piecesData.getAllPiecesHavingDataTableOverlap(overallPossibleOverlapLocations);
                     //console.log('overlap', overlappingPieces);
                     (overlappingPieces.length < 2 && this.#canUpdatePieces ? this.#canUpdatePieces = true : this.#canUpdatePieces = false);
@@ -315,7 +309,14 @@ class BsrSetup{
         if (this.#draggedOverPieceClassName.includes(bsrGridInternals.dragAndDropClassName)){
             this.#setPieceClassName = this.#draggedOverPieceClassName + 'disabled';
             if (this.#canUpdatePieces){
-                this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
+                // if we are using an already placed piece
+                if(this.#isUsingPlacedPiece){
+                    this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
+                }
+                // if we are using a piece that has not been placed and there are still possible pieces that can be placed
+                if(!this.#isUsingPlacedPiece && this.#piecesData.getPlayPiecesLeft()[this.#draggedPieceName] > 0){
+                    this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
+                }
             }
         }
         else{
@@ -334,7 +335,6 @@ class BsrSetup{
             // get the desired piece type for checking and setting
             this.#desiredPiecesType = this.#piecesData.getPlayPieceTypeByName(this.#draggedPieceName);
             this.#draggedPieceInternals = this.#piecesData.getPieceInternals(this.#draggedPieceName, this.#pieceRotation);
-            this.#checkIfPieceCanBeUsed();
             this.#checkIfPieceWasAlreadyPlaced();
             this.#checkAndSetRotationAndLocationsOfChosenPiece();
             this.#draggedPieceIds = this.#piecesData.getCreateIdsOfTableLocations(this.#draggedOverGridPieceId, this.#possiblePlacementLocations);

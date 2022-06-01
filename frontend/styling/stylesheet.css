@@ -33,12 +33,17 @@ body{
 }
 
 .bsr__placementplot{
-  height: 50px;
   width: 50px;
+  height: 50px;
   /*display: block;*/
   /*border-collapse: collapse;*/
   background-color: lightgrey;
   /*border: 2px solid black;*/
+}
+
+.bsr__playerplot{
+  width: 50px;
+  height: 50px;
 }
 
 .bsr__placementplot--enabled{

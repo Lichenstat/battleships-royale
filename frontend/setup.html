@@ -83,6 +83,7 @@
     <div id="testt">
 
     </div>
+    <div id="testtt"><button id="bsr__generateplayertable">generate player table</button></div>
     <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
@@ -189,9 +190,7 @@
         
         let testt = document.getElementById("testt");
         let buttonGrid = BsrCreateGrids.getButtonGrid();
-        testt.innerHTML = buttonGrid.getGrid();
-
-        testt.innerHTML
+        //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
         let setup = new BsrSetup();
@@ -350,6 +349,13 @@
             removedPreviousPiece = false;
         });
 
+
+        document.addEventListener('click', item => {
+            if(item.target.id == "bsr__generateplayertable"){
+                let playerGrid = BsrCreateGrids.getPlayerGrid(setup.getPiecesDataTable())
+                document.getElementById("testtt").innerHTML = playerGrid.getGrid();
+            }
+        })
 
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();

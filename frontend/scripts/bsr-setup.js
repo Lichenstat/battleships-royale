@@ -97,6 +97,12 @@ class BsrSetup{
         return this.#canUpdatePieces;
     }
 
+    // get the pieces data table
+    getPiecesDataTable(){
+        return this.#piecesData.getPieceDataTable();
+    }
+
+    // get the drag and drop grid of the drag and drop table
     getDragAndDropGrid(){
         return this.#dragAndDropGrid;
     }

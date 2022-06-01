@@ -52,15 +52,15 @@ const bsrGridInternals = {
 
     // board button pieces
     boardButtonId : "bsr__boardbutton",
-    boardButtonClass : "bsr__boardbutton",
+    boardButtonClassName : "bsr__boardbutton",
     boardButtonEnabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button"></button>',
     boardButtonDisabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button" disabled></button>',
 
     // player pieces
-    playerPieceId : "bsr__playerplot",
-    playerPieceClass : "bsr__playerplot",
-    //playerPiece : 
-
+    playerPieceId : 'bsr__playerplot',
+    playerPieceClassName : 'bsr__playerplot',
+    playerPieceEmpty : '<div class="bsr__playerplot bsr__playerplot--" id="bsr__playerplot"><img class="bsr__boardimage" src=""></div>',
+    playerPieceBlankImage : '<img class="bsr__boardimage" src="">'
 }
 
 // for interacting with various grid pieces

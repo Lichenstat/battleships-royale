@@ -43,18 +43,34 @@ class BsrCreateGrids{
 
     // method to return a player grid with all the board pieces on it
     static getPlayerGrid(bsrPiecesData = new BsrPiecesData()){
+        let positionPlotPieces = {};
+        let piecesInfo = bsrPiecesData;
+        let piecesInfoLength = Object.keys(piecesInfo).length;
+        // get our internals to which we will set the players board pieces to
+        for (var i = 0; i < piecesInfoLength; i++){
+            let locationsLength = piecesInfo[i].locations.length;
+            for (var j = 0; j < locationsLength; j++){
+                let data = piecesInfo[i];
+                let location = data.locations[j];
+                let internal = data.internals[j];
+                location = '(' + location[0] + ',' + location[1] + ')';
+                // remove draggable features and assign player class and id attributes
+                internal = internal.replace(/ draggable=\"true\"/g, '').toString();
+                internal = internal.replace(/ ondragstart=\"dragBoardPiece\(event\)\"/g, '').toString();
+                internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemClassName ,"g"), bsrGridInternals.playerPieceClassName).toString();
+                internal = internal.replace(/(?=<\/div>)/g, bsrGridInternals.playerPieceBlankImage)
+                positionPlotPieces[location] = internal;
+            }
+        }
+        // combine placed player plot pieces with regular player plot pieces
+        let combinedPlotPieces = Object.assign(positionPlotPieces, { "all" : bsrGridInternals.playerPieceEmpty});
+        console.log(positionPlotPieces);
         let table = new CreateTable();
-        let gamePlayerPlots = Object.assign(bsrGridProperties.content, {'all' : bsrGridInternals.boardButtonEnabled});
+        let gamePlayerPlots = Object.assign(bsrGridProperties.content, combinedPlotPieces);
         table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gamePlayerPlots);
         let gamePlayerTable = table.getHTMLTable();
         return new BsrPlayerGrid(gamePlayerTable, bsrPiecesData);
     }
-
-    // method to create internals to use with the grid at hand
-    static #createGridInternals(){
-
-    }
-
 
 }
 

@@ -7,7 +7,6 @@
     <!--<meta name="author" content="SitePoint">-->
     <!--<base href=".">-->
     <link href="./styling/stylesheet.css" rel="stylesheet" />
-</head>
 <body>
     <div class='bsr'>
         <div class='bsr__nav'>
@@ -91,14 +90,69 @@
     -->
     <script>
 
+        // pre load all required whole ship scaled pieces
+        let carrierh = new Image();    carrierh.src    = "./assets/board-pieces/horizontal/whole/carrierscaled.png";
+        let carrierv = new Image();    carrierv.src    = "./assets/board-pieces/vertical/whole/carrierscaled.png";
+        let battleshiph = new Image(); battleshiph.src = "./assets/board-pieces/horizontal/whole/battleshipscaled.png";
+        let battleshipv = new Image(); battleshipv.src = "./assets/board-pieces/vertical/whole/battleshipscaled.png";
+        let destroyerh = new Image();  destroyerh.src  = "./assets/board-pieces/horizontal/whole/destroyerscaled.png";
+        let destroyerv = new Image();  destroyerv.src  = "./assets/board-pieces/vertical/whole/destroyerscaled.png";
+        let submarineh = new Image();  submarineh.src  = "./assets/board-pieces/horizontal/whole/submarinescaled.png";
+        let submarinev = new Image();  submarinev.src  = "./assets/board-pieces/vertical/whole/submarinescaled.png";
+        let patrolboath = new Image(); patrolboath.src = "./assets/board-pieces/horizontal/whole/patrolboatscaled.png";
+        let patrolboatv = new Image(); patrolboatv.src = "./assets/board-pieces/vertical/whole/patrolboatscaled.png";
+
+        // function to get the proper desired src string
+        function getImageSrc(pieceName, rotation){
+            if(rotation == 'horizontal'){
+                if(pieceName == 'carrier')    return carrierh;
+                if(pieceName == 'battleship') return battleshiph;
+                if(pieceName == 'destroyer')  return destroyerh;
+                if(pieceName == 'submarine')  return submarineh;
+                if(pieceName == 'patrolboat') return patrolboath;
+            }
+            if(rotation == 'vertical'){
+                if(pieceName == 'carrier')    return carrierv;
+                if(pieceName == 'battleship') return battleshipv;
+                if(pieceName == 'destroyer')  return destroyerv;
+                if(pieceName == 'submarine')  return submarinev;
+                if(pieceName == 'patrolboat') return patrolboatv;
+            }
+        }
+
+
         // set data to transfer over on the use of the drag and drop api
         function allowDropBoardPiece(event) {
             event.preventDefault();
         }
 
+        // on dragging of the board piece
         function dragBoardPiece(event) {
-            console.log(event.target.src);
-            //event.target.src = 'doodoo.png';
+            // get location of image to later show whole piece being picked up
+            let imgLocation = event.target.src;
+            let imgString = imgLocation.match(/[^\/]+(?=\.png)/g);
+            // get string location of image to properly show image in relation to mouse cursor adjustment
+            let imgAdjust = imgString.toString().match(/\(.*\)/g);
+            imgAdjust = imgAdjust.toString().replace(/\(|\)/g, '');
+            var imgXAdjust = imgAdjust.toString().replace(/.+,/g, '');
+            var imgYAdjust = imgAdjust.toString().match(/.+(?=,)/g).toString();
+            //console.log(imgXAdjust, imgYAdjust);
+            // set piece location to adjust to match mouse cliciked piece location
+            if(imgXAdjust == 1){
+                imgXAdjust = 50;
+                imgYAdjust = (imgYAdjust * 100) - 50;
+            }
+            if(imgYAdjust == 1){
+                imgXAdjust = (imgXAdjust * 100) - 50;
+                imgYAdjust = 50;
+            }
+            //console.log(imgXAdjust, imgYAdjust);
+            // get piece name and rotation
+            let imgRotation = imgLocation.toString().match(/horizontal(?=\/)|vertical(?=\/)/g).toString();
+            let imgPieceName = imgString.toString().replace(/-.*/g, '').toString();
+            //console.log(imgRotation, imgPieceName);
+            let img = getImageSrc(imgPieceName, imgRotation);
+            event.dataTransfer.setDragImage(img, imgXAdjust/2, imgYAdjust/2);
             event.dataTransfer.setData("text", event.target.id);
         }
 
@@ -132,9 +186,12 @@
         }
 
         //--------------------------------------------------------------
-
+        
+        let testt = document.getElementById("testt");
         let buttonGrid = BsrCreateGrids.getButtonGrid();
-        document.getElementById("testt").innerHTML = buttonGrid.getGrid();
+        testt.innerHTML = buttonGrid.getGrid();
+
+        testt.innerHTML
 
         //--------------------------------------------------------------
         let setup = new BsrSetup();
@@ -201,7 +258,7 @@
 
         // event on the start of the drag
         document.addEventListener('dragstart', item => {
-            console.log('ran dragstart');
+            //console.log('ran dragstart');
             saveDragAndDropGrid();
             if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
                 setup.setClickedPieceInfo(item.target.parentNode);

@@ -362,7 +362,7 @@ class BsrSetup{
         this.#piecesData.relocatePlacedPieceInDataTable(this.#usingPlacedPiece.id, this.#possiblePlacementLocations);
     }
 
-    // set the newly placed piece into the piece data table and increment the piece counter---
+    // set the newly placed piece into the piece data table
     #setNewlyPlacedPiece(){
         this.#piecesData.setNewlyPlacedPiece(this.#draggedPieceName, this.#pieceRotation, this.#possiblePlacementLocations);
     }

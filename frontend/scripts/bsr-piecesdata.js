@@ -194,8 +194,8 @@ class BsrPiecesData extends BsrPlayPieces{
         )
     }
 
-    // simply check if the count of the piece in pieces is greater than 0 (meaning they can place more of these pieces)
-    #checkIfPieceCanBeUsed(pieceName){
+    // simply check if the count of the playable piece in pieces is greater than 0 (meaning they can place more of these pieces)
+    #checkIfPieceHasPlayablesLeft(pieceName){
         if (this.getNumberOfPlayablePiecesLeft()[pieceName] <= 0){
             return false;
         }
@@ -204,7 +204,7 @@ class BsrPiecesData extends BsrPlayPieces{
 
     // set the newly placed piece into the piece data table and increment the piece counter
     setNewlyPlacedPiece(pieceName, pieceRotation, pieceLocations){
-        if(this.#checkIfPieceCanBeUsed(pieceName)){
+        if(this.#checkIfPieceHasPlayablesLeft(pieceName)){
             let internals = this.getPieceInternals(pieceName, pieceRotation);
             this.#piecesDataTable.push({'id' : this.#piecesCounter, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
             this.#piecesCounter = this.#piecesCounter + 1;

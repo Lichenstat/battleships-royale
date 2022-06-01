@@ -17,7 +17,7 @@ class BsrDragAndDropGrid extends BsrGrid{
     }
 
     // check if a piece location can be in the drag and drop grid
-    checkIfPieceLocationsAreInGridBoundries(firstLocation, lastLocation, rotation){
+    checkIfPieceLocationsAreInGridBoundries(firstLocation = [0,0], lastLocation = [0,0], rotation = bsrGeneralInfo.horizontal){
         var draggedPieceFirstLocationMatch;
         var draggedPieceLastLocationMatch;
         if (rotation == this.#horizontal){

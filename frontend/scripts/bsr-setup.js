@@ -343,6 +343,7 @@ class BsrSetup{
             this.#draggedPieceInternals = this.#piecesData.getPieceInternals(this.#draggedPieceName, this.#pieceRotation);
             this.#checkIfPieceWasAlreadyPlaced();
             this.#checkAndSetRotationAndLocationsOfChosenPiece();
+            // set our grid piece ids for various purposes
             this.#draggedPieceIds = this.#piecesData.getCreateIdsOfTableLocations(this.#draggedOverGridPieceId, this.#possiblePlacementLocations);
             if (!this.#gridPieceLocationChecked && this.#isUsingPlacedPiece){
                 this.#gridPieceIds = this.#piecesData.getCreateIdsOfTableLocations(this.#gridPieceClickedId, this.#usingPlacedPiece.locations);

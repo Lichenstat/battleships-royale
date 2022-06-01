@@ -121,7 +121,6 @@
             }
         }
 
-
         // set data to transfer over on the use of the drag and drop api
         function allowDropBoardPiece(event) {
             event.preventDefault();
@@ -200,6 +199,7 @@
 
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
 
+        // temporary to put all the pieces together for now
         let combinedPieces = function(){
             let combined = '';
             let pieces = setup.getUpdatedRotatedPieces();
@@ -209,24 +209,28 @@
             return combined;
         }
 
+        // update the drag and drop pieces that can be put on the grid
         let gridUpdateDragAndDrop = function(){
             document.getElementById("bsr__piecesshell").innerHTML = combinedPieces();
         }
 
+        // load a blank drag and drop grid
         let loadBlankGrid = function(){
             gridElement.innerHTML = blankDragAndDropGrid;
         }
 
+        // sabe the grid of the current drag and drop table
         let saveDragAndDropGrid = function(){
             dragAndDropGrid.saveGrid(gridElement.innerHTML);
         }
 
+        // reload the drag and drop grid
         let reloadDragAndDropGrid = function(){
             gridElement.innerHTML = dragAndDropGrid.loadGrid();
         };
 
+        // load a blank grid and place all the set pieces from the pieces data table
         let loadSetPieces = function(){
-            //loadRemover;
             loadBlankGrid();
                 let piecesAndPlacement = setup.getPiecesIdsAndInternals();
                 //console.log(piecesAndPlacement);
@@ -240,8 +244,34 @@
                 }
         }
 
+        // remove the last piece/highlighting on the board under some sort of circumstance
+        let removePreviousPiece = function(){
+            let previousPlacement = setup.getPlacedPieceIds();
+            //console.log('previous placement',previousPlacement);
+            if(previousPlacement){
+                var previousPlacementLength = previousPlacement.length;
+                for (var i = 0; i < previousPlacementLength; i++){
+                    document.getElementById(previousPlacement[i]).innerHTML = dragAndDropGrid.getDragAndDropCleanInternal();
+                }
+            }
+        }
+
+        // update the plots being dragged over with highlighting using the grid ids generated
+        let loadHighlighting = function(){
+            let currentPlacement = setup.getDraggedPieceIdsAndInternals();
+            let currentClassName = setup.getDraggedOverPieceClassName();
+            //console.log(currentPlacement);
+            let placementLength = currentPlacement[0].length;
+            for (var i = 0; i < placementLength; i++){
+                if(document.getElementById(currentPlacement[0][i]) != null){
+                    if(document.getElementById(currentPlacement[0][i]).children[0] != undefined)
+                        document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
+                }
+            }
+        }
+
+        // some things initially placed to set up the various game objects
         gridUpdateDragAndDrop();
-        //console.log(setup);
         loadBlankGrid();
         document.getElementById('bsr__rotate').onclick = () => {
             console.log('clicked');
@@ -285,30 +315,14 @@
                 //console.log('can place piece', canPlacePiece)
                 // if we havent removed previous pieces on pickup of a board piece on the grid
                 if (!removedPreviousPiece){
-                    let previousPlacement = setup.getPlacedPieceIds();
-                    //console.log('previous placement',previousPlacement);
-                    if(previousPlacement){
-                        var previousPlacementLength = previousPlacement.length;
-                        for (var i = 0; i < previousPlacementLength; i++){
-                            document.getElementById(previousPlacement[i]).innerHTML = dragAndDropGrid.getDragAndDropCleanInternal();
-                        }
-                    }
+                    removePreviousPiece();
                     // set a temporary grid with the chosen piece removed to show for display
                     tempGrid = gridElement.innerHTML;
                     removedPreviousPiece = true;
                 }
                 // to update the last pieces we plan on placing on the grid
                 if (removedPreviousPiece){
-                    let currentPlacement = setup.getDraggedPieceIdsAndInternals();
-                    let currentClassName = setup.getDraggedOverPieceClassName();
-                    //console.log(currentPlacement);
-                    let placementLength = currentPlacement[0].length;
-                    for (var i = 0; i < placementLength; i++){
-                        if(document.getElementById(currentPlacement[0][i]) != null){
-                            if(document.getElementById(currentPlacement[0][i]).children[0] != undefined)
-                                document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
-                        }
-                    }
+                    loadHighlighting();
                 }
             }
         });

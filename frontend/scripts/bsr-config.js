@@ -39,7 +39,6 @@ const bsrGridPieces = {
     patrolboatVertical : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-vertical', id: 'bsr__table--patrolboat', rows : 2, columns : 1, content : '' },
 }
 
-
 // for the various grid internals
 const bsrGridInternals = {
     // drag and drop pieces
@@ -48,6 +47,8 @@ const bsrGridInternals = {
     dragAndDrop : '<div class="bsr__placementplot bsr__placementplot--" id="bsr__placementplot" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
     dragAndDropItemId : "bsr__boardpiece",
     dragAndDropItemClassName : "bsr__boardpiece",
+    dragAndDropItemAttributeDraggable : ' draggable="true"',
+    dragAndDropItemAttributeOndragstart : ' ondragstart="dragBoardPiece\\(event\\)"',
     dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)"><img class="bsr__boardimage" src=""></div>',
 
     // board button pieces

@@ -98,8 +98,8 @@ class BsrSetup{
     }
 
     // get the pieces data table
-    getPiecesDataTable(){
-        return this.#piecesData.getPieceDataTable();
+    getPiecesData(){
+        return this.#piecesData;
     }
 
     // get the drag and drop grid of the drag and drop table
@@ -394,7 +394,7 @@ class BsrSetup{
             }
         }
         this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
-        console.log(this.#piecesData.getPieceDataTable());
+        console.log(this.#piecesData.getPiecesDataTable());
     }
 
 }

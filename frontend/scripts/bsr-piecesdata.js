@@ -25,7 +25,7 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // return the pieces data table
-    getPieceDataTable(){
+    getPiecesDataTable(){
         return this.#piecesDataTable;
     }
 

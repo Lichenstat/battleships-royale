@@ -44,7 +44,7 @@ class BsrCreateGrids{
     // method to return a player grid with all the board pieces on it
     static getPlayerGrid(bsrPiecesData = new BsrPiecesData()){
         let positionPlotPieces = {};
-        let piecesInfo = bsrPiecesData;
+        let piecesInfo = bsrPiecesData.getPiecesDataTable();
         let piecesInfoLength = Object.keys(piecesInfo).length;
         // get our internals to which we will set the players board pieces to
         for (var i = 0; i < piecesInfoLength; i++){
@@ -62,13 +62,16 @@ class BsrCreateGrids{
                 positionPlotPieces[location] = internal;
             }
         }
-        // combine placed player plot pieces with regular player plot pieces
-        let combinedPlotPieces = Object.assign(positionPlotPieces, { "all" : bsrGridInternals.playerPieceEmpty});
-        console.log(positionPlotPieces);
+        // make regular plot pieces
+        let gamePlayerPlots = Object.assign(bsrGridProperties.content, { "all" : bsrGridInternals.playerPieceEmpty});
+        //console.log(gamePlayerPlots);
         let table = new CreateTable();
-        let gamePlayerPlots = Object.assign(bsrGridProperties.content, combinedPlotPieces);
-        table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gamePlayerPlots);
+        // combine with chosen player pieces
+        let gamePlayerPlotsChosen = Object.assign(positionPlotPieces, gamePlayerPlots);
+        //console.log(gamePlayerPlotsChosen);
+        table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gamePlayerPlotsChosen);
         let gamePlayerTable = table.getHTMLTable();
+        //console.log(gamePlayerTable);
         return new BsrPlayerGrid(gamePlayerTable, bsrPiecesData);
     }
 

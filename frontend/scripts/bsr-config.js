@@ -49,7 +49,7 @@ const bsrGridInternals = {
     dragAndDropItemClassName : "bsr__boardpiece",
     dragAndDropItemAttributeDraggable : ' draggable="true"',
     dragAndDropItemAttributeOndragstart : ' ondragstart="dragBoardPiece\\(event\\)"',
-    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)"><img class="bsr__boardimage" src=""></div>',
+    dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)"><img class="bsr__pieceimage" id="bsr__pieceimage" src=""></div>',
 
     // board button pieces
     boardButtonId : "bsr__boardbutton",
@@ -60,8 +60,8 @@ const bsrGridInternals = {
     // player pieces
     playerPieceId : 'bsr__playerplot',
     playerPieceClassName : 'bsr__playerplot',
-    playerPieceEmpty : '<div class="bsr__playerplot bsr__playerplot--" id="bsr__playerplot"><img class="bsr__boardimage" src=""></div>',
-    playerPieceBlankImage : '<img class="bsr__boardimage" src="">'
+    playerPieceEmpty : '<div class="bsr__playerplot bsr__playerplot--" id="bsr__playerplot"><img class="bsr__pieceimage" id="bsr__pieceimage" src=""><img class="bsr__outcomeimage" id="bsr__outcomeimage" src=""></div>',
+    playerPieceBlankImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">'
 }
 
 // for interacting with various grid pieces

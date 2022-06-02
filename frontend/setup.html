@@ -84,6 +84,7 @@
 
     </div>
     <div id="testtt"><button id="bsr__generateplayertable">generate player table</button></div>
+    
     <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
@@ -163,10 +164,9 @@
 
     </script>
     <script type="module">
-        import {BsrCreateGrids} from "./scripts/bsr-creategrids.js";
         import {Helper} from "./scripts/helper.js";
-        import {BsrPlayPieces} from "./scripts/bsr-playpieces.js";
         import {BsrSetup} from "./scripts/bsr-setup.js";
+        import {BsrPlay} from "./scripts/bsr-play.js";
 
         //--------------------------------------------------------------
         let joinGame = document.getElementById('bsr__join');
@@ -188,14 +188,19 @@
         //--------------------------------------------------------------
         
         let testt = document.getElementById("testt");
-        let buttonGrid = BsrCreateGrids.getButtonGrid();
+        //let buttonGrid = BsrCreateGrids.getButtonGrid();
         //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
-        let setup = new BsrSetup();
         let gridElement = document.getElementById('test');
+        
+        let setup = new BsrSetup();
         let dragAndDropGrid = setup.getDragAndDropGrid();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();
+
+        let playing = new BsrPlay();
+        let playerGrid = playing.getPlayerGrid();
+        let buttonGrid = playing.getButtonsGrid().getGrid();
 
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
 
@@ -217,6 +222,17 @@
         // load a blank drag and drop grid
         let loadBlankGrid = function(){
             gridElement.innerHTML = blankDragAndDropGrid;
+        }
+
+        // load the player grid with all the pieces
+        let loadPlayerGrid = function(){
+            playerGrid = playing.getPlayerGrid();
+            gridElement.innerHTML = playerGrid.getGrid();
+        }
+
+        // load the buttons table with all the buttons
+        let loadButtonTable = function(){
+            // fill in with html element here later
         }
 
         // sabe the grid of the current drag and drop table
@@ -363,13 +379,23 @@
             removedPreviousPiece = false;
         });
 
-
+        // check items on event click
         document.addEventListener('click', item => {
             if(item.target.id == "bsr__generateplayertable"){
-                let playerGrid = BsrCreateGrids.getPlayerGrid(setup.getPiecesDataTable())
-                document.getElementById("testtt").innerHTML = playerGrid.getGrid();
+                console.log('making player table');
+                document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
+                playing = new BsrPlay(setup.getPiecesData());
+                loadPlayerGrid();
+                setup = null;
             }
-        })
+            if(item.target.id == "bsr__generateplacementgrid"){
+                console.log('making drag and drop table');
+                document.getElementById('testtt').innerHTML = '<button id="bsr__generateplayertable">generate player grid</button>';
+                setup = new BsrSetup();
+                loadBlankGrid();
+                playing = null;
+            }
+        });
 
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();

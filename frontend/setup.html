@@ -77,7 +77,7 @@
     <div id="bsr__remover">
 
     </div>
-    <div class='test' id="test">
+    <div class="bsr__gridplacement" id="bsr__gridplacement">
 
     </div>
     <div id="testt">
@@ -192,7 +192,7 @@
         //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
-        let gridElement = document.getElementById('test');
+        let gridElement = document.getElementById("bsr__gridplacement");
         
         let setup = new BsrSetup();
         let dragAndDropGrid = setup.getDragAndDropGrid();
@@ -200,7 +200,7 @@
 
         let playing = new BsrPlay();
         let playerGrid = playing.getPlayerGrid();
-        let buttonGrid = playing.getButtonsGrid().getGrid();
+        let buttonGrid = playing.getButtonsGrid();
 
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
 
@@ -225,9 +225,9 @@
         }
 
         // load the player grid with all the pieces
-        let loadPlayerGrid = function(){
+        let loadPlayerGrids = function(){
             playerGrid = playing.getPlayerGrid();
-            gridElement.innerHTML = playerGrid.getGrid();
+            gridElement.innerHTML = playerGrid.getGrid() + buttonGrid.getGrid();
         }
 
         // load the buttons table with all the buttons
@@ -295,8 +295,11 @@
             gridUpdateDragAndDrop();
         }
 
-        let canPlacePiece;
-        let removedPreviousPiece;
+        //-------------------------------------------------------------------------
+        // for grid and pieces using drag and drop
+
+        let canPlacePiece = false;
+        let removedPreviousPiece = false;;
         let tempGrid;
         var time = 10;
         let dragging = false;
@@ -304,41 +307,45 @@
         // event on the start of the drag
         document.addEventListener('dragstart', item => {
             //console.log('ran dragstart');
-            saveDragAndDropGrid();
-            if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
-                setup.setClickedPieceInfo(item.target.parentNode);
+            if (setup != null){
+                saveDragAndDropGrid();
+                if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
+                    setup.setClickedPieceInfo(item.target.parentNode);
+                }
             }
         });
 
         // event to take place on dragging over container pieces
         document.addEventListener('dragover', item => {
             //console.log('ran dragover');
-            dragging = true;
-            let setDraggedOver = false;
-            //console.log(item.target.parentNode.parentNode.parentNode)
-            if(item.target.parentNode){
-                if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
-                    if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
-                        setup.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
-                        setDraggedOver = true;
+            if (setup != null){
+                dragging = true;
+                let setDraggedOver = false;
+                //console.log(item.target.parentNode.parentNode.parentNode)
+                if(item.target.parentNode){
+                    if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
+                        if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
+                            setup.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
+                            setDraggedOver = true;
+                        }
                     }
-                }
-                if(!setDraggedOver){
-                    setup.setDraggedOverPieceInfo(item.target);
-                }
-                setup.checkAndSetPieceLocations();
-                canPlacePiece = setup.canUseCurrentLocation();
-                //console.log('can place piece', canPlacePiece)
-                // if we havent removed previous pieces on pickup of a board piece on the grid
-                if (!removedPreviousPiece){
-                    removePreviousPiece();
-                    // set a temporary grid with the chosen piece removed to show for display
-                    tempGrid = gridElement.innerHTML;
-                    removedPreviousPiece = true;
-                }
-                // to update the last pieces we plan on placing on the grid
-                if (removedPreviousPiece){
-                    loadHighlighting();
+                    if(!setDraggedOver){
+                        setup.setDraggedOverPieceInfo(item.target);
+                    }
+                    setup.checkAndSetPieceLocations();
+                    canPlacePiece = setup.canUseCurrentLocation();
+                    //console.log('can place piece', canPlacePiece)
+                    // if we havent removed previous pieces on pickup of a board piece on the grid
+                    if (!removedPreviousPiece){
+                        removePreviousPiece();
+                        // set a temporary grid with the chosen piece removed to show for display
+                        tempGrid = gridElement.innerHTML;
+                        removedPreviousPiece = true;
+                    }
+                    // to update the last pieces we plan on placing on the grid
+                    if (removedPreviousPiece){
+                        loadHighlighting();
+                    }
                 }
             }
         });
@@ -346,48 +353,58 @@
         // if the piece leaves any droppable position, we will have to reload the grid with the temporary grid
         document.addEventListener('dragleave', item => {
             //console.log('ran dragleave');
-            dragging = false;
-            removedPreviousPiece = false;
-            //console.log(setup.getDraggedPieceLocation());
-            //console.log(canPlacePiece);
-            if (!canPlacePiece || !Helper.checkIfArraysAreEqual(setup.getDraggedPieceLocation(), [0,0])){
-                    gridElement.innerHTML = tempGrid;
-                    // set a small timer to check if we have stopped dragging the piece or not
-                    setTimeout(() => {
-                        if (!dragging){
-                            reloadDragAndDropGrid();
-                        }
-                    }, time)
+            if (setup != null){
+                dragging = false;
+                removedPreviousPiece = false;
+                //console.log(setup.getDraggedPieceLocation());
+                //console.log(canPlacePiece);
+                if (!canPlacePiece || !Helper.checkIfArraysAreEqual(setup.getDraggedPieceLocation(), [0,0])){
+                        gridElement.innerHTML = tempGrid;
+                        // set a small timer to check if we have stopped dragging the piece or not
+                        setTimeout(() => {
+                            if (!dragging){
+                                reloadDragAndDropGrid();
+                            }
+                        }, time)
+                }
             }
         });
 
         // on the drop of the piece
         document.addEventListener('drop', item => {
-            setup.removePieceIfNeeded();
-            setup.setPieceLocationsAndCount();
-            document.getElementById("bsr__count").innerHTML = setup.getNumberOfPlayablePiecesLeft().patrolboat;
-            console.log(setup.getNumberOfPlayablePiecesLeft());
-            gridUpdateDragAndDrop();
-            if(!canPlacePiece){
-                console.log('using old table');
-                reloadDragAndDropGrid();
+            //console.log('ran drop');
+            if (setup != null){
+                setup.removePieceIfNeeded();
+                setup.setPieceLocationsAndCount();
+                document.getElementById("bsr__count").innerHTML = setup.getNumberOfPlayablePiecesLeft().patrolboat;
+                console.log(setup.getNumberOfPlayablePiecesLeft());
+                gridUpdateDragAndDrop();
+                if(!canPlacePiece){
+                    console.log('using old table');
+                    reloadDragAndDropGrid();
+                }
+                if(canPlacePiece || setup.checkIfPieceWasRemoved()){
+                    loadSetPieces();
+                }
+                dragging = true;
+                removedPreviousPiece = false;
             }
-            if(canPlacePiece || setup.checkIfPieceWasRemoved()){
-                loadSetPieces();
-            }
-            dragging = true;
-            removedPreviousPiece = false;
         });
 
+        //-------------------------------------------------------------------------
+        // for game evenets (choosing square, player turns, etc.)
+
         // check items on event click
+        // set the game to playing phase
         document.addEventListener('click', item => {
             if(item.target.id == "bsr__generateplayertable"){
                 console.log('making player table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
                 playing = new BsrPlay(setup.getPiecesData());
-                loadPlayerGrid();
+                loadPlayerGrids();
                 setup = null;
             }
+            // set up the game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplayertable">generate player grid</button>';
@@ -395,7 +412,19 @@
                 loadBlankGrid();
                 playing = null;
             }
+            
+            // get information from the clicked player button
+            if(item.target.id == "bsr__boardbutton"){
+                console.log(item.target);
+                playing.setClickedButtonInfo(item.target);
+                let pieces = playing.getPiecesForUpdating();
+                console.log(pieces);
+                item.target.parentNode.innerHTML = pieces.button;
+                playing.testRuntime();
+            }
         });
+
+        //-------------------------------------------------------------------------
 
         //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
         //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();

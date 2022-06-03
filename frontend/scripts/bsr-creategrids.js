@@ -58,7 +58,7 @@ class BsrCreateGrids{
                 internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemAttributeDraggable, 'g'), '').toString();
                 internal = internal.replace(new RegExp( bsrGridInternals.dragAndDropItemAttributeOndragstart, 'g'), '').toString();
                 internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemClassName ,"g"), bsrGridInternals.playerPieceClassName).toString();
-                internal = internal.replace(/(?=<\/div>)/g, bsrGridInternals.playerPieceBlankImage)
+                internal = internal.replace(/(?=<\/div>)/g, bsrGridInternals.playerPieceBlankOutcomeImage)
                 positionPlotPieces[location] = internal;
             }
         }

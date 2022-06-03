@@ -3,7 +3,7 @@
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { Helper } from "./helper.js";
-import { bsrGridProperties, bsrGeneralInfo, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
+import { bsrGeneralInfo, bsrPieceInteractors, bsrGridInternals } from "./bsr-config.js";
 
 export { BsrSetup };
 

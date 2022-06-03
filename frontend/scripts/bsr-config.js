@@ -22,7 +22,7 @@ const bsrGridProperties = {
 // general info for bsr stuff
 const bsrGeneralInfo = {
     horizontal : 'horizontal',
-    vertical : 'vertical',
+    vertical : 'vertical'
 }
 
 // for information on play pieces
@@ -50,18 +50,25 @@ const bsrGridInternals = {
     dragAndDropItemAttributeDraggable : ' draggable="true"',
     dragAndDropItemAttributeOndragstart : ' ondragstart="dragBoardPiece\\(event\\)"',
     dragAndDropItem : '<div class="bsr__boardpiece bsr__boardpiece--" id="bsr__boardpiece--" draggable="true" ondragstart="dragBoardPiece(event)"><img class="bsr__pieceimage" id="bsr__pieceimage" src=""></div>',
+    dragAndDropItemImageId : "bsr__pieceimage",
+    dragAndDropItemImage : '<img class="bsr__pieceimage" id="bsr__pieceimage" src="">',
 
     // board button pieces
     boardButtonId : "bsr__boardbutton",
     boardButtonClassName : "bsr__boardbutton",
     boardButtonEnabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button"></button>',
-    boardButtonDisabled : '<button class="bsr__boardbutton bsr__boardbutton--enabled" id="bsr__boardbutton" type="button" disabled></button>',
+    boardButtonDisabled : '<button class="bsr__boardbutton bsr__boardbutton--disabled" id="bsr__boardbutton" type="button" disabled><img class="bsr__pieceimage" id="bsr__pieceimage" src=""><img class="bsr__outcomeimage" id="bsr__outcomeimage" src=""></button>',
 
     // player pieces
     playerPieceId : 'bsr__playerplot',
     playerPieceClassName : 'bsr__playerplot',
     playerPieceEmpty : '<div class="bsr__playerplot bsr__playerplot--" id="bsr__playerplot"><img class="bsr__pieceimage" id="bsr__pieceimage" src=""><img class="bsr__outcomeimage" id="bsr__outcomeimage" src=""></div>',
-    playerPieceBlankImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">'
+    playerPieceOutcomeImageId: "bsr__outcomeimage",
+    playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
+
+    // src for certain images
+    missImage : "./assets/board-pieces/outcome/miss.png",
+    hitImage : "./assets/board-pieces/outcome/hit.png"
 }
 
 // for interacting with various grid pieces

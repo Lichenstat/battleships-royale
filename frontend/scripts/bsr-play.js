@@ -1,5 +1,6 @@
 // class to have various play methods to check for in the game
 
+import { bsrGeneralInfo } from "./bsr-config.js";
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { Helper } from "./helper.js";
@@ -9,21 +10,41 @@ export { BsrPlay };
 class BsrPlay{
 
     #piecesData;
+    #setupInfo;
+    #currentPlayInfo;
+
     #playerGrid;
     #buttonGrid;
+    #hitImg;
+    #missImg;
 
     #playerNumber;
-    #playerTurn;
-    #playerDisabled;
 
-    constructor(piecesData = new BsrPiecesData(), playerNumber = 0){
+    #clickedParentId;
+    #clickedLocation;
+    
+    
+    #playerTurn;
+    #gameover;
+
+    constructor(piecesData = new BsrPiecesData()){
         this.#piecesData = piecesData;
+        this.#setupInfo = {playerNumber : 1}
+        this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], pieceHit : false, pieceName : "" , pieceLocations : [], gameover : false}
+        //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], pieceHit : false, pieceName : "" , pieceLocations : [], gameover : false}
+
         this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#piecesData);
         this.#buttonGrid = BsrCreateGrids.getButtonGrid();
+        this.#hitImg = bsrGeneralInfo.hitImage;
+        this.#missImg = bsrGeneralInfo.missImage;
 
-        this.#playerNumber  = playerNumber;
+        this.#playerNumber  = this.#setupInfo.playerNumber;
+
+        this.#clickedParentId = "";
+        this.#clickedLocation = this.#currentPlayInfo.pieceClicked;
+        
         this.#playerTurn = false;
-        this.#playerDisabled = true;
+        this.#gameover = this.#currentPlayInfo.gameover;
 
         this.testreturn1 = { playerNumber : 0, pieceClicked : [0,0], pieceName : "" , pieceLocations : [], gameover : false}
         this.testreturn2 = { playerNumber : 1, pieceClicked : [0,0], pieceName : "" , pieceLocations : [], gameover : false}
@@ -40,17 +61,60 @@ class BsrPlay{
         return this.#buttonGrid;
     }
 
-    // set what turn it is for the player
-    setPlayerTurn(turn){
-
+    // get the button based on a hit or miss
+    #getHitOrMissedButton(){
+        if (this.#currentPlayInfo.pieceHit){
+            return this.#buttonGrid.getGridButtonEnabled();
+        }
+        if (!this.#currentPlayInfo.pieceHit){
+            return this.#buttonGrid.getGridButtonDisabled();
+        }
     }
 
-    // check if the player has hit an enemy piece or not
-    checkIfHit(){
-
+    // return the proper outcome for the given button
+    getPiecesForUpdating(){
+        let properButton = this.#getHitOrMissedButton()
+        return {button : properButton}
     }
 
-    isGameOver(){
+    // initial game setup on player join
+    setInitialGameInfo(setupInfo = this.#setupInfo){
+        this.#setupInfo = setupInfo;
+        this.#playerNumber = this.#setupInfo.playerNumber;
+    }
+
+    // set the updated information for the current play move
+    setUpdateInfo(updatedInfo = this.#currentPlayInfo){
+        this.#currentPlayInfo = updatedInfo;
+    }
+
+    // set information about the clicked button
+    setClickedButtonInfo(button){
+        if(this.#playerTurn){
+            if(!button.disabled){
+                console.log('got ehre');
+                this.#clickedParentId = button.parentNode.id;
+                this.#clickedLocation = Helper.parseElementIdForMatrixLocation(this.#clickedParentId);
+                //console.log(this.#clickedParentId, this.#clickedLocation);
+            }
+        }
+    }
+
+    // set what turn it is for playing
+    #setPlayerTurn(){
+        if(this.#playerNumber == this.#currentPlayInfo.playerTurn){
+            this.#playerTurn = true;
+        }
+        else{
+            this.#playerTurn = false;
+        }
+    }
+
+    testRuntime(){
+        this.#setPlayerTurn();
+    }
+
+    overallRuntime(){
 
     }
 }

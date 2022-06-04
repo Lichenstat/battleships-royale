@@ -395,6 +395,7 @@
         // for game evenets (choosing square, player turns, etc.)
 
         // check items on event click
+        
         // set the game to playing phase
         document.addEventListener('click', item => {
             if(item.target.id == "bsr__generateplayertable"){
@@ -404,6 +405,7 @@
                 loadPlayerGrids();
                 setup = null;
             }
+
             // set up the game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');

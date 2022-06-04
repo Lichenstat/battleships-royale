@@ -3,6 +3,7 @@
 import { bsrGeneralInfo } from "./bsr-config.js";
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
+import { BsrPlayParse } from "./bsr-playparse.js";
 import { Helper } from "./helper.js";
 
 export { BsrPlay };
@@ -73,7 +74,7 @@ class BsrPlay{
 
     // return the proper outcome for the given button
     getPiecesForUpdating(){
-        let properButton = this.#getHitOrMissedButton()
+        let properButton = this.#getHitOrMissedButton();
         return {button : properButton}
     }
 
@@ -86,13 +87,13 @@ class BsrPlay{
     // set the updated information for the current play move
     setUpdateInfo(updatedInfo = this.#currentPlayInfo){
         this.#currentPlayInfo = updatedInfo;
+        this.#setPlayerTurn();
     }
 
     // set information about the clicked button
     setClickedButtonInfo(button){
         if(this.#playerTurn){
             if(!button.disabled){
-                console.log('got ehre');
                 this.#clickedParentId = button.parentNode.id;
                 this.#clickedLocation = Helper.parseElementIdForMatrixLocation(this.#clickedParentId);
                 //console.log(this.#clickedParentId, this.#clickedLocation);
@@ -112,6 +113,8 @@ class BsrPlay{
 
     testRuntime(){
         this.#setPlayerTurn();
+        let m = BsrPlayParse.convertLocationPieceToRawLocation([3,2]);
+        console.log(m);
     }
 
     overallRuntime(){

@@ -38,7 +38,7 @@ class BsrDragAndDropGrid extends BsrGrid{
             draggedPieceLastLocationMatch = lastLocation[0];
             //console.log('piece first location', draggedPieceFirstLocationMatch,'piece last location', draggedPieceLastLocationMatch);
             if (draggedPieceFirstLocationMatch < this.getTableRowsOffset() || draggedPieceLastLocationMatch > this.getTableRowsCount() + this.getTableRowsAndNameIndexSize()){
-                console.log('cannot use piece');
+                //console.log('cannot use piece');
                 return false;
             }
             return true;

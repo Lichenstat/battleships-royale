@@ -109,6 +109,7 @@ class BsrPlayPieces{
         return { carrier : this.#bsrCarrierVertical, battleship : this.#bsrBattleshipVertical, destroyer : this.#bsrDestroyerVertical, submarine : this.#bsrSubmarineVertical, patrolboat : this.#bsrPatrolBoatVertical};
     }
 
+    // get the useable pieces
     #getUseablePieces(){
         let horizontalPlayPieces = this.#getPiecesHorizontal();
         let verticalPlayPieces = this.#getPiecesVertical();
@@ -122,6 +123,12 @@ class BsrPlayPieces{
         return useablePieces;
     }
 
+    // reset the pieces object
+    resetPieces(){
+        this.pieces = this.#getUseablePieces();
+    }
+    
+    // get the internals of a specific piece
     getInternalsOfPiece(pieceName, pieceRotation){
         if(pieceRotation == bsrGeneralInfo.horizontal){
             if(pieceName == bsrGridPieces.carrierHorizontal.name)

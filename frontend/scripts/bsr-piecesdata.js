@@ -1,15 +1,15 @@
 // class with methods to be used when interacting with bsr pieces data
 
-import { Helper } from './helper.js';
+import { BsrDragAndDropGrid } from './bsr-draganddropgrid.js';
 import { BsrPlayPieces } from './bsr-playpieces.js';
 import { bsrGeneralInfo } from './bsr-config.js';
+import { Helper } from './helper.js';
 
 export { BsrPiecesData }
 
 class BsrPiecesData extends BsrPlayPieces{
 
     #piecesDataTable;
-    #piecesCounter;
 
     #horizontal;
     #vertical;
@@ -17,8 +17,6 @@ class BsrPiecesData extends BsrPlayPieces{
     constructor(){
         super();
         this.#piecesDataTable = [];
-
-        this.#piecesCounter = this.#piecesDataTable.length;
 
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
@@ -47,6 +45,13 @@ class BsrPiecesData extends BsrPlayPieces{
                 return true;
             }
         )
+    }
+
+    // clear the pieces data table and reset pieces back to default state
+    #clearPiecesDataTable(){
+        this.#piecesDataTable = [];
+        this.#resetIdsOfPiecesDataTable()
+        this.resetPieces();
     }
 
     // return the desired piece from play pieces
@@ -177,7 +182,6 @@ class BsrPiecesData extends BsrPlayPieces{
                 return true;
             }
         )
-        this.#piecesCounter = this.#piecesCounter - 1;
         this.#resetIdsOfPiecesDataTable();
     }
 
@@ -203,18 +207,87 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // set the newly placed piece into the piece data table and increment the piece counter
-    setNewlyPlacedPiece(pieceName, pieceRotation, pieceLocations){
+    setNewlyPlacedPiece(pieceName = '', pieceRotation = this.#horizontal, pieceLocations = [0,0]){
         if(this.#checkIfPieceHasPlayablesLeft(pieceName)){
             let internals = this.getPieceInternals(pieceName, pieceRotation);
-            this.#piecesDataTable.push({'id' : this.#piecesCounter, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
-            this.#piecesCounter = this.#piecesCounter + 1;
+            this.#piecesDataTable.push({'id' : this.#piecesDataTable.length, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
             let bsrPlayPiece = this.getPlayPieceTypeByName(pieceName);
             bsrPlayPiece.count = bsrPlayPiece.count - 1;
         }
     }
 
+    // get random parts for a given piece to be selected
+    #getPieceRandomParts(){
+        let bsrGrid = new BsrDragAndDropGrid();
+        var rotation = Helper.getRandomInteger();
+        if(rotation){
+            rotation = this.#horizontal;
+        }
+        else{
+            rotation = this.#vertical;
+        }
+        var rowMin = bsrGrid.getTableRowsOffset();
+        var rowMax = rowMin + (bsrGrid.getTableRowsCount() - 1);
+        var rowIndex = Helper.getRandomInteger(rowMin, rowMax);
+        var columnMin = bsrGrid.getTableColumnsOffset();
+        var columnMax = columnMin + (bsrGrid.getTableColumnsCount() - 1);
+        var columnIndex = Helper.getRandomInteger(columnMin, columnMax);
+        return {rotation : rotation, location : [rowIndex, columnIndex]}
+    }
+
+    // get possible piece locations in accordance to first piece
+    getPiecePossibleLocations(pieceName = this.pieces[0].name, firstPieceLocation = [0,0], rotation = this.#horizontal){
+        let pieceLocations = [];
+        let piece = this.getPlayPieceTypeByName(pieceName);
+        //checking if given piece can be placed in horizontally
+        if (rotation == this.#horizontal){
+            var size = piece.size + firstPieceLocation[1];
+            for(var i = firstPieceLocation[1]; i < size; i++){
+                pieceLocations.push([firstPieceLocation[0], i]);
+            }
+        }
+        //checking if given piece can be placed in vertically
+        if (rotation == this.#vertical){
+            var size = piece.size + firstPieceLocation[0];
+            for(var i = firstPieceLocation[0]; i < size; i++){
+                pieceLocations.push([i, firstPieceLocation[1]]);
+            }
+        }
+        //console.log(pieceLocations);
+        return pieceLocations;
+    }
+
+    // set random pieces into the pieces data table
+    setPiecesRandom(){
+        if(!Helper.accumulateObjectValues(this.getPlayPiecesLeft())){
+            this.#clearPiecesDataTable();
+        }
+        let bsrGrid = new BsrDragAndDropGrid();
+        let iterate = 0;
+        let size = this.pieces.length;
+        // while we havent gone through all the pieces
+        while(iterate < size){
+            let pieceName = this.pieces[iterate].name;
+            // while there are pieces of this type yet still to be placed
+            while (this.pieces[iterate].count > 0){
+                let parts = this.#getPieceRandomParts();
+                //console.log(parts);
+                let locations = this.getPiecePossibleLocations(this.pieces[iterate].name, parts.location, parts.rotation);
+                //console.log(locations);
+                let fits = bsrGrid.checkIfPieceLocationsAreInGridBoundries(locations[0], locations[locations.length - 1], parts.rotation);
+                let overlap = this.getPieceHavingDataTableOverlap(locations);
+                // if the piece does fit, put it in the pieces data table
+                if (fits && !overlap){
+                    this.setNewlyPlacedPiece(pieceName, parts.rotation, locations);
+                }
+            }
+            iterate = iterate + 1;
+        }
+        //console.log(this.#piecesDataTable)
+    }
+
     // get the current board pieces ids and internals (presumably being used for replacing pieces in cells)
-    getPiecesWithIdsAndInternals(attributeIdWithCellLocation){
+    getPiecesWithIdsAndInternals(attributeIdWithCellLocation = "some__example-(0,0)"){
         let collectedPieces = [];
         var piecesDataTableLength = this.#piecesDataTable.length;
         for (var i = 0; i < piecesDataTableLength; i++){

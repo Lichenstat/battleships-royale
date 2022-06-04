@@ -74,9 +74,8 @@
             </div>
         </div>
     </div>
-    <div id="bsr__remover">
-
-    </div>
+    <div id="bsr__remover"> </div>
+    <button id="bsr__placepiecerandomly">Randomly Put Pieces</button>
     <div class="bsr__gridplacement" id="bsr__gridplacement">
 
     </div>
@@ -195,6 +194,7 @@
         let gridElement = document.getElementById("bsr__gridplacement");
         
         let setup = new BsrSetup();
+        setup.setDefaultDraggedOverId("bsr__table-cell-(0,0)");
         let dragAndDropGrid = setup.getDragAndDropGrid();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();
 
@@ -395,9 +395,17 @@
         // for game evenets (choosing square, player turns, etc.)
 
         // check items on event click
-        
+
         // set the game to playing phase
         document.addEventListener('click', item => {
+
+            // randomly place pieces on the placement grid
+            if(item.target.id == "bsr__placepiecerandomly"){
+                setup.setRandomPieces();
+                loadSetPieces();
+            }
+
+            // set up the player table
             if(item.target.id == "bsr__generateplayertable"){
                 console.log('making player table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';

@@ -26,6 +26,8 @@ class BsrSetup{
     #draggedPieceFirstLocation;
     #draggedPieceLastLocation;
 
+    #defaultDraggedOverId;
+
     #gridPieceClickedId;
     #gridPieceIds;
     #gridPieceClickedLocation;
@@ -63,6 +65,8 @@ class BsrSetup{
         this.#draggedPieceClickedLocation = [];
         this.#draggedPieceFirstLocation = [];
         this.#draggedPieceLastLocation = [];
+
+        this.#defaultDraggedOverId = 'bsr__table-cell-(0,0)';
         
         this.#gridPieceClickedId = '';
         this.#gridPieceIds = [];
@@ -162,6 +166,11 @@ class BsrSetup{
         return this.#pieceWasRemoved;
     }
 
+    // set default dragged over id as a backup id
+    setDefaultDraggedOverId(defaultId = "example__id-(0,0)"){
+        this.#defaultDraggedOverId = defaultId;
+    }
+
     // set clicked piece content
     setClickedPieceInfo(piece){
         let pieceDraggedId = piece.id;
@@ -255,22 +264,7 @@ class BsrSetup{
 
     // set the placement locations of the piece in correspondence to the grid
     #setPossiblePlacementLocations(){
-        let pieceLocations = [];
-        //checking if given piece can be placed in horizontally
-        if (this.#pieceRotation == this.#horizontal){
-            var size = this.#desiredPiecesType.size + this.#draggedPieceFirstLocation[1];
-            for(var i = this.#draggedPieceFirstLocation[1]; i < size; i++){
-                pieceLocations.push([this.#draggedOverGridPiece[0], i]);
-            }
-        }
-        //checking if given piece can be placed in vertically
-        if (this.#pieceRotation == this.#vertical){
-            var size = this.#desiredPiecesType.size + this.#draggedPieceFirstLocation[0];
-            for(var i = this.#draggedPieceFirstLocation[0]; i < size; i++){
-                pieceLocations.push([i, this.#draggedOverGridPiece[1]]);
-            }
-        }
-        //console.log(pieceLocations);
+        let pieceLocations = this.#piecesData.getPiecePossibleLocations(this.#desiredPiecesType.name, this.#draggedPieceFirstLocation, this.#pieceRotation);
         this.#possiblePlacementLocations = pieceLocations;
     }
 
@@ -395,6 +389,13 @@ class BsrSetup{
         }
         this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
         console.log(this.#piecesData.getPiecesDataTable());
+    }
+
+    // set pieces randomly into the pieces data table
+    setRandomPieces(){
+        this.#piecesData.setPiecesRandom();
+        this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
+        this.setPieceLocationsAndCount();
     }
 
 }

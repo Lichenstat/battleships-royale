@@ -64,6 +64,11 @@ class Helper{
         return text;
     }
 
+    // accumulate all object values into a single value
+    static accumulateObjectValues(object = new Object()){
+        return Object.values(object).reduce((a, b) => a + b);
+    }
+
     // parse an element id for a location inside a matrix
     // (assumes between parenthesis, ex: (14,7))
     static parseElementIdForMatrixLocation(id){
@@ -165,6 +170,11 @@ class Helper{
             }
         }
         return finalArray;
+    }
+
+    // get a random integer between a min and a max
+    static getRandomInteger(min = 0, max = 1){
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
     }
 
 }

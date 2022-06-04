@@ -1,7 +1,6 @@
 // class having parsing options for the various data going in and coming out
 
 import { BsrGrid } from "./bsr-grid.js";
-import { Helper } from "./helper.js";
 
 export {BsrPlayParse}
 

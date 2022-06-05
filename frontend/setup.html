@@ -134,8 +134,8 @@
             // get string location of image to properly show image in relation to mouse cursor adjustment
             let imgAdjust = imgString.toString().match(/\(.*\)/g);
             imgAdjust = imgAdjust.toString().replace(/\(|\)/g, '');
-            var imgXAdjust = imgAdjust.toString().replace(/.+,/g, '');
-            var imgYAdjust = imgAdjust.toString().match(/.+(?=,)/g).toString();
+            let imgXAdjust = imgAdjust.toString().replace(/.+,/g, '');
+            let imgYAdjust = imgAdjust.toString().match(/.+(?=,)/g).toString();
             //console.log(imgXAdjust, imgYAdjust);
             // set piece location to adjust to match mouse cliciked piece location
             if(imgXAdjust == 1){
@@ -156,9 +156,10 @@
             event.dataTransfer.setData("text", event.target.id);
         }
 
+        // on dropping board piece
         function dropBoardPiece(event) {
             event.preventDefault();
-            var data = event.dataTransfer.getData("text");
+            let data = event.dataTransfer.getData("text");
         }
 
     </script>
@@ -198,11 +199,10 @@
         let dragAndDropGrid = setup.getDragAndDropGrid();
         let blankDragAndDropGrid = dragAndDropGrid.getGrid();
 
-        let playing = new BsrPlay();
-        let playerGrid = playing.getPlayerGrid();
-        let buttonGrid = playing.getButtonsGrid();
-
         let loadRemover = document.getElementById("bsr__remover").innerHTML = setup.getPieceRemover();
+
+        //-------------------------------------------------------------------------
+        // for grid and pieces using drag and drop
 
         // temporary to put all the pieces together for now
         let combinedPieces = function(){
@@ -224,17 +224,6 @@
             gridElement.innerHTML = blankDragAndDropGrid;
         }
 
-        // load the player grid with all the pieces
-        let loadPlayerGrids = function(){
-            playerGrid = playing.getPlayerGrid();
-            gridElement.innerHTML = playerGrid.getGrid() + buttonGrid.getGrid();
-        }
-
-        // load the buttons table with all the buttons
-        let loadButtonTable = function(){
-            // fill in with html element here later
-        }
-
         // sabe the grid of the current drag and drop table
         let saveDragAndDropGrid = function(){
             dragAndDropGrid.saveGrid(gridElement.innerHTML);
@@ -250,11 +239,11 @@
             loadBlankGrid();
                 let piecesAndPlacement = setup.getPiecesIdsAndInternals();
                 //console.log(piecesAndPlacement);
-                var piecesAndPlacementLength = piecesAndPlacement.length;
-                for (var i = 0; i < piecesAndPlacementLength; i++){
+                let piecesAndPlacementLength = piecesAndPlacement.length;
+                for (let i = 0; i < piecesAndPlacementLength; i++){
                     let piece = piecesAndPlacement[i];
-                    var pieceLength = piece[0].length;
-                    for (var j = 0; j < pieceLength; j++){
+                    let pieceLength = piece[0].length;
+                    for (let j = 0; j < pieceLength; j++){
                         document.getElementById(piece[0][j]).children[0].innerHTML = piece[1][j];
                     }
                 }
@@ -265,8 +254,8 @@
             let previousPlacement = setup.getPlacedPieceIds();
             //console.log('previous placement',previousPlacement);
             if(previousPlacement){
-                var previousPlacementLength = previousPlacement.length;
-                for (var i = 0; i < previousPlacementLength; i++){
+                let previousPlacementLength = previousPlacement.length;
+                for (let i = 0; i < previousPlacementLength; i++){
                     document.getElementById(previousPlacement[i]).innerHTML = dragAndDropGrid.getDragAndDropCleanInternal();
                 }
             }
@@ -278,7 +267,7 @@
             let currentClassName = setup.getDraggedOverPieceClassName();
             //console.log(currentPlacement);
             let placementLength = currentPlacement[0].length;
-            for (var i = 0; i < placementLength; i++){
+            for (let i = 0; i < placementLength; i++){
                 if(document.getElementById(currentPlacement[0][i]) != null){
                     if(document.getElementById(currentPlacement[0][i]).children[0] != undefined)
                         document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
@@ -295,13 +284,10 @@
             gridUpdateDragAndDrop();
         }
 
-        //-------------------------------------------------------------------------
-        // for grid and pieces using drag and drop
-
         let canPlacePiece = false;
         let removedPreviousPiece = false;;
         let tempGrid;
-        var time = 10;
+        let time = 10;
         let dragging = false;
 
         // event on the start of the drag
@@ -392,7 +378,15 @@
         });
 
         //-------------------------------------------------------------------------
-        // for game evenets (choosing square, player turns, etc.)
+        // for playing events (choosing square, player turns, etc.)
+
+        let playing = new BsrPlay();
+
+        let waitForEnemyTurn = function(){
+            setTimeout(() => {
+
+            }, 1000);
+        }
 
         // check items on event click
 
@@ -410,7 +404,11 @@
                 console.log('making player table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
                 playing = new BsrPlay(setup.getPiecesData());
-                loadPlayerGrids();
+                playing.loadPlayingGrids(gridElement);
+                playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode)
+                playing.setEventListenersOfGridButtons();
+                //var x = () => {return 2};
+                //playing.testRuntime1(x);
                 setup = null;
             }
 
@@ -423,31 +421,16 @@
                 playing = null;
             }
             
-            // get information from the clicked player button
-            if(item.target.id == "bsr__boardbutton"){
-                console.log(item.target);
-                playing.setClickedButtonInfo(item.target);
-                let pieces = playing.getPiecesForUpdating();
-                console.log(pieces);
-                item.target.parentNode.innerHTML = pieces.button;
-                playing.testRuntime();
-            }
+            //// get information from the clicked player button
+            //if(item.target.id == "bsr__boardbutton"){
+            //    console.log(item.target);
+            //    playing.setClickedButtonInfo(item.target);
+            //    playing.setButtonDisabled();
+            //}
+
         });
 
         //-------------------------------------------------------------------------
-
-        //bsrPlot.onclick = function(){console.log(grid.onGridPositionClicked(bsrPlot.id))}
-        //document.getElementById('testi__cell-(2,2)').innerHTML = testbutton.getHTMLButton();
-        //console.log(document.getElementById('generic-button__button').parentElement.id);
-        //document.getElementById('test').innerHTML = Helper.getObjectInfo(testtable);
-        //console.log(Helper.parseElementIdForMatrixLocation(document.getElementById('testi__cell-(1,1)').id));
-        //let testObj1 = {'one': 1, 'objectouter': {'objectinner': {}, 'three': 3}, 'two': 2};
-        //let testObj2 = {'objectouter': {'objectinner': {'two' : 2}, 'three': 3}};
-        //let testObj3 = {'one' : {'two': 2 ,'three' : {'four' : 4 }}};
-        //let testObj4 = {'one' : 1, 'two' : 2, 'three' : {'one' : 1000, 'two' : 2000, 'four' : 4000, 'five' : {'one' : 100}}};
-
-        //console.log(Helper.doesObjectContainProperty(testObj3, 'four'));
-        //console.log(Helper.getObjectPropertyByName(testObj4, 'one', true));
         
     </script>
 </body>

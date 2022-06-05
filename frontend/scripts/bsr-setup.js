@@ -166,6 +166,9 @@ class BsrSetup{
         return this.#pieceWasRemoved;
     }
 
+    //-------------------------------------------------------------------------
+    // setup basic information
+
     // set default dragged over id as a backup id
     setDefaultDraggedOverId(defaultId = "example__id-(0,0)"){
         this.#defaultDraggedOverId = defaultId;
@@ -203,6 +206,9 @@ class BsrSetup{
         //console.log('dragged over', this.#draggedOverGridPieceId, this.#draggedOverGridPiece);
     }
 
+    //-------------------------------------------------------------------------
+    // checking and setting of pieces
+
     // simply check if a piece was already placed on the board (we will have to update the pieces new location then)---
     #checkIfPieceWasAlreadyPlaced(){
         this.#isUsingPlacedPiece = false;
@@ -230,8 +236,8 @@ class BsrSetup{
 
     // set the dragged pieces first and last locations
     #setDraggedPieceFirstAndLastLocations(){
-        var draggedPieceFirstLocationMatch;
-        var draggedPieceLastLocationMatch;
+        let draggedPieceFirstLocationMatch;
+        let draggedPieceLastLocationMatch;
         if (this.#pieceRotation == this.#horizontal){
             // find starting positions
             // horizontal between 2 and 11, vertical between 3 and 12, meaning lowest value can be [3,2] and highest can be [12, 11]
@@ -397,5 +403,8 @@ class BsrSetup{
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
         this.setPieceLocationsAndCount();
     }
+
+    //-------------------------------------------------------------------------
+    // callable anonymous functions for use with event listeners outside of play
 
 }

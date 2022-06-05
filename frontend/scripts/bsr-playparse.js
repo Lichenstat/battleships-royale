@@ -1,6 +1,7 @@
 // class having parsing options for the various data going in and coming out
 
 import { BsrGrid } from "./bsr-grid.js";
+import { BsrPiecesData } from "./bsr-piecesdata.js";
 
 export {BsrPlayParse}
 
@@ -29,6 +30,11 @@ class BsrPlayParse{
         normaizedRow = normaizedRow - bsrGrid.getTableRowsOffset();
         normalizedColumn = normalizedColumn - bsrGrid.getTableColumnsOffset();
         return [normaizedRow, normalizedColumn];
+    }
+
+    // parse pieces data for sending over to server
+    static parseDataForServerFormat(piecesData = new BsrPiecesData()){
+        
     }
 
 }

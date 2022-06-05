@@ -68,7 +68,7 @@ const bsrGridInternals = {
 
     // src for certain images
     missImage : "./assets/board-pieces/outcome/miss.png",
-    hitImage : "./assets/board-pieces/outcome/hit.png"
+    hitImage : "./assets/board-pieces/outcome/hit.png",
 }
 
 // for interacting with various grid pieces

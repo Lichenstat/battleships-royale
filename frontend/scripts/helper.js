@@ -71,12 +71,20 @@ class Helper{
 
     // parse an element id for a location inside a matrix
     // (assumes between parenthesis, ex: (14,7))
-    static parseElementIdForMatrixLocation(id){
+    static parseElementIdForMatrixLocation(id = "default__id-(0,0)"){
         var row, col;
         let matrix = id.substring(id.indexOf('('), id.indexOf(')') + 1);
         row = Number(matrix.substring(matrix.indexOf('(') + 1, matrix.indexOf(',')));
         col = Number(matrix.substring(matrix.indexOf(',') + 1, matrix.indexOf(')')));
         return [row, col];
+    }
+
+    // parse an elements id to change it's matrix location
+    static parseElementIdToChangeMatrixLocation(id = "default__id-(0,0)", location = [0,0]){
+        let idBegin = id.substring(0, id.indexOf('(') + 1);
+        let idEnd = id.substring(id.indexOf(')'), id.length);
+        let updatedId = idBegin + location[0] + ',' + location[1] + idEnd;
+        return updatedId;
     }
 
     // parse part of a string and replace that part with a desired string

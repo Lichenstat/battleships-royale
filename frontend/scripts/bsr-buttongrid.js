@@ -21,13 +21,18 @@ class BsrButtonGrid extends BsrGrid{
         return finalizedString;
     }
 
+    // return a disabled button
+    getGridButtonDisabled(){
+        return bsrGridInternals.boardButtonDisabled;
+    }
+
     // return the button of the board as enabled
-    getGridButtonEnabled(){
+    getGridButtonHit(){
         return this.#changeOutcomeSrc(bsrGridInternals.boardButtonDisabled, bsrGridInternals.hitImage);
     }
 
     // return the button of the board as disabled
-    getGridButtonDisabled(){
+    getGridButtonMissed(){
         return this.#changeOutcomeSrc(bsrGridInternals.boardButtonDisabled, bsrGridInternals.missImage);
     }
 

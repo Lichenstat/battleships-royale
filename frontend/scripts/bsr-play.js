@@ -5,13 +5,16 @@ import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { BsrPlayParse } from "./bsr-playparse.js";
 import { BsrAi } from "./bsr-ai.js";
+import { BsrPlayerAiInteractions } from "./bsr-aiplayerinteractions.js";
 import { Helper } from "./helper.js";
 
 export { BsrPlay };
 
 class BsrPlay{
 
-    #piecesData;
+    #playerPiecesData;
+    #isPlayingAgainstAi;
+    #aiPlayer;
     #playSetupInfo;
     #currentPlayInfo;
     #hasInfoUpdated;
@@ -31,17 +34,23 @@ class BsrPlay{
 
     #buttonParentId;
     #buttonLocation;
+    #hasButtonUpdated;
     
     #setTimer;
 
     #playerTurn;
     #gameover;
 
-    constructor(piecesData = new BsrPiecesData()){
-        this.#piecesData = piecesData;
+    constructor(playerPiecesData = new BsrPiecesData(), playingAgainstAi = true){
+        this.#playerPiecesData = playerPiecesData;
+        this.#isPlayingAgainstAi = playingAgainstAi;
+        this.#aiPlayer = false;
+        if(this.#isPlayingAgainstAi){
+            this.#aiPlayer = new BsrAi();
+        }
         this.#playSetupInfo = { playerNumber : 1 }
         //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
-        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[3,2]], piecesHit : [false], pieceName : "" , pieceLocations : [[]], gameover : false}
+        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
         this.#hasInfoUpdated = false;
 
         this.#sendInitialInfo = { boardPieces : {}}
@@ -50,16 +59,17 @@ class BsrPlay{
 
         this.#playerDefaultGridCellId = "grid__cell-example-(0,0)";
 
-        this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#piecesData);
+        this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#playerPiecesData);
         this.#buttonGrid = BsrCreateGrids.getButtonGrid();
         this.#hitImg = bsrGeneralInfo.hitImage;
         this.#missImg = bsrGeneralInfo.missImage;
-
+        
         this.#playerNumber  = this.#playSetupInfo.playerNumber;
         this.#playingAgainstAi = false;
-
+        
         this.#buttonParentId = "";
         this.#buttonLocation = [this.#currentPlayInfo.piecesClicked];
+        this.#hasButtonUpdated = false;
         
         this.#setTimer = 1000; // 1000 = 1 sec
 
@@ -108,21 +118,29 @@ class BsrPlay{
         this.#playerDefaultGridCellId = cell.id;
     }
 
+    // set the current players turn (only for 2 players at the moment)
+    #setCurrentTurn(){
+        let turn = this.#currentPlayInfo.playerTurn;
+        if(turn == 1){
+            this.#currentPlayInfo.playerTurn = 2;
+            console.log('herh2e')
+        }
+        if(turn == 2){
+            this.#currentPlayInfo.playerTurn = 1;
+            console.log('herhe1')
+        }
+    }
+
     // set information about the clicked button
-    setClickedButtonInfo(button){
+    #setClickedButtonInfo(button){
         if(this.#playerTurn){
             if(!button.disabled){
                 this.#buttonParentId = button.parentNode.id;
                 this.#buttonLocation = [Helper.parseElementIdForMatrixLocation(this.#buttonParentId)];
-                this.#setIfPlayerUsedTurn();
-                //console.log(this.#clickedParentId, this.#clickedLocation);
+                this.#hasButtonUpdated = true;
+                this.#playerTurn = false;
             }
         }
-    }
-
-    // set if the player has used their turn
-    #setIfPlayerUsedTurn(){
-        this.#playerTurn = false;
     }
 
     // set what turn it is for playing
@@ -136,26 +154,7 @@ class BsrPlay{
     }
 
     //-------------------------------------------------------------------------
-    // updating methods
-
-    // get the buttons on an update
-    getPlayingPiecesOnUpdate(){
-        return this.#getPiecesUpdated();
-    }
-
-    #getPiecesUpdated(){
-        if(this.#hasInfoUpdated){
-            if(this.#playerTurn){
-
-            }
-            if(!this.#playerTurn){
-                return this.#getButtonsForUpdating();
-            }
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // button methods
+    // updating pieces methods
 
     // get buttons enable or disabled on initial button click
     #getDisabledPushButtons(){
@@ -201,72 +200,54 @@ class BsrPlay{
         return {ids : ids, imageSrcs : imagercs}
     }
 
-    // return the proper outcome for the given button
-    #getButtonsForUpdating(locations = [[]]){
-        let ids = this.#getCellIds(locations);
-        let properButtons = this.#getHitOrMissedButtons();
-        return {ids : ids, images : properButtons}
-    }
+    //-------------------------------------------------------------------------
+    // runtime methods
 
-    #getHitOrMissedButtons(){
-        let buttons = []
-        let size = this.#currentPlayInfo.piecesHit.length;
-        for(let i = 0; i < size; i++){
-            let hitOrMiss = this.#currentPlayInfo.piecesHit[i];
-            buttons.push(this.#getHitOrMissedButton(hitOrMiss));
+    // runtime functions/methods to take place if the player is fighting against an ai
+    #vsAiRuntime(){
+        if(this.#currentPlayInfo.playerTurn == this.#playerNumber){
+            if(this.#hasButtonUpdated){
+                console.log('player attacked');
+                this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
+                this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#buttonLocation);
+                //console.log(this.#currentPlayInfo);
+                this.#setChosenPiecesOutcome();
+                this.#hasInfoUpdated = true;
+                this.#hasButtonUpdated = false;
+                this.#setCurrentTurn();
+            }
         }
-        return buttons;
+        if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
+            console.log("ai attacked");
+            let aiLocationChoice = [this.#aiPlayer.getTestChoiceLocaions()];
+            this.#currentPlayInfo.piecesClicked = aiLocationChoice;
+            this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, aiLocationChoice);
+            //console.log(this.#currentPlayInfo);
+            this.#setChosenPiecesOutcome();
+            this.#hasInfoUpdated = true;
+            this.#playerTurn = true;
+            this.#setCurrentTurn();
+        }
     }
 
-    // get the button based on a hit or miss
-    #getHitOrMissedButton(hitOrMiss = false){
-        if(hitOrMiss != null){
-            if (hitOrMiss){
-                return this.#buttonGrid.getGridButtonHit();
-            }
-            if (!hitOrMiss){
-                return this.#buttonGrid.getGridButtonMissed();
-            }
+    // player vs whoever runtime
+    #playRuntime(){
+        console.log('running');
+        if(this.#isPlayingAgainstAi){
+            this.#vsAiRuntime();
+        }
+        if(!this.#isPlayingAgainstAi){
+            
+        }
+        if (!this.#currentPlayInfo.gameover || this.#setPlayerTurn){
+
         }
     }
 
     //-------------------------------------------------------------------------
-    // player methods
+    // callable anonymous functions for use with events
 
-    //// get player info on update
-    //getPlayerOnUpdate(){
-    //    return this.#getPlayerForUpdating();
-    //}
-
-    //// return the proper outcome for the given player
-    //#getButtonsForUpdating(locations = [[]]){
-    //    let ids = this.#getCellIds(locations);
-    //    let images = this.#getImageOutcomes();
-    //    return {ids : ids, images : images}
-    //}
-
-    #getImageOutcomes(){
-        let images = [];
-        let size = this.#currentPlayInfo.piecesHit.length;
-
-    }
-
-    //// get the button based on a hit or miss
-    //#getHitOrMissedButton(hitOrMiss = false){
-    //    if(hitOrMiss != null){
-    //        if (hitOrMiss){
-    //            return this.#buttonGrid.getGridButtonHit();
-    //        }
-    //        if (!hitOrMiss){
-    //            return this.#buttonGrid.getGridButtonMissed();
-    //        }
-    //    }
-    //}
-
-    //-------------------------------------------------------------------------
-    // callable anonymous functions for use with event listeners outside of play
-
-    // load the player grid with all the pieces
+    // load the player grid with all the pieces in some element(s)
     loadPlayingGrids = function(elementOne, elementTwo){
         if (elementTwo){
             elementOne.innerHTML = this.getPlayerGrid().getGrid();
@@ -278,7 +259,7 @@ class BsrPlay{
     }
 
     // set the clicked button as disabled
-    setButtonsDisabled = function(){
+    #setButtonsDisabled = function(){
         let pieces = this.#getDisabledPushButtons();
         if(pieces){
             let allButtonsSize = Object.keys(pieces).length;
@@ -291,8 +272,8 @@ class BsrPlay{
         }
     }
 
-    // set pieces after they have been checked and sent back from ai/server
-    setChosenPiecesOutcome = function(){
+    // set pieces after they have been checked and sent back after ai/server updates
+    #setChosenPiecesOutcome = function(){
         let pieces = this.#getIdsWithImagesForUpdating();
         console.log(pieces);
         let ids = pieces.ids;
@@ -300,55 +281,31 @@ class BsrPlay{
         let size = ids.length;
         for (let i = 0; i < size; i++){
             let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
-            console.log(allSameCellIds);
-            if(this.#currentPlayInfo.playerTurn == 2){
+            //console.log(allSameCellIds);
+            // the programming only works for 2 players at the moment, will have to change if more players
+            // playing at once is desired
+            if(this.#currentPlayInfo.playerTurn == 1){
                 let images = allSameCellIds[1].children[0].innerHTML;
-                console.log(images)
                 allSameCellIds[1].innerHTML = images;
                 allSameCellIds[1].children[1].src = srcs[i];
             }
-            if(this.#currentPlayInfo.playerTurn == 1){
+            if(this.#currentPlayInfo.playerTurn == 2){
                 allSameCellIds[0].children[0].children[1].src = srcs[i]
             }
         }
     }
 
+    // set the event listeners of the grid buttons
     setEventListenersOfGridButtons = function(){
         let x = document.querySelectorAll("[id='" + bsrGridInternals.boardButtonId + "']");
         x.forEach(item => {
             item.addEventListener("click", elemItem =>{
             console.log(elemItem.target);
-            this.setClickedButtonInfo(elemItem.target);
-            this.setButtonsDisabled();
-            this.setChosenPiecesOutcome();
+            this.#setClickedButtonInfo(elemItem.target);
+            this.#setButtonsDisabled();
+            this.#playRuntime();
             })
         })
     }
 
-    runFunctionTill(thisFunction = function(){}, cycleTime = 1000, ){
-
-    }
-
-    testRuntime1 = (someFunction = function(){}) => {
-        setTimeout(
-            () => {
-                if(!this.#playerTurn){
-                    this.testRuntime1(someFunction);
-                    console.log("not ur turn yet");
-                    this.x = this.x + 1;
-                    if (this.x > 5){
-                        this.#playerTurn = true;
-                    }
-                }
-                else{
-                    console.log(someFunction());
-                    console.log('ur turn now');
-                    return "winnder";
-                }
-            }, this.#setTimer);
-    }
-
-    overallRuntime(){
-
-    }
 }

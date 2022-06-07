@@ -404,9 +404,10 @@
 
             // set up the player table
             if(item.target.id == "bsr__generateplayertable"){
+                let playingAgainstAi = true;
                 console.log('making player table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
-                playing = new BsrPlay(setup.getPiecesData());
+                playing = new BsrPlay(setup.getPiecesData(), playingAgainstAi);
                 playing.loadPlayingGrids(gridContainerElement);
                 playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode);
                 playing.setEventListenersOfGridButtons();

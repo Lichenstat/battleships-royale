@@ -402,9 +402,40 @@ class BsrSetup{
         this.#piecesData.setPiecesRandom();
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
         this.setPieceLocationsAndCount();
+        console.log(this.#piecesData.getPiecesDataTable());
     }
 
     //-------------------------------------------------------------------------
-    // callable anonymous functions for use with event listeners outside of play
+    // callable anonymous functions for use with event listeners outside of setup
+
+    // load a blank drag and drop grid using some givne element and it's id
+    loadBlankGrid = function(gridContainerElement){
+        let desiredElement = document.getElementById(gridContainerElement.id);
+        desiredElement.innerHTML = this.getDragAndDropGrid().getGrid();
+    }
+
+    // load a blank grid and place all the set pieces from the pieces data table
+    loadSetPieces = function(gridContainerElement){
+        this.loadBlankGrid(gridContainerElement);
+            let piecesAndPlacement = this.getPiecesIdsAndInternals();
+            //console.log(piecesAndPlacement);
+            let piecesAndPlacementLength = piecesAndPlacement.length;
+            for (let i = 0; i < piecesAndPlacementLength; i++){
+                let piece = piecesAndPlacement[i];
+                let pieceLength = piece[0].length;
+                for (let j = 0; j < pieceLength; j++){
+                    document.getElementById(piece[0][j]).children[0].innerHTML = piece[1][j];
+                }
+            }
+    }
+
+    // set random pieces in the given drag and drop grid using a given element as the event handler
+    setRandomPiecesButton(buttonElement, gridContainerElement){
+        let randomlyPlacePiecesElement = document.getElementById(buttonElement.id);
+        randomlyPlacePiecesElement.addEventListener("click", () => {
+            this.setRandomPieces();
+            this.loadSetPieces(gridContainerElement);
+        })
+    }
 
 }

@@ -40,7 +40,8 @@ class BsrPlay{
     constructor(piecesData = new BsrPiecesData()){
         this.#piecesData = piecesData;
         this.#playSetupInfo = { playerNumber : 1 }
-        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [false], pieceName : "" , pieceLocations : [[]], gameover : false}
+        //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
+        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[3,2]], piecesHit : [false], pieceName : "" , pieceLocations : [[]], gameover : false}
         this.#hasInfoUpdated = false;
 
         this.#sendInitialInfo = { boardPieces : {}}
@@ -167,6 +168,39 @@ class BsrPlay{
         return buttons;
     }
 
+    // return the cell ids if required for updating
+    #getCellIds(locations = [[]]){
+        let setLocationIds = [];
+        let size = locations.length;
+        for (let i = 0; i < size; i++){
+            let cellId = Helper.parseElementIdToChangeMatrixLocation(this.#playerDefaultGridCellId, locations[i]);
+            setLocationIds.push(cellId);
+        }
+        return setLocationIds;
+    }
+
+    // get the proper sources for the images on a hit or miss outcome
+    #getImagesForUpdating(piecesHit = []){
+        let imageSrc = [];
+        let size = piecesHit.length;
+        for (let i = 0; i < size; i++){
+            if(piecesHit[i]){
+                imageSrc.push(bsrGridInternals.hitImage);
+            }
+            if(!piecesHit[i]){
+                imageSrc.push(bsrGridInternals.missImage);
+            }
+        }
+        return imageSrc;
+    }
+
+    // return the proper outcome for the given button
+    #getIdsWithImagesForUpdating(){
+        let ids = this.#getCellIds(this.#currentPlayInfo.piecesClicked);
+        let imagercs = this.#getImagesForUpdating(this.#currentPlayInfo.piecesHit)
+        return {ids : ids, imageSrcs : imagercs}
+    }
+
     // return the proper outcome for the given button
     #getButtonsForUpdating(locations = [[]]){
         let ids = this.#getCellIds(locations);
@@ -244,12 +278,38 @@ class BsrPlay{
     }
 
     // set the clicked button as disabled
-    setButtonDisabled = function(){
+    setButtonsDisabled = function(){
         let pieces = this.#getDisabledPushButtons();
         if(pieces){
-            let allSameCellIds = document.querySelectorAll("[id='" + Object.keys(pieces) + "']");
-            // coded to work with 2 grids for now, jsut use second occurence of id
-            allSameCellIds[1].innerHTML = pieces[Object.keys(pieces)[0]];
+            let allButtonsSize = Object.keys(pieces).length;
+            for (let i = 0; i < allButtonsSize; i++){
+                let key = Object.keys(pieces)[i];
+                let allSameCellIds = document.querySelectorAll("[id='" + key + "']");
+                // coded to work with 2 grids for now, just use second occurence of id
+                allSameCellIds[1].innerHTML = pieces[key];
+            }
+        }
+    }
+
+    // set pieces after they have been checked and sent back from ai/server
+    setChosenPiecesOutcome = function(){
+        let pieces = this.#getIdsWithImagesForUpdating();
+        console.log(pieces);
+        let ids = pieces.ids;
+        let srcs = pieces.imageSrcs;
+        let size = ids.length;
+        for (let i = 0; i < size; i++){
+            let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
+            console.log(allSameCellIds);
+            if(this.#currentPlayInfo.playerTurn == 2){
+                let images = allSameCellIds[1].children[0].innerHTML;
+                console.log(images)
+                allSameCellIds[1].innerHTML = images;
+                allSameCellIds[1].children[1].src = srcs[i];
+            }
+            if(this.#currentPlayInfo.playerTurn == 1){
+                allSameCellIds[0].children[0].children[1].src = srcs[i]
+            }
         }
     }
 
@@ -259,15 +319,10 @@ class BsrPlay{
             item.addEventListener("click", elemItem =>{
             console.log(elemItem.target);
             this.setClickedButtonInfo(elemItem.target);
-            this.setButtonDisabled();
+            this.setButtonsDisabled();
+            this.setChosenPiecesOutcome();
             })
         })
-    }
-
-
-    // return the cell id if required for updating
-    #getCellIds(locations = [[]]){
-        return this.#piecesData.getPiecesWithIdsAndInternals(this.#playerDefaultGridCellId, locations)
     }
 
     runFunctionTill(thisFunction = function(){}, cycleTime = 1000, ){

@@ -17,7 +17,7 @@ class Helper{
             return true;
         }
         // otherwise check the other objects in the object (checking nested objects)
-        for (var key in object){
+        for (let key in object){
             if (typeof object[key] === 'object'){
                 return this.doesObjectContainProperty(object[key], propertyName);
             } 

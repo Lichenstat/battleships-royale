@@ -56,9 +56,18 @@ body{
   height: 50px;
 }
 
-.bsr__outcomeimage{
-  padding-top: 3px;
+.bsr__pieceimage{
+  position: absolute;
   max-width: 100%;
+  top: 0px;
+  left: 0px;
+}
+
+.bsr__outcomeimage{
+  position: absolute;
+  max-width: 100%;
+  top: 0px;
+  left: 0px;
 }
 
 .bsr__placementplot--enabled{
@@ -70,9 +79,10 @@ body{
 }
 
 .bsr__boardpiece{
-  display: block;
+  border-collapse: collapse;
+  position: relative;
   width: 50px;
-  height : 50px;
+  height: 50px;
 }
 
 .bsr__table--carrier-horizontal{
@@ -88,13 +98,9 @@ body{
 }
 
 .bsr__table-cell{
-  
   border-collapse: collapse;
+  position: relative;
   /*border: 2px solid black;*/
-}
-
-.bsr__pieceimage{
-  max-width: 100%;
 }
 
 .bsr__piececontainer{

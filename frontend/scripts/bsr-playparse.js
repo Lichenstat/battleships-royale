@@ -1,4 +1,4 @@
-// class having parsing options for the various data going in and coming out
+// class having parsing options for the various data going in and coming out from the server
 
 import { BsrGrid } from "./bsr-grid.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
@@ -34,7 +34,7 @@ class BsrPlayParse{
 
     // parse pieces data for sending over to server
     static parseDataForServerFormat(piecesData = new BsrPiecesData()){
-        
+
     }
 
 }

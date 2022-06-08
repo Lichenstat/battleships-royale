@@ -142,8 +142,8 @@ class BsrSetup{
     }
 
     //get number of play pieces left
-    getNumberOfPlayablePiecesLeft(){
-        return this.#piecesData.getPlayPiecesLeft();
+    getNumberOfPlaceablePiecesLeft(){
+        return this.#piecesData.getPlaceablePiecesLeft();
     }
 
     // return the remover div for removing pieces from the board
@@ -320,7 +320,7 @@ class BsrSetup{
                     this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
                 }
                 // if we are using a piece that has not been placed and there are still possible pieces that can be placed
-                if(!this.#isUsingPlacedPiece && this.#piecesData.getPlayPiecesLeft()[this.#draggedPieceName] > 0){
+                if(!this.#isUsingPlacedPiece && this.#piecesData.getPlaceablePiecesLeft()[this.#draggedPieceName] > 0){
                     this.#setPieceClassName = Helper.parsePartOfStringToReplace(this.#draggedOverPieceClassName, '--', '--enabled');
                 }
             }
@@ -399,7 +399,7 @@ class BsrSetup{
 
     // set pieces randomly into the pieces data table
     setRandomPieces(){
-        this.#piecesData.setPiecesRandom();
+        this.#piecesData.fillDataTableRandomly();
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
         this.setPieceLocationsAndCount();
         console.log(this.#piecesData.getPiecesDataTable());

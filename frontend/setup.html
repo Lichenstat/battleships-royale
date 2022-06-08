@@ -365,8 +365,8 @@
             if (setup != null){
                 setup.removePieceIfNeeded();
                 setup.setPieceLocationsAndCount();
-                document.getElementById("bsr__count").innerHTML = setup.getNumberOfPlayablePiecesLeft().patrolboat;
-                console.log(setup.getNumberOfPlayablePiecesLeft());
+                document.getElementById("bsr__count").innerHTML = setup.getNumberOfPlaceablePiecesLeft().patrolboat;
+                console.log(setup.getNumberOfPlaceablePiecesLeft());
                 gridUpdateDragAndDrop();
                 if(!canPlacePiece){
                     console.log('using old table');

@@ -30,7 +30,7 @@ class BsrAi{
 
     this.#aiPiecesData = aiPiecesData;
     // fill ai data table with random placed pieces
-    this.#aiPiecesData.setPiecesRandom();
+    this.#aiPiecesData.fillDataTableRandomly();
     this.#aiPlayerNumber = 2;
 
     this.#aiChosenLocations = [];

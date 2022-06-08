@@ -10,6 +10,7 @@ export { BsrPiecesData }
 class BsrPiecesData extends BsrPlayPieces{
 
     #piecesDataTable;
+    #piecesDataTableCount;
 
     #horizontal;
     #vertical;
@@ -17,6 +18,7 @@ class BsrPiecesData extends BsrPlayPieces{
     constructor(){
         super();
         this.#piecesDataTable = [];
+        this.#piecesDataTableCount = {};
 
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
@@ -27,14 +29,41 @@ class BsrPiecesData extends BsrPlayPieces{
         return this.#piecesDataTable;
     }
 
-    // get play pieces left
-    getPlayPiecesLeft(){
-        return this.getNumberOfPlayablePiecesLeft();
+    // get placeable pieces left
+    getPlaceablePiecesLeft(){
+        return this.getNumberOfPlaceablePiecesLeft();
     }
-
+        
     // return placement pieces
     getPlacementPieces(rotation){
         return this.getPlaceablePieces(rotation);
+    }
+
+    // get count of pieces that have locations left in the data table 
+    getPiecesLeftByLocation(){
+        let piecesInDataTable = structuredClone(this.#piecesDataTableCount);
+        let dataTableLength = this.#piecesDataTable.length;
+        for (let i = 0; i < dataTableLength; i++){
+            if (!this.#piecesDataTable[i].locations.length){
+                piecesInDataTable[this.#piecesDataTable[i].name] = piecesInDataTable[this.#piecesDataTable[i].name] - 1;
+            }
+        }
+        //console.log(piecesInDataTable);
+        return piecesInDataTable;
+    }
+
+    // get the count of each type of piece put into the data table
+    #setCurrentPiecesCountUsingDataTable(){
+        let originalPieces = this.getNumberOfPlayablePieces();
+        let keys = Object.keys(originalPieces);
+        let keysLength = keys.length;
+        //console.log(keys);
+        for (let i = 0; i < keysLength; i++){
+            let allSimilarPieces = this.getDataTablePiecesByName(keys[i]);
+            originalPieces[keys[i]] = allSimilarPieces.length;
+        }
+        this.#piecesDataTableCount = originalPieces;
+        //console.log(this.#piecesDataTableCount);
     }
 
     // reset ids of pieces in a pieces data table
@@ -92,8 +121,21 @@ class BsrPiecesData extends BsrPlayPieces{
         return desiredPiece;
     }
 
+    // return all pieces from the pieces data table that have the same name
+    getDataTablePiecesByName(pieceName){
+        let desiredPieces = [];
+        this.#piecesDataTable.forEach(
+            piece => {
+                if (piece.name == pieceName){
+                    desiredPieces.push(piece);
+                }
+            }
+        )
+        return desiredPieces;
+    }
+
     // get piece internals that would belong in the dragged piece
-    getPieceInternals(pieceName, pieceRotation){
+    getPieceInternals(pieceName = 'patrolboat', pieceRotation = 'horizontal'){
         let pieceInternals = [];
         let internals = this.getInternalsOfPiece(pieceName, pieceRotation);
         for(const [key, value] of Object.entries(internals)){
@@ -109,16 +151,16 @@ class BsrPiecesData extends BsrPlayPieces{
         let pieces = [];
         let piecesDataTableLength = Object.keys(this.#piecesDataTable).length;
         // for data table pieces
-        for (var i = 0; i < piecesDataTableLength; i++){
-            var dataTableLocation = this.#piecesDataTable[i].locations;
-            var dataTableLocationLength = dataTableLocation.length;
+        for (let i = 0; i < piecesDataTableLength; i++){
+            let dataTableLocation = this.#piecesDataTable[i].locations;
+            let dataTableLocationLength = dataTableLocation.length;
             // for data table pieces locations
             for (var j = 0; j < dataTableLocationLength; j++){
                 let foundPiece = false;
                 let currentLocaion = dataTableLocation[j];
-                var locaionsLength = locations.length
+                let locaionsLength = locations.length
                 // for checking our passed by value pieces
-                for (var k = 0; k < locaionsLength; k++){
+                for (let k = 0; k < locaionsLength; k++){
                     if (Helper.checkIfArraysAreEqual(currentLocaion, locations[k])){
                         pieces.push(dataTableLocation);
                         foundPiece = true;
@@ -139,11 +181,11 @@ class BsrPiecesData extends BsrPlayPieces{
         //console.log('desired piece locations', locations);
         let pieceDataLength = this.#piecesDataTable.length;
         let pieceLocationsLength = locations.length;
-        for (var i = 0; i < pieceDataLength; i++){
-            var currentData = this.#piecesDataTable[i].locations;
-            var currentDataLength = currentData.length;
-            for (var j = 0; j < currentDataLength; j++){
-                for (var k = 0; k < pieceLocationsLength; k++){
+        for (let i = 0; i < pieceDataLength; i++){
+            let currentData = this.#piecesDataTable[i].locations;
+            let currentDataLength = currentData.length;
+            for (let j = 0; j < currentDataLength; j++){
+                for (let k = 0; k < pieceLocationsLength; k++){
                     if (Helper.checkIfArraysAreEqual(currentData[j], locations[k])){
                         return this.#piecesDataTable[i];
                     }
@@ -183,6 +225,22 @@ class BsrPiecesData extends BsrPlayPieces{
             }
         )
         this.#resetIdsOfPiecesDataTable();
+        this.#setCurrentPiecesCountUsingDataTable()
+    }
+
+    // remove locations from pieces in the data table
+    removeLocationsFromPiecesInDataTable(locations = [[]]){
+        console.log('removing locations', locations);
+        let locationsSize = locations.length;
+        for (let i = 0; i < locationsSize; i++){
+            let piece = this.getPieceHavingDataTableOverlap([locations[i]]);
+            if(piece){
+                console.log('should remove');
+                piece.locations = Helper.removeDuplicatesFromArrayUsingArray(piece.locations, [locations[i]]);
+                console.log()
+                this.#piecesDataTable[piece.id] = piece;
+            }
+        }
     }
 
     // relocate an already placed piece in the pieces data table
@@ -198,9 +256,9 @@ class BsrPiecesData extends BsrPlayPieces{
         )
     }
 
-    // simply check if the count of the playable piece in pieces is greater than 0 (meaning they can place more of these pieces)
-    #checkIfPieceHasPlayablesLeft(pieceName){
-        if (this.getNumberOfPlayablePiecesLeft()[pieceName] <= 0){
+    // simply check if the count of the placeable piece in pieces is greater than 0 (meaning they can place more of these pieces)
+    #checkIfPieceHasPlaceablesLeft(pieceName){
+        if (this.getNumberOfPlaceablePiecesLeft()[pieceName] <= 0){
             return false;
         }
         return true;
@@ -208,30 +266,31 @@ class BsrPiecesData extends BsrPlayPieces{
 
     // set the newly placed piece into the piece data table and increment the piece counter
     setNewlyPlacedPiece(pieceName = '', pieceRotation = this.#horizontal, pieceLocations = [0,0]){
-        if(this.#checkIfPieceHasPlayablesLeft(pieceName)){
+        if(this.#checkIfPieceHasPlaceablesLeft(pieceName)){
             let internals = this.getPieceInternals(pieceName, pieceRotation);
             this.#piecesDataTable.push({'id' : this.#piecesDataTable.length, 'name' : pieceName, 'rotation' : pieceRotation, 'locations' : pieceLocations, 'internals' : internals})
             let bsrPlayPiece = this.getPlayPieceTypeByName(pieceName);
             bsrPlayPiece.count = bsrPlayPiece.count - 1;
+            this.#setCurrentPiecesCountUsingDataTable()
         }
     }
 
     // get random parts for a given piece to be selected
     #getPieceRandomParts(){
         let bsrGrid = new BsrDragAndDropGrid();
-        var rotation = Helper.getRandomInteger();
+        let rotation = Helper.getRandomInteger();
         if(rotation){
             rotation = this.#horizontal;
         }
         else{
             rotation = this.#vertical;
         }
-        var rowMin = bsrGrid.getTableRowsOffset();
-        var rowMax = rowMin + (bsrGrid.getTableRowsCount() - 1);
-        var rowIndex = Helper.getRandomInteger(rowMin, rowMax);
-        var columnMin = bsrGrid.getTableColumnsOffset();
-        var columnMax = columnMin + (bsrGrid.getTableColumnsCount() - 1);
-        var columnIndex = Helper.getRandomInteger(columnMin, columnMax);
+        let rowMin = bsrGrid.getTableRowsOffset();
+        let rowMax = rowMin + (bsrGrid.getTableRowsCount() - 1);
+        let rowIndex = Helper.getRandomInteger(rowMin, rowMax);
+        let columnMin = bsrGrid.getTableColumnsOffset();
+        let columnMax = columnMin + (bsrGrid.getTableColumnsCount() - 1);
+        let columnIndex = Helper.getRandomInteger(columnMin, columnMax);
         return {rotation : rotation, location : [rowIndex, columnIndex]}
     }
 
@@ -241,15 +300,15 @@ class BsrPiecesData extends BsrPlayPieces{
         let piece = this.getPlayPieceTypeByName(pieceName);
         //checking if given piece can be placed in horizontally
         if (rotation == this.#horizontal){
-            var size = piece.size + firstPieceLocation[1];
-            for(var i = firstPieceLocation[1]; i < size; i++){
+            let size = piece.size + firstPieceLocation[1];
+            for(let i = firstPieceLocation[1]; i < size; i++){
                 pieceLocations.push([firstPieceLocation[0], i]);
             }
         }
         //checking if given piece can be placed in vertically
         if (rotation == this.#vertical){
-            var size = piece.size + firstPieceLocation[0];
-            for(var i = firstPieceLocation[0]; i < size; i++){
+            let size = piece.size + firstPieceLocation[0];
+            for(let i = firstPieceLocation[0]; i < size; i++){
                 pieceLocations.push([i, firstPieceLocation[1]]);
             }
         }
@@ -258,8 +317,8 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // set random pieces into the pieces data table
-    setPiecesRandom(){
-        if(!Helper.accumulateObjectValues(this.getPlayPiecesLeft())){
+    fillDataTableRandomly(){
+        if(!Helper.accumulateObjectValues(this.getPlaceablePiecesLeft())){
             this.#clearPiecesDataTable();
         }
         let bsrGrid = new BsrDragAndDropGrid();
@@ -289,8 +348,8 @@ class BsrPiecesData extends BsrPlayPieces{
     // get the current board pieces ids and internals (presumably being used for replacing pieces in cells)
     getPiecesWithIdsAndInternals(attributeIdWithCellLocation = "some__example-(0,0)"){
         let collectedPieces = [];
-        var piecesDataTableLength = this.#piecesDataTable.length;
-        for (var i = 0; i < piecesDataTableLength; i++){
+        let piecesDataTableLength = this.#piecesDataTable.length;
+        for (let i = 0; i < piecesDataTableLength; i++){
             // set dragged pieces ids with the dragged element ids
             let ids = this.getCreateIdsOfTableLocations(attributeIdWithCellLocation, this.#piecesDataTable[i].locations);
             let internals = this.#piecesDataTable[i].internals;

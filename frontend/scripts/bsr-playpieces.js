@@ -30,7 +30,9 @@ class BsrPlayPieces{
     #bsrPatrolBoatVertical;
     #bsrPatrolBoatVerticalContent;
 
-    #playPiecesCount;
+    #defaultPieces;
+    #originalPlayPiecesCount;
+    #currentPlaceablePiecesCount;
 
     #savePieces;
 
@@ -73,11 +75,17 @@ class BsrPlayPieces{
         this.#bsrTable.setHTMLTableProperties(bsrGridPieces.patrolboatVertical.class,   bsrGridPieces.patrolboatVertical.id,   0, 0, bsrGridPieces.patrolboatVertical.rows,   bsrGridPieces.patrolboatVertical.columns,   this.#bsrPatrolBoatVerticalContent);
         this.#bsrPatrolBoatVertical = this.#bsrTable.getHTMLTable();
 
+        //default pieces made at beginning
+        this.#defaultPieces = this.#getUseablePieces();
+
         // be able to get useable pieces
         this.pieces = this.#getUseablePieces();
 
-        // get the number of playable pieces left
-        this.#playPiecesCount = {};
+        // overall play pieces count (should not be changed, sends back original amount of pieces with piece name)
+        this.#originalPlayPiecesCount = {}
+        this.#setNumberOfPlayablePieces();
+        // get the number of placeable pieces left
+        this.#currentPlaceablePiecesCount = {};
 
         // use this later on in case of needing to save draggable pieces
         this.#savePieces;
@@ -157,17 +165,30 @@ class BsrPlayPieces{
     }
 
     // get count of remaining pieces left to place on the game board
-    #setNumberOfPlayablePiecesLeft(){
+    #setNumberOfPlaceablePiecesLeft(){
         let bsrPiecesLength = this.pieces.length;
-        for (var i = 0; i < bsrPiecesLength; i++){
-            this.#playPiecesCount[this.pieces[i].name] = this.pieces[i].count;
+        for (let i = 0; i < bsrPiecesLength; i++){
+            this.#currentPlaceablePiecesCount[this.pieces[i].name] = this.pieces[i].count;
         }
     }
 
     // return count of the number of playable pieces left
-    getNumberOfPlayablePiecesLeft(){
-        this.#setNumberOfPlayablePiecesLeft();
-        return this.#playPiecesCount;
+    getNumberOfPlaceablePiecesLeft(){
+        this.#setNumberOfPlaceablePiecesLeft();
+        return this.#currentPlaceablePiecesCount;
+    }
+
+    // set the number of overall avalable pieces
+    #setNumberOfPlayablePieces(){
+        let useablePiecesLength = this.#defaultPieces.length;
+        for (let i = 0; i < useablePiecesLength; i++){
+            this.#originalPlayPiecesCount[this.#defaultPieces[i].name] = this.#defaultPieces[i].count;
+        }
+    }
+
+    // get the number of playable pieces
+    getNumberOfPlayablePieces(){
+        return this.#originalPlayPiecesCount;
     }
 
     // update the drag pieces that could be put on the grid

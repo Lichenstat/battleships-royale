@@ -116,12 +116,12 @@ class Helper{
     }
 
     // remove duplicates in an array using a desired remove duplicates array
-    static removeDuplicatesFromArrayUsingArray(arrayToClean, arrayForChecking){
-        arrayForChecking.filter(
+    static removeDuplicatesFromArrayUsingArray(arrayToClean = [[],[]], arrayForChecking = [[],[]]){
+        arrayForChecking.forEach(
             (itemDuplicate, indexFromDuplicate) => {
-                arrayToClean.filter(
+                arrayToClean.forEach(
                     (item, index) => {
-                        if(item == itemDuplicate){
+                        if(this.checkIfArraysAreEqual(item, itemDuplicate)){
                             arrayToClean.splice(index, 1);
                         }
                     }

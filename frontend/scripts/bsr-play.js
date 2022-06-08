@@ -76,9 +76,6 @@ class BsrPlay{
         this.#playerTurn = true;
         this.#gameover = this.#currentPlayInfo.gameover;
 
-        //this.testreturn1 = { playerNumber : 0, piecesClicked : [0,0], pieceName : "" , pieceLocations : [], gameover : false}
-        //this.testreturn2 = { playerNumber : 1, piecesClicked : [0,0], pieceName : "" , pieceLocations : [], gameover : false}
-        //this.testreturn3 = { playerNumber : 2, piecesClicked : [0,0], pieceName : "" , pieceLocations : [], gameover : false}
     }
 
     // return the player grid
@@ -123,11 +120,9 @@ class BsrPlay{
         let turn = this.#currentPlayInfo.playerTurn;
         if(turn == 1){
             this.#currentPlayInfo.playerTurn = 2;
-            console.log('herh2e')
         }
         if(turn == 2){
             this.#currentPlayInfo.playerTurn = 1;
-            console.log('herhe1')
         }
     }
 
@@ -304,6 +299,8 @@ class BsrPlay{
             this.#setClickedButtonInfo(elemItem.target);
             this.#setButtonsDisabled();
             this.#playRuntime();
+            console.log(this.#playerPiecesData.getPiecesDataTable());
+            console.log(this.#playerPiecesData.getPiecesLeftByLocation());
             })
         })
     }

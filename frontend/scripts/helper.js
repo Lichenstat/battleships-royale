@@ -131,6 +131,17 @@ class Helper{
         return arrayToClean;
     }
 
+    // check if array is in array of arrays
+    static checkIfArrayIsInArrayOfArrays(array = [], arrayOfArrays = [[],[]]){
+        let setOfArraysLength = arrayOfArrays.length;
+        let checkArray = this.removeDuplicatesFromArrayUsingArray(arrayOfArrays, [array]);
+        let checkArrayLength = checkArray.length;
+        if (setOfArraysLength == checkArrayLength){
+            return false;
+        }
+        return true;
+    }
+
     // check if arrays are equal by position and size
     static checkIfArraysAreEqual(arrayOne, arrayTwo){
         let arrOne = arrayOne.length;
@@ -144,6 +155,30 @@ class Helper{
             return true;
         }
         return false;
+    }
+
+    // get rid of duplicates in an array and keep order
+    static makeUniqueArray(array = []) {
+        let a = array.concat();
+        for(let i=0; i<a.length; ++i) {
+            for(let j=i+1; j<a.length; ++j) {
+                if(a[i] === a[j])
+                    a.splice(j--, 1);
+            }
+        }
+    
+        return a;
+    }
+
+    // get matrix array locations as array
+    static getMatrixLocationsAsArray(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0){
+        let arrayLocations = [];
+        for (let i = minWidth; i <= maxWidth; i++){
+            for (let j = minHeight; j <= maxHeight; j++){
+                arrayLocations.push([i,j]);
+            }
+        }
+        return arrayLocations;
     }
 
     // get index locations of match cases in a, array/string

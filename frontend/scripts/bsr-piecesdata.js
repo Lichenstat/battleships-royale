@@ -230,12 +230,11 @@ class BsrPiecesData extends BsrPlayPieces{
 
     // remove locations from pieces in the data table
     removeLocationsFromPiecesInDataTable(locations = [[]]){
-        console.log('removing locations', locations);
+        //console.log('removing locations', locations);
         let locationsSize = locations.length;
         for (let i = 0; i < locationsSize; i++){
             let piece = this.getPieceHavingDataTableOverlap([locations[i]]);
             if(piece){
-                console.log('should remove');
                 piece.locations = Helper.removeDuplicatesFromArrayUsingArray(piece.locations, [locations[i]]);
                 console.log()
                 this.#piecesDataTable[piece.id] = piece;

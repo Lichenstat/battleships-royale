@@ -13,9 +13,9 @@ class BsrSetup{
     #piecesIdsAndInternals;
     #dragAndDropGrid;
 
-    #pieceRotation;
     #horizontal;
     #vertical;
+    #pieceRotation;
 
     #desiredPiecesType;
 
@@ -47,15 +47,15 @@ class BsrSetup{
     #willPieceBeRemoved;
     #pieceWasRemoved;
 
-    constructor(piecesData = new BsrPiecesData(), dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid(), pieceRotation = 'horizontal'){
+    constructor(piecesData = new BsrPiecesData(), dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid()){
         // create and assign pieces objects to be used with the grid
         this.#piecesData = piecesData;
         this.#piecesIdsAndInternals = [];
         this.#dragAndDropGrid = dragAndDropGrid;
 
-        this.#pieceRotation = pieceRotation;
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
+        this.#pieceRotation = this.#horizontal;
 
         this.#desiredPiecesType = {};
 
@@ -90,11 +90,8 @@ class BsrSetup{
         //console.log(this.#tableRowsOffset, this.#tableColumnsOffset);
     }
 
-    // set rotation of pieces during grid setup
-    changeBoardPieceRotation(){
-        if(this.#pieceRotation == this.#vertical ? this.#pieceRotation = this.#horizontal : this.#pieceRotation = this.#vertical);
-        this.#canUpdatePieces = true;
-    }
+    //-------------------------------------------------------------------------
+    // for getting various information during setup
 
     // a return to see if the current location can be used
     canUseCurrentLocation(){
@@ -168,6 +165,12 @@ class BsrSetup{
 
     //-------------------------------------------------------------------------
     // setup basic information
+
+    // set rotation of pieces during grid setup
+    changeBoardPieceRotation(){
+        if(this.#pieceRotation == this.#vertical ? this.#pieceRotation = this.#horizontal : this.#pieceRotation = this.#vertical);
+        this.#canUpdatePieces = true;
+    }
 
     // set default dragged over id as a backup id
     setDefaultDraggedOverId(defaultId = "example__id-(0,0)"){

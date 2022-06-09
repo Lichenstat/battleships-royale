@@ -214,10 +214,11 @@ class BsrPlay{
         }
         if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
             console.log("ai attacked");
-            let aiLocationChoice = [this.#aiPlayer.getTestChoiceLocaions()];
+            let aiLocationChoice = [this.#aiPlayer.getNextAttackPosition()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, aiLocationChoice);
-            //console.log(this.#currentPlayInfo);
+            this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit);
+            console.log(this.#currentPlayInfo);
             this.#setChosenPiecesOutcome();
             this.#hasInfoUpdated = true;
             this.#playerTurn = true;

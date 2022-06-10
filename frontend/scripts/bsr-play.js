@@ -217,8 +217,9 @@ class BsrPlay{
             let aiLocationChoice = [this.#aiPlayer.getNextAttackPosition()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, aiLocationChoice);
-            this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit);
-            console.log(this.#currentPlayInfo);
+            //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
+            this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftByLocation());
+            //console.log(this.#currentPlayInfo);
             this.#setChosenPiecesOutcome();
             this.#hasInfoUpdated = true;
             this.#playerTurn = true;
@@ -271,7 +272,7 @@ class BsrPlay{
     // set pieces after they have been checked and sent back after ai/server updates
     #setChosenPiecesOutcome = function(){
         let pieces = this.#getIdsWithImagesForUpdating();
-        console.log(pieces);
+        // console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
         let size = ids.length;
@@ -296,12 +297,12 @@ class BsrPlay{
         let x = document.querySelectorAll("[id='" + bsrGridInternals.boardButtonId + "']");
         x.forEach(item => {
             item.addEventListener("click", elemItem =>{
-            console.log(elemItem.target);
+            //console.log(elemItem.target);
             this.#setClickedButtonInfo(elemItem.target);
             this.#setButtonsDisabled();
             this.#playRuntime();
-            console.log(this.#playerPiecesData.getPiecesDataTable());
-            console.log(this.#playerPiecesData.getPiecesLeftByLocation());
+            //console.log(this.#playerPiecesData.getPiecesDataTable());
+            //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
             })
         })
     }

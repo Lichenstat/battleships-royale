@@ -236,7 +236,6 @@ class BsrPiecesData extends BsrPlayPieces{
             let piece = this.getPieceHavingDataTableOverlap([locations[i]]);
             if(piece){
                 piece.locations = Helper.removeDuplicatesFromArrayUsingArray(piece.locations, [locations[i]]);
-                console.log()
                 this.#piecesDataTable[piece.id] = piece;
             }
         }

@@ -66,7 +66,10 @@ class Helper{
 
     // accumulate all object values into a single value
     static accumulateObjectValues(object = new Object()){
-        return Object.values(object).reduce((a, b) => a + b);
+        if (Object.keys(object).length > 0){
+            return Object.values(object).reduce((a, b) => a + b);
+        }
+        return 0;
     }
 
     // parse an element id for a location inside a matrix
@@ -117,18 +120,42 @@ class Helper{
 
     // remove duplicates in an array using a desired remove duplicates array
     static removeDuplicatesFromArrayUsingArray(arrayToClean = [[],[]], arrayForChecking = [[],[]]){
+        let keepCleaned = [];
+        let checkingLength  = arrayForChecking.length;
+        let cleanLength = arrayToClean.length;
+        for (let i = 0; i < cleanLength; i++){
+            let clean = arrayToClean[i];
+            let found = false;
+            for (let j = 0; j < checkingLength; j++){
+                let check = arrayForChecking[j];
+                let checkMatch = this.checkIfArraysAreEqual(check, clean);
+                if (checkMatch){
+                    found = true;
+                    break;
+                }
+            }
+            if (!found){
+                keepCleaned.push(clean);
+            }
+        }
+        return keepCleaned;
+    }
+
+    // keep duplicates in an array using a desired keep duplicates array
+    static keepDuplicatesFromArrayUsingArray(arrayKeepingDuplicates = [[],[]], arrayForChecking = [[],[]]){
+        let keepDuplicates = [];
         arrayForChecking.forEach(
             (itemDuplicate, indexFromDuplicate) => {
-                arrayToClean.forEach(
+                arrayKeepingDuplicates.forEach(
                     (item, index) => {
                         if(this.checkIfArraysAreEqual(item, itemDuplicate)){
-                            arrayToClean.splice(index, 1);
+                            keepDuplicates.push(arrayKeepingDuplicates[index]);
                         }
                     }
                 )
             }
         );
-        return arrayToClean;
+        return keepDuplicates;
     }
 
     // check if array is in array of arrays
@@ -170,6 +197,47 @@ class Helper{
         return a;
     }
 
+    // get diffrences of array values (make sure they are the same size)
+    static getSubtractedArray(arrayOriginal = [], arraySubtractor = []){
+        let diffrenceArray = [];
+        let original = arrayOriginal.length;
+        let subtractor = arraySubtractor.length;
+        let length = Math.min(original, subtractor);
+        for (let i = 0; i < length; i++){
+            diffrenceArray.push(arrayOriginal[i] - arraySubtractor[i]);
+        }
+        return diffrenceArray;
+    }
+
+    // get addition of array values (make sure they are the same size)
+    static getAddedArray(arrayOriginal = [], arrayAdder = []){
+        let addedArray = [];
+        let original = arrayOriginal.length;
+        let adder = arrayAdder.length;
+        let length = Math.min(original, adder);
+        for (let i = 0; i < length; i++){
+            addedArray.push(arrayOriginal[i] + arrayAdder[i]);
+        }
+        return addedArray;
+    }
+
+    // convert array values from positives to negatives
+    static swapPositiveNegativeArrayValues(array = []){
+        let length = array.length;
+        for (let i = 0; i < length; i++){
+            if(typeof(array[i]) === 'number'){
+                array[i] = this.swapPositiveNegativeValue(array[i]);
+            }
+        }
+        return array;
+    }
+
+    // swap integer/double sign
+    static swapPositiveNegativeValue(value = 0){
+        if (value == 0) return 0;
+        return value * -1;
+    }
+
     // get matrix array locations as array
     static getMatrixLocationsAsArray(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0){
         let arrayLocations = [];
@@ -181,8 +249,18 @@ class Helper{
         return arrayLocations;
     }
 
-    // get index locations of match cases in a, array/string
-    static getIndexLocationsOfMatchCase(matchCase, string){
+    // get index of a match case using arrays
+    static getIndexLocationOfMatchedArray(matchArray = [], arrays = [[],[]]){
+        let length = arrays.length;
+        for (let i = 0; i < length; i++){
+            if (this.checkIfArraysAreEqual(matchArray, arrays[i])){
+                return i;
+            }
+        }
+    }
+
+    // get index locations of match cases in a string
+    static getIndexLocationsOfMatchCase(matchCase = 'amp', string = 'example'){
         let markedIndex = [];
         var result;
         let pattern = new RegExp(matchCase, 'gi');
@@ -219,5 +297,13 @@ class Helper{
     static getRandomInteger(min = 0, max = 1){
         return Math.floor(Math.random() * (max - min + 1) ) + min;
     }
+
+    // manhattan distance from one matrix location to the next
+    static getManhattanDistanceViaArrays(arrayLocationOne = [0,0], arrayLocationTwo = [0,0]){
+        let distance = Math.abs(arrayLocationTwo[0] - arrayLocationOne[0]) + Math.abs(arrayLocationTwo[1] - arrayLocationOne[1]);
+        return distance;
+    }
+
+
 
 }

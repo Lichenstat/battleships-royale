@@ -304,6 +304,4 @@ class Helper{
         return distance;
     }
 
-
-
 }

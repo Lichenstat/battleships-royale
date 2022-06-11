@@ -112,6 +112,8 @@ class BsrAi{
     //    return info;
     //}
 
+
+
     // get a location that has not yet been hit
     #getUnhitLocation(){
         let unhitLocationsLength = this.#aiUnhitLocations.length;
@@ -220,7 +222,11 @@ class BsrAi{
                 if (this.#aiPrioritizeAttackLocations.length){
                     return this.#getLocationForPrioritizedAttack();
                 }
-                // if we have possible attack locations
+                // if we can use existing unhit locations 50% of the time
+                if (Helper.getRandomInteger(0, 1) && this.#aiUnhitLocations.length){
+                    return this.#getLocationForRandomAttack();
+                }
+                // otherwise we use possible attack locations
                 return this.#getLocationForPossibleAttack();
             }
         }

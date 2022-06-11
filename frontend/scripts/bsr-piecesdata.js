@@ -40,7 +40,7 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // get count of pieces that have locations left in the data table 
-    getPiecesLeftByLocation(){
+    getPiecesLeftThatHaveLocations(){
         let piecesInDataTable = structuredClone(this.#piecesDataTableCount);
         let dataTableLength = this.#piecesDataTable.length;
         for (let i = 0; i < dataTableLength; i++){

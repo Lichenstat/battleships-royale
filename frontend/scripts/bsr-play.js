@@ -214,11 +214,11 @@ class BsrPlay{
         }
         if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
             console.log("ai attacked");
-            let aiLocationChoice = [this.#aiPlayer.getNextAttackPosition()];
+            let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, aiLocationChoice);
             //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
-            this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftByLocation());
+            this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftThatHaveLocations());
             //console.log(this.#currentPlayInfo);
             this.#setChosenPiecesOutcome();
             this.#hasInfoUpdated = true;
@@ -302,7 +302,7 @@ class BsrPlay{
             this.#setButtonsDisabled();
             this.#playRuntime();
             //console.log(this.#playerPiecesData.getPiecesDataTable());
-            //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
+            console.log('player pieces left', this.#playerPiecesData.getPiecesLeftThatHaveLocations());
             })
         })
     }

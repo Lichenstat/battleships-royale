@@ -163,7 +163,7 @@ class BsrAi{
     #getLocationForPriorityAttack(){
         console.log('using priority attack location', this.#aiPriorityAttackLocation);
         let priortiyAttackLocationIndex = Helper.getIndexLocationOfMatchedArray(this.#aiPriorityAttackLocation, this.#aiPossibleAttackLocations);
-        console.log(priortiyAttackLocationIndex);
+        //console.log(priortiyAttackLocationIndex);
         this.#aiPossibleAttackLocations.splice(priortiyAttackLocationIndex, 1);
         this.#aiLastAttackedLocations = [this.#aiPriorityAttackLocation];
         return this.#aiPriorityAttackLocation;
@@ -291,7 +291,7 @@ class BsrAi{
     #setOppositeDirectionToAttakIn(){
         console.log('swapping direction');
         let direction = Helper.getSubtractedArray(this.#aiSuccessfulAttackLocation, this.#aiLastSuccessfulAttackLocation);
-        console.log(direction);
+        //console.log(direction);
         let newDirection = Helper.swapPositiveNegativeArrayValues(direction);
         //this.#checkDirectionThatPieceWillGoIn(newDirection);
         // set all of our sucessful hits to the right locations for a follow up attack leading towards the opposite side of the ship

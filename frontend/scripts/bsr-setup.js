@@ -47,6 +47,18 @@ class BsrSetup{
     #willPieceBeRemoved;
     #pieceWasRemoved;
 
+    #gridContainerElement;
+    #piecesContainerElement;
+    #rotatePiecesElement;
+    #removePiecesElement;
+    #randomPlacementElement;
+
+    #canPlacePiece;
+    #removedPreviousPiece;
+    #tempGrid;
+    #time;
+    #dragging;
+
     constructor(piecesData = new BsrPiecesData(), dragAndDropGrid = BsrCreateGrids.getDragAndDropGrid()){
         // create and assign pieces objects to be used with the grid
         this.#piecesData = piecesData;
@@ -86,6 +98,20 @@ class BsrSetup{
         this.#usingPlacedPiece = {};
         this.#willPieceBeRemoved = false;
         this.#pieceWasRemoved = false;
+
+        //---------------------------------------------------------------------
+        // parts for event listeners
+        this.#gridContainerElement = "some__html-element";
+        this.#piecesContainerElement = "some__html-element";
+        this.#rotatePiecesElement = "some__html-element";
+        this.#removePiecesElement = "some__html-element";
+        this.#randomPlacementElement = "some__html-element";
+
+        this.#canPlacePiece = false;
+        this.#removedPreviousPiece = false;
+        this.#tempGrid;
+        this.#time = 10;
+        this.#dragging = false;
         
         //console.log(this.#tableRowsOffset, this.#tableColumnsOffset);
     }
@@ -167,15 +193,15 @@ class BsrSetup{
     // setup basic information
 
     // set rotation of pieces during grid setup
-    changeBoardPieceRotation(){
+    #changeBoardPieceRotation(){
         if(this.#pieceRotation == this.#vertical ? this.#pieceRotation = this.#horizontal : this.#pieceRotation = this.#vertical);
         this.#canUpdatePieces = true;
     }
 
-    // set default dragged over id as a backup id
-    setDefaultDraggedOverId(defaultId = "example__id-(0,0)"){
-        this.#defaultDraggedOverId = defaultId;
-    }
+    //// set default dragged over id as a backup id
+    //setDefaultDraggedOverId(defaultId = "example__id-(0,0)"){
+    //    this.#defaultDraggedOverId = defaultId;
+    //}
 
     // set clicked piece content
     setClickedPieceInfo(piece){
@@ -397,11 +423,11 @@ class BsrSetup{
             }
         }
         this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
-        console.log(this.#piecesData.getPiecesDataTable());
+        //console.log(this.#piecesData.getPiecesDataTable());
     }
 
     // set pieces randomly into the pieces data table
-    setRandomPieces(){
+    #setRandomPieces(){
         this.#piecesData.fillDataTableRandomly();
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
         this.setPieceLocationsAndCount();
@@ -411,14 +437,41 @@ class BsrSetup{
     //-------------------------------------------------------------------------
     // callable anonymous functions for use with event listeners outside of setup
 
+    // temporary to put all the pieces together for now
+    #combinedPieces = function(){
+        let container = bsrPieceInteractors.piecesContainer;
+        let beginning = container.substring(0, container.indexOf('>') + 1);
+        let ending = container.substring(container.lastIndexOf('<'), container.length);
+        let combined = '';
+        let pieces = this.getUpdatedRotatedPieces();
+        for (const [key, item] of Object.entries(pieces)){
+            combined = combined + item;
+        }
+        return beginning + combined + ending;
+    }
+
+    // update the drag and drop pieces that can be put on the grid
+    gridUpdateDragAndDropPieces = function(piecesContainerElement){
+        piecesContainerElement.innerHTML = this.#combinedPieces();
+    }
+
     // load a blank drag and drop grid using some givne element and it's id
     loadBlankGrid = function(gridContainerElement){
-        let desiredElement = document.getElementById(gridContainerElement.id);
-        desiredElement.innerHTML = this.getDragAndDropGrid().getGrid();
+        gridContainerElement.innerHTML = this.getDragAndDropGrid().getGrid();
+    }
+
+    // save the grid of the current drag and drop table
+    saveDragAndDropGrid = function(gridContainerElement){
+        this.#dragAndDropGrid.saveGrid(gridContainerElement.innerHTML);
+    }
+
+    // reload the drag and drop grid
+    reloadDragAndDropGrid = function(gridContainerElement){
+        gridContainerElement.innerHTML = this.#dragAndDropGrid.loadGrid();
     }
 
     // load a blank grid and place all the set pieces from the pieces data table
-    loadSetPieces = function(gridContainerElement){
+    loadSetGridPieces = function(gridContainerElement){
         this.loadBlankGrid(gridContainerElement);
             let piecesAndPlacement = this.getPiecesIdsAndInternals();
             //console.log(piecesAndPlacement);
@@ -432,13 +485,154 @@ class BsrSetup{
             }
     }
 
+    // remove the last piece/highlighting on the board under some sort of circumstance
+    removePreviousPiece(){
+        let previousPlacement = this.getPlacedPieceIds();
+        //console.log('previous placement',previousPlacement);
+        if(previousPlacement){
+            let previousPlacementLength = previousPlacement.length;
+            for (let i = 0; i < previousPlacementLength; i++){
+                document.getElementById(previousPlacement[i]).innerHTML = this.#dragAndDropGrid.getDragAndDropCleanInternal();
+            }
+        }
+    }
+
+    // update the plots being dragged over with highlighting using the grid ids generated
+    loadHighlighting = function(){
+        let currentPlacement = this.getDraggedPieceIdsAndInternals();
+        let currentClassName = this.getDraggedOverPieceClassName();
+        //console.log('currentPlacement', currentPlacement);
+        let placementLength = currentPlacement[0].length;
+        for (let i = 0; i < placementLength; i++){
+            if(document.getElementById(currentPlacement[0][i]) != null){
+                if(document.getElementById(currentPlacement[0][i]).children[0] != undefined)
+                    document.getElementById(currentPlacement[0][i]).children[0].className = currentClassName;
+            }
+        }
+    }
+
+    // rotate the placeable pieces
+    setRotatePiecesButton = function(rotateButtonElement, piecesContainerElement){
+        rotateButtonElement.onclick = () => {
+            //console.log('rotationg pieces');
+            this.#changeBoardPieceRotation();
+            this.gridUpdateDragAndDropPieces(piecesContainerElement);
+        }
+    }
+
+    // set the piece remover
+    setRemovePiecesElement = function(removePiecesElement){
+        removePiecesElement.innerHTML = this.getPieceRemover();
+    }
+
+
     // set random pieces in the given drag and drop grid using a given element as the event handler
-    setRandomPiecesButton(buttonElement, gridContainerElement){
-        let randomlyPlacePiecesElement = document.getElementById(buttonElement.id);
-        randomlyPlacePiecesElement.addEventListener("click", () => {
-            this.setRandomPieces();
-            this.loadSetPieces(gridContainerElement);
+    setRandomPiecesButton = function(gridContainerElement){
+        this.#randomPlacementElement.addEventListener("click", () => {
+            //console.log('randomly placed pieces');
+            this.#setRandomPieces();
+            this.loadSetGridPieces(gridContainerElement);
         })
+    }
+
+    // event on the start of the drag
+    bsrDragStart = function(item){
+        //console.log('ran dragstart');
+        this.saveDragAndDropGrid(this.#gridContainerElement);
+        if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
+            this.setClickedPieceInfo(item.target.parentNode);
+        }
+    }
+
+    // event function to take place on dragging over container pieces
+    bsrDragOver = function(item){
+        //console.log('ran dragover');
+        this.#dragging = true;
+        let setDraggedOver = false;
+        //console.log(item.target.parentNode.parentNode.parentNode)
+        if(item.target.parentNode){
+            //console.log(item.target.parentNode);
+            if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
+                if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
+                    this.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
+                    setDraggedOver = true;
+                }
+            }
+            if(!setDraggedOver){
+                this.setDraggedOverPieceInfo(item.target);
+            }
+            this.checkAndSetPieceLocations();
+            this.#canPlacePiece = this.canUseCurrentLocation();
+            //console.log('can place piece', canPlacePiece)
+            // if we havent removed previous pieces on pickup of a board piece on the grid
+            if (!this.#removedPreviousPiece){
+                this.removePreviousPiece();
+                // set a temporary grid with the chosen piece removed to show for display
+                this.#tempGrid = this.#gridContainerElement.innerHTML;
+                this.#removedPreviousPiece = true;
+            }
+            // to update the last pieces we plan on placing on the grid
+            if (this.#removedPreviousPiece){
+                this.loadHighlighting();
+            }
+        }
+    }
+
+    // if the piece leaves any droppable position, we will have to reload the grid with the temporary grid
+    bsrDragLeave = function(item){
+        //console.log('ran dragleave');
+        this.#dragging = false;
+        this.#removedPreviousPiece = false;
+        //console.log(setup.getDraggedPieceLocation());
+        //console.log(canPlacePiece);
+        if (!this.#canPlacePiece || !Helper.checkIfArraysAreEqual(this.getDraggedPieceLocation(), [0,0])){
+                this.#gridContainerElement.innerHTML = this.#tempGrid;
+                // set a small timer to check if we have stopped dragging the piece or not
+                setTimeout(() => {
+                    if (!this.#dragging){
+                        this.reloadDragAndDropGrid(this.#gridContainerElement);
+                    }
+                }, this.#time)
+        }
+    }
+
+    // on the drop of the piece
+    bsrDragDrop = function(item){
+        //console.log('ran drop');
+        this.removePieceIfNeeded();
+        this.setPieceLocationsAndCount();
+        document.getElementById("bsr__count").innerHTML = this.getNumberOfPlaceablePiecesLeft().patrolboat;
+        console.log(this.getNumberOfPlaceablePiecesLeft());
+        this.gridUpdateDragAndDropPieces(this.#piecesContainerElement);
+        if(!this.#canPlacePiece){
+            //console.log('using old table');
+            this.reloadDragAndDropGrid(this.#gridContainerElement);
+        }
+        if(this.#canPlacePiece || this.checkIfPieceWasRemoved()){
+            this.loadSetGridPieces(this.#gridContainerElement);
+        }
+        this.#dragging = true;
+        this.#removedPreviousPiece = false;
+    }
+
+    // some things initially placed to set up the various game objects
+    bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement){
+        this.#gridContainerElement = gridContainerElement;
+        this.#piecesContainerElement = piecesContainerElement;
+        this.#rotatePiecesElement = rotatePiecesElement;
+        this.#removePiecesElement = removePiecesElement;
+        this.#randomPlacementElement = randomPlacementElement;
+        //console.log(this.#gridContainerElement);
+        //console.log(this.#piecesContainerElement);
+        //console.log(this.#rotatePiecesElement);
+        //console.log(this.#removePiecesElement);
+        //console.log(this.#randomPlacementElement);
+
+        this.gridUpdateDragAndDropPieces(this.#piecesContainerElement);
+        this.loadBlankGrid(this.#gridContainerElement);
+        this.setRotatePiecesButton(this.#rotatePiecesElement, this.#piecesContainerElement);
+        this.setRandomPiecesButton(this.#gridContainerElement);
+        this.setRemovePiecesElement(this.#removePiecesElement);
     }
 
 }

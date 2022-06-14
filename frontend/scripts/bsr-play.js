@@ -107,7 +107,7 @@ class BsrPlay{
     // set the updated information for the current play move
     #setUpdateInfo(updatedInfo = this.#currentPlayInfo){
         this.#currentPlayInfo = updatedInfo;
-        this.#setPlayerTurn();
+        this.#setPlayerTurnByCurrentPlayInfo();
     }
 
     // set default info about the players grid cell in play
@@ -133,13 +133,12 @@ class BsrPlay{
                 this.#buttonParentId = button.parentNode.id;
                 this.#buttonLocation = [Helper.parseElementIdForMatrixLocation(this.#buttonParentId)];
                 this.#hasButtonUpdated = true;
-                this.#playerTurn = false;
             }
         }
     }
 
     // set what turn it is for playing
-    #setPlayerTurn(){
+    #setPlayerTurnByCurrentPlayInfo(){
         if(this.#playerNumber == this.#currentPlayInfo.playerTurn){
             this.#playerTurn = true;
         }
@@ -191,12 +190,25 @@ class BsrPlay{
     // return the proper outcome for the given button
     #getIdsWithImagesForUpdating(){
         let ids = this.#getCellIds(this.#currentPlayInfo.piecesClicked);
-        let imagercs = this.#getImagesForUpdating(this.#currentPlayInfo.piecesHit)
-        return {ids : ids, imageSrcs : imagercs}
+        let imagesrc = this.#getImagesForUpdating(this.#currentPlayInfo.piecesHit)
+        return {ids : ids, imageSrcs : imagesrc}
+    }
+
+    // get parts to show the end information of the game
+    #getGameoverParts(){
+        
     }
 
     //-------------------------------------------------------------------------
     // runtime methods
+
+    // functions to run on ai "thinking" wait time
+    #aiThinkingWaitTimeFunctions = () => {
+        this.#setChosenPiecesOutcome();
+        this.#hasInfoUpdated = true;
+        this.#playerTurn = true;
+        this.#setCurrentTurn();
+    }
 
     // runtime functions/methods to take place if the player is fighting against an ai
     #vsAiRuntime(){
@@ -209,6 +221,7 @@ class BsrPlay{
                 this.#setChosenPiecesOutcome();
                 this.#hasInfoUpdated = true;
                 this.#hasButtonUpdated = false;
+                this.#playerTurn = false;
                 this.#setCurrentTurn();
             }
         }
@@ -220,10 +233,7 @@ class BsrPlay{
             //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
             this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftThatHaveLocations());
             //console.log(this.#currentPlayInfo);
-            this.#setChosenPiecesOutcome();
-            this.#hasInfoUpdated = true;
-            this.#playerTurn = true;
-            this.#setCurrentTurn();
+            this.#aiPlayer.thinkingWaitTime(this.#aiThinkingWaitTimeFunctions);
         }
     }
 
@@ -231,12 +241,14 @@ class BsrPlay{
     #playRuntime(){
         console.log('running');
         if(this.#isPlayingAgainstAi){
-            this.#vsAiRuntime();
+            if(this.#playerTurn){
+                this.#vsAiRuntime();
+            }
         }
         if(!this.#isPlayingAgainstAi){
             
         }
-        if (!this.#currentPlayInfo.gameover || this.#setPlayerTurn){
+        if (!this.#currentPlayInfo.gameover){
 
         }
     }
@@ -258,7 +270,7 @@ class BsrPlay{
     // set the clicked button as disabled
     #setButtonsDisabled = function(){
         let pieces = this.#getDisabledPushButtons();
-        if(pieces){
+        if(pieces && this.#playerTurn){
             let allButtonsSize = Object.keys(pieces).length;
             for (let i = 0; i < allButtonsSize; i++){
                 let key = Object.keys(pieces)[i];
@@ -281,12 +293,14 @@ class BsrPlay{
             //console.log(allSameCellIds);
             // the programming only works for 2 players at the moment, will have to change if more players
             // playing at once is desired
-            if(this.#currentPlayInfo.playerTurn == 1){
+            // other players grid
+            if(this.#currentPlayInfo.playerTurn == this.#playerNumber){
                 let images = allSameCellIds[1].children[0].innerHTML;
                 allSameCellIds[1].innerHTML = images;
                 allSameCellIds[1].children[1].src = srcs[i];
             }
-            if(this.#currentPlayInfo.playerTurn == 2){
+            // client player grid
+            if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
                 allSameCellIds[0].children[0].children[1].src = srcs[i]
             }
         }

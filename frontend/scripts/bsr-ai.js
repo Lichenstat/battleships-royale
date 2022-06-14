@@ -25,7 +25,6 @@ class BsrAi{
     #aiLastSuccessfulAttackLocation;
     #aiPrioritizeAttackLocations;
     #aiPriorityAttackLocation;
-    #aiTiredOfCheckingSame;
 
     #bsrGrid;
     #bsrGridMinAndMax;
@@ -58,7 +57,6 @@ class BsrAi{
     this.#aiLastSuccessfulAttackLocation = [];
     this.#aiPrioritizeAttackLocations = [];
     this.#aiPriorityAttackLocation = [];
-    this.#aiTiredOfCheckingSame = 0;
 
     this.#bsrGrid = new BsrGrid();
     this.#bsrGridMinAndMax = this.#bsrGrid.getGridMinAndMaxPositions();
@@ -67,8 +65,8 @@ class BsrAi{
 
     this.#testChoice = [this.#bsrGridMinAndMax.minRowPosition, this.#bsrGridMinAndMax.minColumnPosition - 1];
     
-    this.#minTime = 1;
-    this.#maxTime = 3;
+    this.#minTime = 500;
+    this.#maxTime = 1000;
     this.#timer = Helper.getRandomInteger(this.#minTime, this.#maxTime);
 
     }
@@ -112,7 +110,15 @@ class BsrAi{
     //    return info;
     //}
 
-
+    // wait on an ai "thinking" wait time
+    thinkingWaitTime = function(runAfterTimeoutOver = function(){}){
+        setTimeout(
+            () => {
+                runAfterTimeoutOver();
+                this.#setRandomTimerInterval()
+            }
+        ,this.#timer)
+    }
 
     // get a location that has not yet been hit
     #getUnhitLocation(){
@@ -249,7 +255,7 @@ class BsrAi{
             this.#enemyShipsCount = Helper.accumulateObjectValues(currentEnemyBoats);
             this.#enemyShipJustSunk = true;
             this.#setCleanPriorityInfo();
-            console.log('boat sank, reset priority info');
+            //console.log('boat sank, reset priority info');
         }
     }
 

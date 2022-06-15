@@ -8,7 +8,7 @@
     <!--<base href=".">-->
     <link href="./styling/stylesheet.css" rel="stylesheet" />
 <body>
-    <div class='bsr'>
+    <div class='bsr bsr__container'>
         <div class='bsr__nav'>
             <a class="bsr__link bsr__link--active" href="play.html">Play</a>
             <a class="bsr__link bsr__link--inactive" href="leaderboard.html">Leaderboard</a>
@@ -50,13 +50,6 @@
                     </div>
                 </div>
             </div>
-            <button type="button" id="bsr__piecesrotate">Rotate pieces</button>
-            <div class="bsr__piecesshell" id="bsr__piecesshell">
-
-            </div>
-            <div id="bsr__count">
-
-            </div>
             <div class="bsr__options" id="bsr__options">
 
             </div>
@@ -73,18 +66,23 @@
                 </div>
             </div>
         </div>
+        
+        <div id="bsr__setupplacement" class="bsr__setupplacement">
+            <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell">
+                <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton">Rotate pieces</button>
+                <button id="bsr__placepiecerandomly" class="bsr__setupbutton">Randomly Put Pieces</button>
+            </div>
+            <div class="bsr__piecesshell" id="bsr__piecesshell"></div>
+            <div id="bsr__piecesremover"></div>
+            <div class="bsr__gridplacement" id="bsr__gridplacement"></div>
+        </div>
+        <div id="testt">
+            
+        </div>
+        <div id="testtt"><button id="bsr__generateplayertable">generate player table</button></div>
+        
+        <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
     </div>
-    <div id="bsr__piecesremover"> </div>
-    <button id="bsr__placepiecerandomly">Randomly Put Pieces</button>
-    <div class="bsr__gridplacement" id="bsr__gridplacement">
-
-    </div>
-    <div id="testt">
-
-    </div>
-    <div id="testtt"><button id="bsr__generateplayertable">generate player table</button></div>
-    
-    <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
     </script>
@@ -192,12 +190,34 @@
         //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
-        let gridContainerElement = document.getElementById("bsr__gridplacement");
+        // get our elements to easily initialize bsr setup
+
+        let setupPlacement = document.getElementById("bsr__setupplacement");
+        let originalSetup = setupPlacement.innerHTML;
         let piecesContainerElement = document.getElementById("bsr__piecesshell");
+        let buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
         let rotatePiecesElement = document.getElementById("bsr__piecesrotate");
         let removePiecesElement = document.getElementById("bsr__piecesremover");
         let randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
-        
+        let gridContainerElement = document.getElementById("bsr__gridplacement");
+
+        let removeNodesForPlaying = () => {
+            piecesContainerElement.remove();
+            buttonsContainerElement.remove();
+            removePiecesElement.remove();
+        }
+
+        // function to reset all replaced elements when they are put back into the document
+        let resetNodesForSetup = () => {
+            setupPlacement.innerHTML = originalSetup;
+            piecesContainerElement = document.getElementById("bsr__piecesshell");
+            buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
+            rotatePiecesElement = document.getElementById("bsr__piecesrotate");
+            removePiecesElement = document.getElementById("bsr__piecesremover");
+            randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
+            gridContainerElement = document.getElementById("bsr__gridplacement");
+        }
+
         let setup = new BsrSetup();
         setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement);
 
@@ -256,11 +276,11 @@
                 let playingAgainstAi = true;
                 console.log('making player table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
+                removeNodesForPlaying();
                 playing = new BsrPlay(setup.getPiecesData(), playingAgainstAi);
                 playing.loadPlayingGrids(gridContainerElement);
                 playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode);
                 playing.setEventListenersOfGridButtons();
-                setup.bsrRemoveSetup();
                 setup = null;
             }
 
@@ -268,6 +288,7 @@
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
                 document.getElementById('testtt').innerHTML = '<button id="bsr__generateplayertable">generate player grid</button>';
+                resetNodesForSetup();
                 setup = new BsrSetup();
                 setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement);
                 playing = null;

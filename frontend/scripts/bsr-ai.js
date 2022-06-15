@@ -9,6 +9,7 @@ export { BsrAi }
 class BsrAi{
 
     #aiPiecesData;
+    #aiPiecesDataDuplicate;
     #aiPlayerNumber;
     #aiUnhitLocations;
     #aiHitLocations;
@@ -40,6 +41,8 @@ class BsrAi{
     this.#aiPiecesData = aiPiecesData;
     // fill ai data table with random placed pieces
     this.#aiPiecesData.fillDataTableRandomly();
+    this.#aiPiecesDataDuplicate = structuredClone(this.#aiPiecesData.getPiecesDataTable());
+    this.#aiPiecesDataDuplicate = new BsrPiecesData(this.#aiPiecesDataDuplicate);
     this.#aiPlayerNumber = 2;
 
     this.#enemyInformationInitialized = false;
@@ -65,8 +68,8 @@ class BsrAi{
 
     this.#testChoice = [this.#bsrGridMinAndMax.minRowPosition, this.#bsrGridMinAndMax.minColumnPosition - 1];
     
-    this.#minTime = 500;
-    this.#maxTime = 1000;
+    this.#minTime = 1;
+    this.#maxTime = 1;
     this.#timer = Helper.getRandomInteger(this.#minTime, this.#maxTime);
 
     }
@@ -79,6 +82,11 @@ class BsrAi{
     // get ai pieces data
     getAiPiecesData(){
         return this.#aiPiecesData;
+    }
+
+    // get ai pieces data untouched
+    getAiPiecesDataUntouched(){
+        return this.#aiPiecesDataDuplicate;
     }
 
     // get the ai pieces that are left

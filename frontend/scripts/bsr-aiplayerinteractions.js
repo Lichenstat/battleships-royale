@@ -8,14 +8,14 @@ export { BsrPlayerAiInteractions }
 class BsrPlayerAiInteractions{
 
     // check if the location chosen to attack has hit a location or not
-    static checkIfHitOrMiss(attackedPiecesDataTable = new BsrPiecesData(), chosenLocation = [[0,0]]){
+    static checkIfHitOrMiss(attackedPiecesData = new BsrPiecesData(), chosenLocation = [[0,0]]){
         let locationsHit = []
         let chosenLocationLength = chosenLocation.length;
         for (let i = 0; i < chosenLocationLength; i++){
-            let checkIfHit = attackedPiecesDataTable.getPieceHavingDataTableOverlap([chosenLocation[i]]);
+            let checkIfHit = attackedPiecesData.getPieceHavingDataTableOverlap([chosenLocation[i]]);
             if(checkIfHit){
                 locationsHit.push(true);
-                attackedPiecesDataTable.removeLocationsFromPiecesInDataTable([chosenLocation[i]]);
+                attackedPiecesData.removeLocationsWithInternalsFromPiecesInDataTable([chosenLocation[i]]);
                 //console.log('hit');
             }
             if(!checkIfHit){
@@ -26,5 +26,17 @@ class BsrPlayerAiInteractions{
         return locationsHit
     }
 
+    // check if there has been a winner during the match yet or not
+    static setGameover(playerPiecesData = new BsrPiecesData(), aiPiecesData = new BsrPiecesData, currentPlayInfo = {}){
+        if(!Helper.accumulateObjectValues(playerPiecesData.getPiecesLeftThatHaveLocations())){
+            //console.log('player should lose')
+            currentPlayInfo.gameover = true;
+        }
+        if(!Helper.accumulateObjectValues(aiPiecesData.getPiecesLeftThatHaveLocations())){
+            //console.log('ai should lose')
+            currentPlayInfo.gameover = true;
+        }
+        return currentPlayInfo;
+    }
 
 }

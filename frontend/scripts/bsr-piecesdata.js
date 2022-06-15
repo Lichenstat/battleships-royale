@@ -15,10 +15,10 @@ class BsrPiecesData extends BsrPlayPieces{
     #horizontal;
     #vertical;
 
-    constructor(){
+    constructor(piecesDataTable = []){
         super();
-        this.#piecesDataTable = [];
-        this.#piecesDataTableCount = {};
+        this.#piecesDataTable = piecesDataTable;
+        this.#piecesDataTableCount = this.#setCurrentPiecesCountUsingDataTable();
 
         this.#horizontal = bsrGeneralInfo.horizontal;
         this.#vertical = bsrGeneralInfo.vertical;
@@ -50,6 +50,38 @@ class BsrPiecesData extends BsrPlayPieces{
         }
         //console.log(piecesInDataTable);
         return piecesInDataTable;
+    }
+
+    // get all piece locations that have locations left
+    getAllPiecesLocationsLeft(){
+        let locations = []
+        let length = this.#piecesDataTable.length;
+        for (let i = 0; i < length; i++){
+            let piece = this.getDataTablePieceById(i);
+            let locationsLength = piece.locations.length;
+            for (let j = 0; j < locationsLength; j++){
+                locations.push(piece.locations[j]);
+            }
+        }
+        return locations;
+    }
+
+    // get all piece internal source images left in order
+    getAllPiecesImagesLeft(){
+        let imageSrcs = []
+        let length = this.#piecesDataTable.length;
+        for (let i = 0; i < length; i++){
+            let piece = this.getDataTablePieceById(i);
+            let internalsLength = piece.internals.length;
+            for (let j = 0; j < internalsLength; j++){
+                let internal = piece.internals[j];
+                internal = internal.match(/src=.*\"/g).toString();
+                internal = internal.replace(/src=\"\.\//g, '').toString();
+                internal = internal.substring(0, internal.length - 1);
+                imageSrcs.push(internal);
+            }
+        }
+        return imageSrcs;
     }
 
     // get the count of each type of piece put into the data table
@@ -229,13 +261,16 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // remove locations from pieces in the data table
-    removeLocationsFromPiecesInDataTable(locations = [[]]){
+    removeLocationsWithInternalsFromPiecesInDataTable(locations = [[]]){
         //console.log('removing locations', locations);
         let locationsSize = locations.length;
         for (let i = 0; i < locationsSize; i++){
             let piece = this.getPieceHavingDataTableOverlap([locations[i]]);
             if(piece){
+                let oldLocations = piece.locations;
                 piece.locations = Helper.removeDuplicatesFromArrayUsingArray(piece.locations, [locations[i]]);
+                let keptIndexes = Helper.getIndexLocationOfMatchedArrays(piece.locations, oldLocations);
+                piece.internals = Helper.keepPartsOfArrayGivenIndexLocations(keptIndexes, piece.internals);
                 this.#piecesDataTable[piece.id] = piece;
             }
         }

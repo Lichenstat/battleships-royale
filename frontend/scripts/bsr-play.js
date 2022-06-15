@@ -137,6 +137,14 @@ class BsrPlay{
         }
     }
 
+    // check if there is a winner as of yet
+    #checkIfWinner(){
+        if(this.#currentPlayInfo.gameover){
+            console.log('we got a winner!!!!');
+            this.#setGameoverImages();
+        }
+    }
+
     // set what turn it is for playing
     #setPlayerTurnByCurrentPlayInfo(){
         if(this.#playerNumber == this.#currentPlayInfo.playerTurn){
@@ -173,7 +181,7 @@ class BsrPlay{
     }
 
     // get the proper sources for the images on a hit or miss outcome
-    #getImagesForUpdating(piecesHit = []){
+    #getOutcomeImagesForUpdating(piecesHit = []){
         let imageSrc = [];
         let size = piecesHit.length;
         for (let i = 0; i < size; i++){
@@ -188,19 +196,26 @@ class BsrPlay{
     }
 
     // return the proper outcome for the given button
-    #getIdsWithImagesForUpdating(){
+    #getOutcomeIdsWithImagesForUpdating(){
         let ids = this.#getCellIds(this.#currentPlayInfo.piecesClicked);
-        let imagesrc = this.#getImagesForUpdating(this.#currentPlayInfo.piecesHit)
+        let imagesrc = this.#getOutcomeImagesForUpdating(this.#currentPlayInfo.piecesHit)
         return {ids : ids, imageSrcs : imagesrc}
     }
 
-    // get parts to show the end information of the game
-    #getGameoverParts(){
-        
+    // return ship images from a bsr data table over the given buttons after a game over
+    #getGameoverShipImages(bsrPiecesData = new BsrPiecesData()){
+        let ids = this.#getCellIds(bsrPiecesData.getAllPiecesLocationsLeft());
+        let imagesrc = bsrPiecesData.getAllPiecesImagesLeft();
+        return {ids : ids, imageSrcs : imagesrc}
     }
 
     //-------------------------------------------------------------------------
     // runtime methods
+
+    #checkPlayerVsAiGameover = () => {
+        this.#currentPlayInfo = BsrPlayerAiInteractions.setGameover(this.#playerPiecesData, this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
+        this.#checkIfWinner();
+    }
 
     // functions to run on ai "thinking" wait time
     #aiThinkingWaitTimeFunctions = () => {
@@ -209,10 +224,10 @@ class BsrPlay{
         this.#playerTurn = true;
         this.#setCurrentTurn();
     }
-
+    
     // runtime functions/methods to take place if the player is fighting against an ai
     #vsAiRuntime(){
-        if(this.#currentPlayInfo.playerTurn == this.#playerNumber){
+        if(this.#currentPlayInfo.playerTurn == this.#playerNumber && !this.#currentPlayInfo.gameover){
             if(this.#hasButtonUpdated){
                 console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
@@ -225,7 +240,8 @@ class BsrPlay{
                 this.#setCurrentTurn();
             }
         }
-        if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
+        this.#checkPlayerVsAiGameover();
+        if(this.#currentPlayInfo.playerTurn != this.#playerNumber && !this.#currentPlayInfo.gameover){
             console.log("ai attacked");
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
@@ -235,21 +251,24 @@ class BsrPlay{
             //console.log(this.#currentPlayInfo);
             this.#aiPlayer.thinkingWaitTime(this.#aiThinkingWaitTimeFunctions);
         }
+        this.#checkPlayerVsAiGameover();
     }
 
     // player vs whoever runtime
     #playRuntime(){
         console.log('running');
-        if(this.#isPlayingAgainstAi){
-            if(this.#playerTurn){
-                this.#vsAiRuntime();
+        if(!this.#currentPlayInfo.gameover){
+            if(this.#isPlayingAgainstAi){
+                if(this.#playerTurn){
+                    this.#vsAiRuntime();
+                }
             }
-        }
-        if(!this.#isPlayingAgainstAi){
-            
-        }
-        if (!this.#currentPlayInfo.gameover){
-
+            if(!this.#isPlayingAgainstAi){
+                
+            }
+            if (!this.#currentPlayInfo.gameover){
+    
+            }
         }
     }
 
@@ -283,12 +302,12 @@ class BsrPlay{
 
     // set pieces after they have been checked and sent back after ai/server updates
     #setChosenPiecesOutcome = function(){
-        let pieces = this.#getIdsWithImagesForUpdating();
+        let pieces = this.#getOutcomeIdsWithImagesForUpdating();
         // console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
-        let size = ids.length;
-        for (let i = 0; i < size; i++){
+        let length = ids.length;
+        for (let i = 0; i < length; i++){
             let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
             //console.log(allSameCellIds);
             // the programming only works for 2 players at the moment, will have to change if more players
@@ -302,6 +321,33 @@ class BsrPlay{
             // client player grid
             if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
                 allSameCellIds[0].children[0].children[1].src = srcs[i]
+            }
+        }
+    }
+
+    // set pieces ship images after the game is over
+    #setGameoverImages = () =>{
+        let pieces = {}
+        if (this.#isPlayingAgainstAi){
+            pieces = this.#getGameoverShipImages(this.#aiPlayer.getAiPiecesDataUntouched());
+        }
+        console.log(pieces);
+        let ids = pieces.ids;
+        let srcs = pieces.imageSrcs;
+        let length = ids.length;
+        for (let i = 0; i < length; i++){
+            let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
+            //console.log(allSameCellIds);
+            // if the button is not disabled (does not have proper image elements for setting up pieces), 
+            // create disabled button and put images into cell
+            if (allSameCellIds[1].children[0].nodeName == 'BUTTON'){
+                allSameCellIds[1].innerHTML = this.#buttonGrid.getGridButtonDisabled();
+                let images = allSameCellIds[1].children[0].innerHTML;
+                allSameCellIds[1].innerHTML = images;
+            }
+            // if our child node is an image (meaning we can put the ship image in the src), use the ship image
+            if (allSameCellIds[1].children[0].nodeName == 'IMG'){
+                allSameCellIds[1].children[0].src = srcs[i];
             }
         }
     }

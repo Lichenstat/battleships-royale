@@ -437,17 +437,28 @@ class BsrSetup{
     //-------------------------------------------------------------------------
     // callable anonymous functions for use with event listeners outside of setup
 
-    // temporary to put all the pieces together for now
+    // put all the placeable pieces together
     #combinedPieces = function(){
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
+        //beginning = Helper.parsePartOfStringToReplace(beginning, 'class="' + bsrPieceInteractors.piecesContainerId + '"', bsrPieceInteractors.piecesContainerId)
         let ending = container.substring(container.lastIndexOf('<'), container.length);
-        let combined = '';
+        let remover = bsrPieceInteractors.dragAndDropPieceRemover;
         let pieces = this.getUpdatedRotatedPieces();
+        let piecesLeft = this.getNumberOfPlaceablePiecesLeft();
+        let combined = '';
+        //console.log(pieces);
         for (const [key, item] of Object.entries(pieces)){
-            combined = combined + item;
+            let currentBeginning = Helper.parsePartOfStringToReplace(
+                beginning, 
+                'class="' + bsrPieceInteractors.piecesContainerId + '"', 
+                'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
+                );
+                let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
+                if (uppercaseKey == 'Patrolboat') uppercaseKey = 'Patrol Boat';
+            combined = combined + (currentBeginning + uppercaseKey + ': ' + piecesLeft[key] + item + ending);
         }
-        return beginning + combined + ending;
+        return remover + combined;
     }
 
     // update the drag and drop pieces that can be put on the grid
@@ -525,19 +536,19 @@ class BsrSetup{
         removePiecesElement.innerHTML = this.getPieceRemover();
     }
 
-
     // set random pieces in the given drag and drop grid using a given element as the event handler
-    setRandomPiecesButton = function(gridContainerElement){
+    setRandomPiecesButton = function(gridContainerElement, piecesContainerElement){
         this.#randomPlacementElement.addEventListener("click", () => {
             //console.log('randomly placed pieces');
             this.#setRandomPieces();
             this.loadSetGridPieces(gridContainerElement);
+            this.gridUpdateDragAndDropPieces(piecesContainerElement);
         })
     }
 
     // event on the start of the drag
     bsrDragStart = function(item){
-        //console.log('ran dragstart');
+        //console.log('ran dragstart from setup.js');
         this.saveDragAndDropGrid(this.#gridContainerElement);
         if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
             this.setClickedPieceInfo(item.target.parentNode);
@@ -546,7 +557,7 @@ class BsrSetup{
 
     // event function to take place on dragging over container pieces
     bsrDragOver = function(item){
-        //console.log('ran dragover');
+        //console.log('ran dragover from setup.js');
         this.#dragging = true;
         let setDraggedOver = false;
         //console.log(item.target.parentNode.parentNode.parentNode)
@@ -580,7 +591,7 @@ class BsrSetup{
 
     // if the piece leaves any droppable position, we will have to reload the grid with the temporary grid
     bsrDragLeave = function(item){
-        //console.log('ran dragleave');
+        //console.log('ran dragleave from setup.js');
         this.#dragging = false;
         this.#removedPreviousPiece = false;
         //console.log(setup.getDraggedPieceLocation());
@@ -598,11 +609,9 @@ class BsrSetup{
 
     // on the drop of the piece
     bsrDragDrop = function(item){
-        //console.log('ran drop');
+        //console.log('ran drop from setup.js');
         this.removePieceIfNeeded();
         this.setPieceLocationsAndCount();
-        document.getElementById("bsr__count").innerHTML = this.getNumberOfPlaceablePiecesLeft().patrolboat;
-        console.log(this.getNumberOfPlaceablePiecesLeft());
         this.gridUpdateDragAndDropPieces(this.#piecesContainerElement);
         if(!this.#canPlacePiece){
             //console.log('using old table');
@@ -631,8 +640,8 @@ class BsrSetup{
         this.gridUpdateDragAndDropPieces(this.#piecesContainerElement);
         this.loadBlankGrid(this.#gridContainerElement);
         this.setRotatePiecesButton(this.#rotatePiecesElement, this.#piecesContainerElement);
-        this.setRandomPiecesButton(this.#gridContainerElement);
-        this.setRemovePiecesElement(this.#removePiecesElement);
+        this.setRandomPiecesButton(this.#gridContainerElement, this.#piecesContainerElement);
+        //this.setRemovePiecesElement(this.#removePiecesElement);
     }
 
 }

@@ -11,8 +11,12 @@ body{
 }
 
 /* bsr is shorthand for battleships royale*/
-.bsr{
-
+.bsr__container{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width : 1200px;
+  border: 2px solid blue;
 }
 
 .bsr__nav{
@@ -35,23 +39,59 @@ body{
 
 }
 
+.bsr__setupplacement{
+  border: 2px solid purple;
+  display: flex;
+  margin: auto;
+
+  justify-content: center;
+}
+
+.bsr__setupbuttonsshell{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  border: 2px solid gold;
+}
+
+.bsr__setupbutton{
+  width: 100px;
+  height: 100px;
+  border: 2px solid orange;
+}
+
 .bsr__gridplacement{
   display: flex;
   align-items: center;
   justify-content: center;
+  width: fit-content;
+  height: fit-content;
   border: 2px solid green;
 }
 
 .bsr__piecescontainer{
+  min-width: 145px;
+  width: fit-content;
+  height: fit-content;
   border: 2px solid red;
+  padding-bottom: 10px;
 }
 
 .bsr__piecesshell{
   border: 2px solid peachpuff;
-  overflow: auto;
-  table-layout: fixed;
-  width: 400px;
-  height: 300px;
+  width: 300px;
+  height: 650px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.bsr__pieceremover{
+  position: absolute;
+  width: 300px;
+  height: 640px;
+  border: 2px solid darkblue;
 }
 
 .bsr__placementplot{
@@ -102,11 +142,6 @@ body{
   height: 50px;
 }
 
-.bsr__table--carrier-horizontal{
-  background-color: aqua;
-  /*border: 4px solid red;*/
-}
-
 .bsr__table{
   border-collapse: collapse;
   height: 40px;
@@ -120,12 +155,6 @@ body{
   width: 50px;
   height: 50px;
   /*border: 2px solid black;*/
-}
-
-.bsr__pieceremover{
-  width: auto;
-  height: 60px;
-  border: 2px solid darkblue;
 }
 
 table{

@@ -37,7 +37,7 @@ class BsrPlayPieces{
     #savePieces;
 
     constructor(){
-        // generate and set grid game pieces
+        // create and set grid game pieces
         this.#bsrTable = new CreateTable();
 
         this.#bsrCarrierHorizontalContent = this.#createGridPieceContents(bsrGridPieces.carrierHorizontal.name, bsrGeneralInfo.horizontal, bsrGridPieces.carrierHorizontal.rows, bsrGridPieces.carrierHorizontal.columns);

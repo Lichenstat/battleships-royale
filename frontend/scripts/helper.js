@@ -158,6 +158,18 @@ class Helper{
         return keepDuplicates;
     }
 
+    // keep parts of an array given index locations of some kind
+    static keepPartsOfArrayGivenIndexLocations(indexLocations = [], array = []){
+        let keepArrayParts = [];
+        let length = array.length;
+        for (let i = 0; i < length; i++){
+            if (indexLocations.includes(i)){
+                keepArrayParts.push(array[i]);
+            }
+        }
+        return keepArrayParts;
+    }
+
     // check if array is in array of arrays
     static checkIfArrayIsInArrayOfArrays(array = [], arrayOfArrays = [[],[]]){
         let setOfArraysLength = arrayOfArrays.length;
@@ -257,6 +269,20 @@ class Helper{
                 return i;
             }
         }
+    }
+
+    // get index of multiple match cases using arrays
+    static getIndexLocationOfMatchedArrays(matchedArray = [[],[]], arrays=[[],[]]){
+        let matchedIndexes = [];
+        let length = matchedArray.length
+        for (let i = 0; i < length; i++){
+            let matched = null;
+            matched = this.getIndexLocationOfMatchedArray(matchedArray[i], arrays);
+            if (matched != null){
+                matchedIndexes.push(matched);
+            }
+        }
+        return matchedIndexes;
     }
 
     // get index locations of match cases in a string

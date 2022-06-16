@@ -1,6 +1,6 @@
 // class to have various play methods to check for in the game
 
-import { bsrGeneralInfo, bsrGridInternals } from "./bsr-config.js";
+import { bsrGeneralInfo, bsrGridInternals, bsrPieceInteractors } from "./bsr-config.js";
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { BsrPlayParse } from "./bsr-playparse.js";
@@ -41,6 +41,9 @@ class BsrPlay{
     #playerTurn;
     #gameover;
 
+    #playerShipInfoElement;
+    #enemyShipInfoElement;
+
     constructor(playerPiecesData = new BsrPiecesData(), playingAgainstAi = true){
         this.#playerPiecesData = playerPiecesData;
         this.#isPlayingAgainstAi = playingAgainstAi;
@@ -76,6 +79,11 @@ class BsrPlay{
         this.#playerTurn = true;
         this.#gameover = this.#currentPlayInfo.gameover;
 
+        //------------------------------------------------
+        // for updating parts in game
+        this.#playerShipInfoElement = "";
+        this.#enemyShipInfoElement = "";
+
     }
 
     // return the player grid
@@ -93,9 +101,30 @@ class BsrPlay{
         return this.#currentPlayInfo.playerTurn;
     }
 
-    //  call if we will want to play against ai
+    // call if we will want to play against ai
     setPlayingAgainstAi(){
         this.#playingAgainstAi = true;
+    }
+
+    // get the updated pieces info
+    getUpdatedPieces(bsrPiecesData = new BsrPiecesData()){
+        let gamePieces = ''
+        let container = bsrPieceInteractors.piecesContainer;
+        let beginning = container.substring(0, container.indexOf('>') + 1);
+        let ending = container.substring(container.lastIndexOf('<'), container.length);
+        let shipPieces = bsrPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
+        let shipCount = bsrPiecesData.getPiecesLeftThatHaveLocations();
+        for (const [key, item] of Object.entries(shipPieces)){
+            let currentBeginning = Helper.parsePartOfStringToReplace(
+            beginning, 
+            'class="' + bsrPieceInteractors.piecesContainerId + '"', 
+            'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
+            );
+            let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
+            if (uppercaseKey == 'Patrolboat') uppercaseKey = 'Patrol Boat';
+            gamePieces = gamePieces + (currentBeginning + uppercaseKey + ': ' + shipCount[key] + item + ending);
+        }
+        return gamePieces;
     }
 
     // initial game setup on player join
@@ -282,7 +311,8 @@ class BsrPlay{
             elementTwo.innerHTML = this.getButtonsGrid().getGrid();
         }
         else{
-            elementOne.innerHTML = this.getPlayerGrid().getGrid() + this.getButtonsGrid().getGrid();
+            let gridSpacer = '<div id="bsr__gridspacer" class="bsr__gridspacer"></div>';
+            elementOne.innerHTML = this.getPlayerGrid().getGrid() + gridSpacer + this.getButtonsGrid().getGrid();
         }
     }
 
@@ -302,6 +332,13 @@ class BsrPlay{
 
     // set pieces after they have been checked and sent back after ai/server updates
     #setChosenPiecesOutcome = function(){
+        // update the proper ship information if it exists
+        if (this.#playerShipInfoElement){
+            this.#updatedPlayerInfo(this.#playerShipInfoElement, this.#playerPiecesData);
+        }
+        if (this.#enemyShipInfoElement){
+            this.#updatedPlayerInfo(this.#enemyShipInfoElement, this.#aiPlayer.getAiPiecesData());
+        }
         let pieces = this.#getOutcomeIdsWithImagesForUpdating();
         // console.log(pieces);
         let ids = pieces.ids;
@@ -331,7 +368,7 @@ class BsrPlay{
         if (this.#isPlayingAgainstAi){
             pieces = this.#getGameoverShipImages(this.#aiPlayer.getAiPiecesDataUntouched());
         }
-        console.log(pieces);
+        //console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
         let length = ids.length;
@@ -352,6 +389,19 @@ class BsrPlay{
         }
     }
 
+    // update player info
+    #updatedPlayerInfo = (infoElement, bsrPiecesData) => {
+        infoElement.innerHTML = this.getUpdatedPieces(bsrPiecesData);
+    }
+
+    // set the updated player info by element pieces
+    setUpdatedPlayerInfo(playerShipsInfoElement, enemyShipsInfoElement){
+        this.#playerShipInfoElement = playerShipsInfoElement;
+        this.#enemyShipInfoElement = enemyShipsInfoElement;
+        this.#updatedPlayerInfo(playerShipsInfoElement, this.#playerPiecesData);
+        this.#updatedPlayerInfo(enemyShipsInfoElement, this.#aiPlayer.getAiPiecesData());
+    }
+
     // set the event listeners of the grid buttons
     setEventListenersOfGridButtons = function(){
         let x = document.querySelectorAll("[id='" + bsrGridInternals.boardButtonId + "']");
@@ -366,5 +416,6 @@ class BsrPlay{
             })
         })
     }
+
 
 }

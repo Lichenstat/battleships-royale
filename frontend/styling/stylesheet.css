@@ -10,6 +10,11 @@ body{
     font-family: 'Stardos Stencil', cursive;
 }
 
+button{
+  font-family: 'Stardos Stencil', cursive;
+  font-size: 16px;
+}
+
 /* bsr is shorthand for battleships royale*/
 .bsr__container{
   display: block;
@@ -17,6 +22,39 @@ body{
   margin-right: auto;
   width : 1200px;
   border: 2px solid blue;
+}
+
+.bsr__title{
+  text-align: center;
+  font-size: 75px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.bsr__shipinfoshell{
+  border: 2px solid brown;
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.bsr__playershipinfo{
+  border: 2px solid black;
+  width: fit-content;
+  height: fit-content;
+}
+
+.bsr__enemyshipinfo{
+  border: 2px solid black;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: 0;
+  height: fit-content;
+  /*
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  float: right;
+  */
 }
 
 .bsr__nav{
@@ -43,63 +81,66 @@ body{
   border: 2px solid purple;
   display: flex;
   margin: auto;
-
   justify-content: center;
 }
 
 .bsr__setupbuttonsshell{
+  border: 2px solid gold;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 10px;
-  border: 2px solid gold;
 }
 
 .bsr__setupbutton{
-  width: 100px;
-  height: 100px;
   border: 2px solid orange;
+  width: 100px;
+  height: 200px;
 }
 
 .bsr__gridplacement{
+  border: 2px solid green;
   display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
   height: fit-content;
-  border: 2px solid green;
+}
+
+.bsr__gridspacer{
+  border: 2px solid cyan;
+  width: 20px;
 }
 
 .bsr__piecescontainer{
+  border: 2px solid red;
   min-width: 145px;
   width: fit-content;
   height: fit-content;
-  border: 2px solid red;
-  padding-bottom: 10px;
 }
 
 .bsr__piecesshell{
   border: 2px solid peachpuff;
   width: 300px;
-  height: 650px;
+  height: 635px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
 }
 
 .bsr__pieceremover{
+  border: 2px solid darkblue;
   position: absolute;
   width: 300px;
-  height: 640px;
-  border: 2px solid darkblue;
+  height: 635px;
 }
 
 .bsr__placementplot{
+  background-color: lightgrey;
   width: 50px;
   height: 50px;
   /*display: block;*/
   /*border-collapse: collapse;*/
-  background-color: lightgrey;
   /*border: 2px solid black;*/
 }
 
@@ -109,8 +150,11 @@ body{
 }
 
 .bsr__boardbutton{
-  width: 50px;
-  height: 50px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 100%;
 }
 
 .bsr__pieceimage{
@@ -143,9 +187,9 @@ body{
 }
 
 .bsr__table{
+  background-color: grey;
   border-collapse: collapse;
   height: 40px;
-  background-color: grey;
   /*border: 2px solid black;*/
 }
 
@@ -155,6 +199,21 @@ body{
   width: 50px;
   height: 50px;
   /*border: 2px solid black;*/
+}
+
+.bsr__changestates{
+  padding: 20px;
+  text-align: center;
+}
+
+.bsr__generateplacementgrid{
+  width: 200px;
+  height: 50px;
+}
+
+.bsr__generateplayertable{
+  width: 200px;
+  height: 50px;
 }
 
 table{

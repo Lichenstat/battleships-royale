@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Battleships Royale - Setup</title>
+    <title>Battleships - Play</title>
     <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
     <!--<meta name="author" content="SitePoint">-->
     <!--<base href=".">-->
     <link href="./styling/stylesheet.css" rel="stylesheet" />
 <body>
     <div class='bsr bsr__container'>
+        <div class="bsr__title">Battleships</div>
+        <!--
         <div class='bsr__nav'>
             <a class="bsr__link bsr__link--active" href="play.html">Play</a>
             <a class="bsr__link bsr__link--inactive" href="leaderboard.html">Leaderboard</a>
             <a class="bsr__link bsr__link--inactive" href="about.html">About</a>
         </div>
+        -->
+        <!--
         <div class="bsr__menu">
             <div class="bsr__game">
                 *32 player limit at the moment*
@@ -56,7 +60,9 @@
             <div class="bsr__players" id="bsr__players">
 
             </div>
-        </div>
+        </div> 
+        -->
+        <!--
         <div class="color">
             test
             <div class="test__color">
@@ -66,11 +72,16 @@
                 </div>
             </div>
         </div>
-        
+        -->
+        <div id="bsr__shipinfoshell" class="bsr__shipinfoshell">
+            <div id="bsr__playershipinfo" class="bsr__playershipinfo"></div>
+            <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo"></div>
+        </div>
         <div id="bsr__setupplacement" class="bsr__setupplacement">
             <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell">
-                <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton">Rotate pieces</button>
-                <button id="bsr__placepiecerandomly" class="bsr__setupbutton">Randomly Put Pieces</button>
+                <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton">Rotate Pieces</button>
+                <button type="button" id="bsr__piecesremove" class="bsr__setupbutton">Remove All Pieces</button>
+                <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton">Randomly Place Pieces</button>
             </div>
             <div class="bsr__piecesshell" id="bsr__piecesshell"></div>
             <div id="bsr__piecesremover"></div>
@@ -79,9 +90,8 @@
         <div id="testt">
             
         </div>
-        <div id="testtt"><button id="bsr__generateplayertable">generate player table</button></div>
-        
-        <div class="bsr__playerplot bsr__playerplot--empty" id="bsr__playerplot"><img class="bsr__imagepiece" id="bsr__imagepiece"></div>
+        <div id="bsr__changestates" class="bsr__changestates"><button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button></div>
+        <!--<div id="bsr__gridspacer" class="bsr__gridspacer"></div>-->
     </div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
@@ -167,39 +177,44 @@
         import {BsrPlay} from "./scripts/bsr-play.js";
 
         //--------------------------------------------------------------
-        let joinGame = document.getElementById('bsr__join');
-        let gameCode = document.getElementById('bsr__code');
+        //let joinGame = document.getElementById('bsr__join');
+        //let gameCode = document.getElementById('bsr__code');
 
-        let aiCheckbox = document.getElementById('bsr__checkbox--ai');
-        let publicGame = document.getElementById('bsr__checkbox--public');
-        let playerCount = document.getElementById('bsr__players--count');
-        let prepareGame = document.getElementById('bsr__prepare');
-        let startGame = document.getElementById('bsr__start');
+        //let aiCheckbox = document.getElementById('bsr__checkbox--ai');
+        //let publicGame = document.getElementById('bsr__checkbox--public');
+        //let playerCount = document.getElementById('bsr__players--count');
+        //let prepareGame = document.getElementById('bsr__prepare');
+        //let startGame = document.getElementById('bsr__start');
 
-        playerCount.onchange = () => {
-            if (playerCount.value < 1)
-                playerCount.value = 1;
-            if (playerCount.value > 31)
-                playerCount.value = 31;
-        }
+        //playerCount.onchange = () => {
+        //    if (playerCount.value < 1)
+        //        playerCount.value = 1;
+        //    if (playerCount.value > 31)
+        //        playerCount.value = 31;
+        //}
 
         //--------------------------------------------------------------
         
-        let testt = document.getElementById("testt");
+        //let testt = document.getElementById("testt");
         //let buttonGrid = BsrCreateGrids.getButtonGrid();
         //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
         // get our elements to easily initialize bsr setup
 
+        let playerShipInfoElement = document.getElementById("bsr__playershipinfo");
+        let enemyShipInfoElement = document.getElementById("bsr__enemyshipinfo");
+
         let setupPlacement = document.getElementById("bsr__setupplacement");
         let originalSetup = setupPlacement.innerHTML;
         let piecesContainerElement = document.getElementById("bsr__piecesshell");
         let buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
         let rotatePiecesElement = document.getElementById("bsr__piecesrotate");
+        let removeAllPiecesElement = document.getElementById("bsr__piecesremove");
         let removePiecesElement = document.getElementById("bsr__piecesremover");
         let randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
         let gridContainerElement = document.getElementById("bsr__gridplacement");
+        let changeStatesElement = document.getElementById("bsr__changestates");
 
         let removeNodesForPlaying = () => {
             piecesContainerElement.remove();
@@ -213,13 +228,14 @@
             piecesContainerElement = document.getElementById("bsr__piecesshell");
             buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
             rotatePiecesElement = document.getElementById("bsr__piecesrotate");
+            removeAllPiecesElement = document.getElementById("bsr__piecesremove");
             removePiecesElement = document.getElementById("bsr__piecesremover");
             randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
             gridContainerElement = document.getElementById("bsr__gridplacement");
         }
 
         let setup = new BsrSetup();
-        setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement);
+        setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
 
         //-------------------------------------------------------------------------
         // for grid and pieces using drag and drop
@@ -272,25 +288,38 @@
             //}
 
             // set up the player table
-            if(item.target.id == "bsr__generateplayertable"){
-                let playingAgainstAi = true;
-                console.log('making player table');
-                document.getElementById('testtt').innerHTML = '<button id="bsr__generateplacementgrid">generate placement grid</button>';
-                removeNodesForPlaying();
-                playing = new BsrPlay(setup.getPiecesData(), playingAgainstAi);
-                playing.loadPlayingGrids(gridContainerElement);
-                playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode);
-                playing.setEventListenersOfGridButtons();
-                setup = null;
+            if (item.target.id == "bsr__generateplayertable"){
+                let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                if (placeablePiecesCount){
+                    setTimeout(() => {
+                        if (setup != null)
+                            changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
+                    }, 3000)
+                }
+                if (!placeablePiecesCount){
+                    let playingAgainstAi = true;
+                    console.log('making player table');
+                    changeStatesElement.innerHTML = '<button id="bsr__generateplacementgrid" class="bsr__generateplacementgrid">Stop Game</button>';
+                    removeNodesForPlaying();
+                    playing = new BsrPlay(setup.getPiecesData(), playingAgainstAi);
+                    playing.loadPlayingGrids(gridContainerElement);
+                    playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode);
+                    playing.setEventListenersOfGridButtons();
+                    playing.setUpdatedPlayerInfo(playerShipInfoElement, enemyShipInfoElement);
+                    setup = null;
+                }
             }
 
             // set up the game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
-                document.getElementById('testtt').innerHTML = '<button id="bsr__generateplayertable">generate player grid</button>';
+                changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
+                playerShipInfoElement.innerHTML = '';
+                enemyShipInfoElement.innerHTML = '';
                 resetNodesForSetup();
                 setup = new BsrSetup();
-                setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement);
+                setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
                 playing = null;
             }
             

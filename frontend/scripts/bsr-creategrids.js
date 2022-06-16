@@ -25,7 +25,7 @@ class BsrCreateGrids{
     static getDragAndDropGrid(){
         let table = new CreateTable();
         // for creating a drag and drop table
-        let gamePlacementPlots = Object.assign(bsrGridProperties.content , {'all' : bsrGridInternals.dragAndDrop});
+        let gamePlacementPlots = Object.assign(bsrGridProperties.content , {'(1,1)' : 'Setup', all : bsrGridInternals.dragAndDrop});
         table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gamePlacementPlots);
         let gamePlacementTable = table.getHTMLTable();
         return new BsrDragAndDropGrid(gamePlacementTable);
@@ -35,7 +35,7 @@ class BsrCreateGrids{
     static getButtonGrid(){
         let table = new CreateTable();
         // for creating a game button table (user choice attacking enemy)
-        let gameButtonPlots = Object.assign(bsrGridProperties.content, {'all' : bsrGridInternals.boardButtonEnabled});
+        let gameButtonPlots = Object.assign(bsrGridProperties.content, {'(1,1)' : 'P2', all : bsrGridInternals.boardButtonEnabled});
         table.setHTMLTableProperties(bsrGridProperties.class, bsrGridProperties.id, bsrGridProperties.tableHeadColumnCount, bsrGridProperties.tableFootColumnCount, bsrGridProperties.rows, bsrGridProperties.columns, gameButtonPlots);
         let gameButtonTable = table.getHTMLTable();
         return new BsrButtonGrid(gameButtonTable);
@@ -63,7 +63,7 @@ class BsrCreateGrids{
             }
         }
         // make regular plot pieces
-        let gamePlayerPlots = Object.assign(bsrGridProperties.content, { "all" : bsrGridInternals.playerPieceEmpty});
+        let gamePlayerPlots = Object.assign(bsrGridProperties.content, { '(1,1)' : 'P1', "all" : bsrGridInternals.playerPieceEmpty});
         //console.log(gamePlayerPlots);
         let table = new CreateTable();
         // combine with chosen player pieces

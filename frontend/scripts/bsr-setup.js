@@ -50,6 +50,7 @@ class BsrSetup{
     #gridContainerElement;
     #piecesContainerElement;
     #rotatePiecesElement;
+    #removeAllPiecesElement;
     #removePiecesElement;
     #randomPlacementElement;
 
@@ -104,6 +105,7 @@ class BsrSetup{
         this.#gridContainerElement = "some__html-element";
         this.#piecesContainerElement = "some__html-element";
         this.#rotatePiecesElement = "some__html-element";
+        this.#removeAllPiecesElement = "some__html-element"
         this.#removePiecesElement = "some__html-element";
         this.#randomPlacementElement = "some__html-element";
 
@@ -387,7 +389,7 @@ class BsrSetup{
     removePieceIfNeeded(){
         this.#pieceWasRemoved = false;
         if(this.#willPieceBeRemoved && !Helper.checkIfArraysAreEqual(this.#gridPieceClickedLocation, [0,0])){
-            console.log(this.#usingPlacedPiece);
+            //console.log(this.#usingPlacedPiece);
             this.#piecesData.removePieceInDataTable(this.#usingPlacedPiece.id);
             this.#pieceWasRemoved = true;
         }
@@ -441,8 +443,8 @@ class BsrSetup{
     #combinedPieces = function(){
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
-        //beginning = Helper.parsePartOfStringToReplace(beginning, 'class="' + bsrPieceInteractors.piecesContainerId + '"', bsrPieceInteractors.piecesContainerId)
         let ending = container.substring(container.lastIndexOf('<'), container.length);
+        // we will add the remover here to the play pieces as of now (ease of use)
         let remover = bsrPieceInteractors.dragAndDropPieceRemover;
         let pieces = this.getUpdatedRotatedPieces();
         let piecesLeft = this.getNumberOfPlaceablePiecesLeft();
@@ -528,6 +530,15 @@ class BsrSetup{
             //console.log('rotationg pieces');
             this.#changeBoardPieceRotation();
             this.gridUpdateDragAndDropPieces(piecesContainerElement);
+        }
+    }
+
+    // set the remove all pieces element
+    setRemoveAllPiecesButton = function(removeAllPiecesElement, piecesContainerElement, gridContainerElement){
+        removeAllPiecesElement.onclick = () => {
+            this.#piecesData.clearPiecesDataTable();
+            this.gridUpdateDragAndDropPieces(piecesContainerElement);
+            this.loadBlankGrid(gridContainerElement);
         }
     }
 
@@ -625,10 +636,11 @@ class BsrSetup{
     }
 
     // some things initially placed to set up the various game objects
-    bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removePiecesElement, randomPlacementElement){
+    bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement){
         this.#gridContainerElement = gridContainerElement;
         this.#piecesContainerElement = piecesContainerElement;
         this.#rotatePiecesElement = rotatePiecesElement;
+        this.#removeAllPiecesElement = removeAllPiecesElement;
         this.#removePiecesElement = removePiecesElement;
         this.#randomPlacementElement = randomPlacementElement;
         //console.log(this.#gridContainerElement);
@@ -640,6 +652,7 @@ class BsrSetup{
         this.gridUpdateDragAndDropPieces(this.#piecesContainerElement);
         this.loadBlankGrid(this.#gridContainerElement);
         this.setRotatePiecesButton(this.#rotatePiecesElement, this.#piecesContainerElement);
+        this.setRemoveAllPiecesButton(this.#removeAllPiecesElement, this.#piecesContainerElement, this.#gridContainerElement);
         this.setRandomPiecesButton(this.#gridContainerElement, this.#piecesContainerElement);
         //this.setRemovePiecesElement(this.#removePiecesElement);
     }

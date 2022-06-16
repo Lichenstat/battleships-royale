@@ -109,7 +109,7 @@ class BsrPiecesData extends BsrPlayPieces{
     }
 
     // clear the pieces data table and reset pieces back to default state
-    #clearPiecesDataTable(){
+    clearPiecesDataTable(){
         this.#piecesDataTable = [];
         this.#resetIdsOfPiecesDataTable()
         this.resetPieces();
@@ -327,7 +327,7 @@ class BsrPiecesData extends BsrPlayPieces{
         return {rotation : rotation, location : [rowIndex, columnIndex]}
     }
 
-    // get possible piece locations in accordance to first piece
+    // get possible piece locations in accordance to first piece (creates entire piece locations)
     getPiecePossibleLocations(pieceName = this.pieces[0].name, firstPieceLocation = [0,0], rotation = this.#horizontal){
         let pieceLocations = [];
         let piece = this.getPlayPieceTypeByName(pieceName);
@@ -352,7 +352,7 @@ class BsrPiecesData extends BsrPlayPieces{
     // set random pieces into the pieces data table
     fillDataTableRandomly(){
         if(!Helper.accumulateObjectValues(this.getPlaceablePiecesLeft())){
-            this.#clearPiecesDataTable();
+            this.clearPiecesDataTable();
         }
         let bsrGrid = new BsrDragAndDropGrid();
         let iterate = 0;

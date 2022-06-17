@@ -172,9 +172,9 @@
 
     </script>
     <script type="module">
-        import {Helper} from "./scripts/helper.js";
-        import {BsrSetup} from "./scripts/bsr-setup.js";
-        import {BsrPlay} from "./scripts/bsr-play.js";
+        import { Helper } from "./scripts/helper.js";
+        import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
+        import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
 
         //--------------------------------------------------------------
         //let joinGame = document.getElementById('bsr__join');
@@ -234,8 +234,8 @@
             gridContainerElement = document.getElementById("bsr__gridplacement");
         }
 
-        let setup = new BsrSetup();
-        setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+        let setup = new BsrSetupAbstraction();
+        setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
 
         //-------------------------------------------------------------------------
         // for grid and pieces using drag and drop
@@ -243,7 +243,7 @@
         // event on the start of the drag
         document.addEventListener('dragstart', item => {
             if (setup != null){
-                setup.bsrDragStart(item);
+                setup.dragStart(item);
             }
         });
 
@@ -251,7 +251,7 @@
         document.addEventListener('dragover', item => {
             //console.log('ran dragover');
             if (setup != null){
-                setup.bsrDragOver(item);
+                setup.dragOver(item);
             }
         });
 
@@ -259,7 +259,7 @@
         document.addEventListener('dragleave', item => {
             //console.log('ran dragleave');
             if (setup != null){
-                setup.bsrDragLeave(item);
+                setup.dragLeave(item);
             }
         });
 
@@ -267,68 +267,51 @@
         document.addEventListener('drop', item => {
             //console.log('ran drop');
             if (setup != null){
-                setup.bsrDragDrop(item);
+                setup.dragDrop(item);
             }
         });
 
         //-------------------------------------------------------------------------
         // for playing events (choosing square, player turns, etc.)
 
-        let playing = new BsrPlay();
+        let playing;
 
         // check items on event click
 
-        // set the game to playing phase
         document.addEventListener('click', item => {
 
-            //// randomly place pieces on the placement grid
-            //if(item.target.id == "bsr__placepiecerandomly"){
-            //    setup.setRandomPieces();
-            //    setup.loadSetPieces();
-            //}
-
-            // set up the player table
+            // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
-                let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
-                changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
-                if (placeablePiecesCount){
-                    setTimeout(() => {
-                        if (setup != null)
-                            changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
-                    }, 3000)
-                }
-                if (!placeablePiecesCount){
+                //let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                //changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                //if (placeablePiecesCount){
+                //    setTimeout(() => {
+                //        if (setup != null)
+                //            changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
+                //    }, 3000)
+                //}
+                //if (!placeablePiecesCount){
                     let playingAgainstAi = true;
                     console.log('making player table');
                     changeStatesElement.innerHTML = '<button id="bsr__generateplacementgrid" class="bsr__generateplacementgrid">Stop Game</button>';
                     removeNodesForPlaying();
-                    playing = new BsrPlay(setup.getPiecesData(), playingAgainstAi);
-                    playing.loadPlayingGrids(gridContainerElement);
-                    playing.setDefaultPlayerGridCell(document.getElementById("bsr__playerplot").parentNode);
-                    playing.setEventListenersOfGridButtons();
-                    playing.setUpdatedPlayerInfo(playerShipInfoElement, enemyShipInfoElement);
+                    playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
+                    playing.initializePlay(gridContainerElement, playerShipInfoElement, enemyShipInfoElement);
                     setup = null;
-                }
+                //}
             }
 
-            // set up the game to the setup phase
+            // set teh game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
                 changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
                 playerShipInfoElement.innerHTML = '';
                 enemyShipInfoElement.innerHTML = '';
                 resetNodesForSetup();
-                setup = new BsrSetup();
-                setup.bsrInitializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+                setup = new BsrSetupAbstraction();
+                setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
                 playing = null;
             }
-            
-            //// get information from the clicked player button
-            //if(item.target.id == "bsr__boardbutton"){
-            //    console.log(item.target);
-            //    playing.setClickedButtonInfo(item.target);
-            //    playing.setButtonDisabled();
-            //}
 
         });
 

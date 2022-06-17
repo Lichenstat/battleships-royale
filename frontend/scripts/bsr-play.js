@@ -1,11 +1,11 @@
 // class to have various play methods to check for in the game
 
-import { bsrGeneralInfo, bsrGridInternals, bsrPieceInteractors } from "./bsr-config.js";
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
-import { BsrPlayParse } from "./bsr-playparse.js";
+//import { BsrPlayParse } from "./bsr-playparse.js";
 import { BsrAi } from "./bsr-ai.js";
 import { BsrPlayerAiInteractions } from "./bsr-aiplayerinteractions.js";
+import { bsrGeneralInfo, bsrGridInternals, bsrPieceInteractors } from "./bsr-config.js";
 import { Helper } from "./helper.js";
 
 export { BsrPlay };
@@ -41,8 +41,7 @@ class BsrPlay{
     #playerTurn;
     #gameover;
 
-    #playerShipInfoElement;
-    #enemyShipInfoElement;
+    #outsideFuncs;
 
     constructor(playerPiecesData = new BsrPiecesData(), playingAgainstAi = true){
         this.#playerPiecesData = playerPiecesData;
@@ -60,7 +59,7 @@ class BsrPlay{
         this.#sendLocations = { piecesClicked : [[]] };
         //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , pieceLocations : [[]], gameover : false}
 
-        this.#playerDefaultGridCellId = "grid__cell-example-(0,0)";
+        this.#playerDefaultGridCellId = "bsr__table-cell-(0,0)";
 
         this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#playerPiecesData);
         this.#buttonGrid = BsrCreateGrids.getButtonGrid();
@@ -80,10 +79,25 @@ class BsrPlay{
         this.#gameover = this.#currentPlayInfo.gameover;
 
         //------------------------------------------------
-        // for updating parts in game
-        this.#playerShipInfoElement = "";
-        this.#enemyShipInfoElement = "";
 
+        // assign functions from the outside to run on updates
+        this.#outsideFuncs = [];
+
+    }
+
+    // get player pieces data
+    getPlayerPiecesData(){
+        return this.#playerPiecesData
+    }
+
+    // get ai pieces data
+    getAiPiecesData(){
+        return this.#aiPlayer.getAiPiecesData();
+    }
+
+    // get ai pieces original data
+    getOriginalAiPiecesData(){
+        return this.#aiPlayer.getAiPiecesDataUntouched();
     }
 
     // return the player grid
@@ -96,24 +110,45 @@ class BsrPlay{
         return this.#buttonGrid;
     }
 
+    // get the current play info
+    getCurrentPlayInfo(){
+        return this.#currentPlayInfo;
+    }
+
     // get player currently playing the game
     getCurrentPlayerTurn(){
         return this.#currentPlayInfo.playerTurn;
     }
 
-    // call if we will want to play against ai
-    setPlayingAgainstAi(){
-        this.#playingAgainstAi = true;
+    // get the current player number (if it is the players number it is his turn)
+    getPlayerNumber(){
+        return this.#playerNumber;
     }
 
+    // check if it is our players turn or not
+    checkIfPlayerTurn(){
+        return this.#playerTurn;
+    }
+
+    // check if we are playing agianst ai or not
+    checkIfPlayingAgainstAi(){
+        return this.#isPlayingAgainstAi;
+    }
+
+    //// call if we will want to play against ai
+    //setPlayingAgainstAi(){
+    //    this.#playingAgainstAi = true;
+    //}
+
     // get the updated pieces info
-    getUpdatedPieces(bsrPiecesData = new BsrPiecesData()){
+    getUpdatedPiecesInfo(bsrPiecesData = new BsrPiecesData()){
         let gamePieces = ''
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
         let ending = container.substring(container.lastIndexOf('<'), container.length);
         let shipPieces = bsrPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
         let shipCount = bsrPiecesData.getPiecesLeftThatHaveLocations();
+        console.log(shipCount);
         for (const [key, item] of Object.entries(shipPieces)){
             let currentBeginning = Helper.parsePartOfStringToReplace(
             beginning, 
@@ -121,8 +156,14 @@ class BsrPlay{
             'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
             );
             let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
-            if (uppercaseKey == 'Patrolboat') uppercaseKey = 'Patrol Boat';
-            gamePieces = gamePieces + (currentBeginning + uppercaseKey + ': ' + shipCount[key] + item + ending);
+            if (uppercaseKey == 'Patrolboat'){
+                uppercaseKey = 'Patrol Boat';
+            }
+            let count = 0;
+            if (shipCount != undefined){
+                count = shipCount[key];
+            }  
+            gamePieces = gamePieces + (currentBeginning + uppercaseKey + ': ' + count + item + ending);
         }
         return gamePieces;
     }
@@ -139,10 +180,10 @@ class BsrPlay{
         this.#setPlayerTurnByCurrentPlayInfo();
     }
 
-    // set default info about the players grid cell in play
-    setDefaultPlayerGridCell(cell){
-        this.#playerDefaultGridCellId = cell.id;
-    }
+    //// set default info about the players grid cell in play
+    //setDefaultPlayerGridCell(cell){
+    //    this.#playerDefaultGridCellId = cell.id;
+    //}
 
     // set the current players turn (only for 2 players at the moment)
     #setCurrentTurn(){
@@ -156,7 +197,7 @@ class BsrPlay{
     }
 
     // set information about the clicked button
-    #setClickedButtonInfo(button){
+    setClickedButtonInfo(button){
         if(this.#playerTurn){
             if(!button.disabled){
                 this.#buttonParentId = button.parentNode.id;
@@ -169,8 +210,29 @@ class BsrPlay{
     // check if there is a winner as of yet
     #checkIfWinner(){
         if(this.#currentPlayInfo.gameover){
-            console.log('we got a winner!!!!');
-            this.#setGameoverImages();
+            console.log('we got a winner!!!! - ', this.#currentPlayInfo.playerTurn);
+        }
+    }
+
+    // set an outside function in the outside functions array to run on game update
+    setOutsideFunctionToRunOnUpdate(func = function(){}){
+        this.#outsideFuncs.push(func);
+    }
+
+    // run array of functions on player update
+    #runOnGameUpdate(){
+        this.#outsideFuncs.forEach(
+            func => {
+                console.log(func);
+                func();
+            }
+        )
+    }
+
+    // run functions on a player win
+    runOnWin = (func = function(){}) => {
+        if (this.#currentPlayInfo.gameover){
+            func();
         }
     }
 
@@ -188,7 +250,7 @@ class BsrPlay{
     // updating pieces methods
 
     // get buttons enable or disabled on initial button click
-    #getDisabledPushButtons(){
+    getDisabledPushButtons(){
         let buttons = {}
         let locationSize = this.#buttonLocation.length;
         for (var i = 0; i < locationSize; i++){
@@ -225,14 +287,14 @@ class BsrPlay{
     }
 
     // return the proper outcome for the given button
-    #getOutcomeIdsWithImagesForUpdating(){
+    getOutcomeIdsWithImagesForUpdating(){
         let ids = this.#getCellIds(this.#currentPlayInfo.piecesClicked);
         let imagesrc = this.#getOutcomeImagesForUpdating(this.#currentPlayInfo.piecesHit)
         return {ids : ids, imageSrcs : imagesrc}
     }
 
     // return ship images from a bsr data table over the given buttons after a game over
-    #getGameoverShipImages(bsrPiecesData = new BsrPiecesData()){
+    getGameoverShipIdsWithImages(bsrPiecesData = new BsrPiecesData()){
         let ids = this.#getCellIds(bsrPiecesData.getAllPiecesLocationsLeft());
         let imagesrc = bsrPiecesData.getAllPiecesImagesLeft();
         return {ids : ids, imageSrcs : imagesrc}
@@ -241,14 +303,16 @@ class BsrPlay{
     //-------------------------------------------------------------------------
     // runtime methods
 
-    #checkPlayerVsAiGameover = () => {
+    // check if the player vs ai game is over
+    #checkPlayerVsAiGameover(){
         this.#currentPlayInfo = BsrPlayerAiInteractions.setGameover(this.#playerPiecesData, this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
         this.#checkIfWinner();
     }
 
     // functions to run on ai "thinking" wait time
     #aiThinkingWaitTimeFunctions = () => {
-        this.#setChosenPiecesOutcome();
+        //this.#setChosenPiecesOutcome();
+        this.#runOnGameUpdate();
         this.#hasInfoUpdated = true;
         this.#playerTurn = true;
         this.#setCurrentTurn();
@@ -262,7 +326,8 @@ class BsrPlay{
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
                 this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#buttonLocation);
                 //console.log(this.#currentPlayInfo);
-                this.#setChosenPiecesOutcome();
+                //this.#setChosenPiecesOutcome();
+                this.#runOnGameUpdate();
                 this.#hasInfoUpdated = true;
                 this.#hasButtonUpdated = false;
                 this.#playerTurn = false;
@@ -284,7 +349,7 @@ class BsrPlay{
     }
 
     // player vs whoever runtime
-    #playRuntime(){
+    playRuntime(){
         console.log('running');
         if(!this.#currentPlayInfo.gameover){
             if(this.#isPlayingAgainstAi){
@@ -302,120 +367,5 @@ class BsrPlay{
     }
 
     //-------------------------------------------------------------------------
-    // callable anonymous functions for use with events
-
-    // load the player grid with all the pieces in some element(s)
-    loadPlayingGrids = function(elementOne, elementTwo){
-        if (elementTwo){
-            elementOne.innerHTML = this.getPlayerGrid().getGrid();
-            elementTwo.innerHTML = this.getButtonsGrid().getGrid();
-        }
-        else{
-            let gridSpacer = '<div id="bsr__gridspacer" class="bsr__gridspacer"></div>';
-            elementOne.innerHTML = this.getPlayerGrid().getGrid() + gridSpacer + this.getButtonsGrid().getGrid();
-        }
-    }
-
-    // set the clicked button as disabled
-    #setButtonsDisabled = function(){
-        let pieces = this.#getDisabledPushButtons();
-        if(pieces && this.#playerTurn){
-            let allButtonsSize = Object.keys(pieces).length;
-            for (let i = 0; i < allButtonsSize; i++){
-                let key = Object.keys(pieces)[i];
-                let allSameCellIds = document.querySelectorAll("[id='" + key + "']");
-                // coded to work with 2 grids for now, just use second occurence of id
-                allSameCellIds[1].innerHTML = pieces[key];
-            }
-        }
-    }
-
-    // set pieces after they have been checked and sent back after ai/server updates
-    #setChosenPiecesOutcome = function(){
-        // update the proper ship information if it exists
-        if (this.#playerShipInfoElement){
-            this.#updatedPlayerInfo(this.#playerShipInfoElement, this.#playerPiecesData);
-        }
-        if (this.#enemyShipInfoElement){
-            this.#updatedPlayerInfo(this.#enemyShipInfoElement, this.#aiPlayer.getAiPiecesData());
-        }
-        let pieces = this.#getOutcomeIdsWithImagesForUpdating();
-        // console.log(pieces);
-        let ids = pieces.ids;
-        let srcs = pieces.imageSrcs;
-        let length = ids.length;
-        for (let i = 0; i < length; i++){
-            let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
-            //console.log(allSameCellIds);
-            // the programming only works for 2 players at the moment, will have to change if more players
-            // playing at once is desired
-            // other players grid
-            if(this.#currentPlayInfo.playerTurn == this.#playerNumber){
-                let images = allSameCellIds[1].children[0].innerHTML;
-                allSameCellIds[1].innerHTML = images;
-                allSameCellIds[1].children[1].src = srcs[i];
-            }
-            // client player grid
-            if(this.#currentPlayInfo.playerTurn != this.#playerNumber){
-                allSameCellIds[0].children[0].children[1].src = srcs[i]
-            }
-        }
-    }
-
-    // set pieces ship images after the game is over
-    #setGameoverImages = () =>{
-        let pieces = {}
-        if (this.#isPlayingAgainstAi){
-            pieces = this.#getGameoverShipImages(this.#aiPlayer.getAiPiecesDataUntouched());
-        }
-        //console.log(pieces);
-        let ids = pieces.ids;
-        let srcs = pieces.imageSrcs;
-        let length = ids.length;
-        for (let i = 0; i < length; i++){
-            let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
-            //console.log(allSameCellIds);
-            // if the button is not disabled (does not have proper image elements for setting up pieces), 
-            // create disabled button and put images into cell
-            if (allSameCellIds[1].children[0].nodeName == 'BUTTON'){
-                allSameCellIds[1].innerHTML = this.#buttonGrid.getGridButtonDisabled();
-                let images = allSameCellIds[1].children[0].innerHTML;
-                allSameCellIds[1].innerHTML = images;
-            }
-            // if our child node is an image (meaning we can put the ship image in the src), use the ship image
-            if (allSameCellIds[1].children[0].nodeName == 'IMG'){
-                allSameCellIds[1].children[0].src = srcs[i];
-            }
-        }
-    }
-
-    // update player info
-    #updatedPlayerInfo = (infoElement, bsrPiecesData) => {
-        infoElement.innerHTML = this.getUpdatedPieces(bsrPiecesData);
-    }
-
-    // set the updated player info by element pieces
-    setUpdatedPlayerInfo(playerShipsInfoElement, enemyShipsInfoElement){
-        this.#playerShipInfoElement = playerShipsInfoElement;
-        this.#enemyShipInfoElement = enemyShipsInfoElement;
-        this.#updatedPlayerInfo(playerShipsInfoElement, this.#playerPiecesData);
-        this.#updatedPlayerInfo(enemyShipsInfoElement, this.#aiPlayer.getAiPiecesData());
-    }
-
-    // set the event listeners of the grid buttons
-    setEventListenersOfGridButtons = function(){
-        let x = document.querySelectorAll("[id='" + bsrGridInternals.boardButtonId + "']");
-        x.forEach(item => {
-            item.addEventListener("click", elemItem =>{
-            //console.log(elemItem.target);
-            this.#setClickedButtonInfo(elemItem.target);
-            this.#setButtonsDisabled();
-            this.#playRuntime();
-            //console.log(this.#playerPiecesData.getPiecesDataTable());
-            console.log('player pieces left', this.#playerPiecesData.getPiecesLeftThatHaveLocations());
-            })
-        })
-    }
-
 
 }

@@ -117,6 +117,7 @@ button{
   min-width: 145px;
   width: fit-content;
   height: fit-content;
+  padding-top: 2px;
 }
 
 .bsr__piecesshell{

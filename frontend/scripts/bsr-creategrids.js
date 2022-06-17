@@ -56,7 +56,7 @@ class BsrCreateGrids{
                 location = '(' + location[0] + ',' + location[1] + ')';
                 // remove draggable features and assign player class and id attributes
                 internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemAttributeDraggable, 'g'), '').toString();
-                internal = internal.replace(new RegExp( bsrGridInternals.dragAndDropItemAttributeOndragstart, 'g'), '').toString();
+                internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemAttributeOndragstart, 'g'), '').toString();
                 internal = internal.replace(new RegExp(bsrGridInternals.dragAndDropItemClassName ,"g"), bsrGridInternals.playerPieceClassName).toString();
                 internal = internal.replace(/(?=<\/div>)/g, bsrGridInternals.playerPieceBlankOutcomeImage)
                 positionPlotPieces[location] = internal;

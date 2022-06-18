@@ -379,6 +379,11 @@ class BsrSetup{
         this.#piecesData.setNewlyPlacedPiece(this.#draggedPieceName, this.#pieceRotation, this.#possiblePlacementLocations);
     }
 
+    // set pieces ids and internas whenever we desire on some sort of setup pieces data update
+    #setPieceIdsAndInternals(){
+        this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
+    }
+
     // some functions require an attribute id location to use, if there isn't an initial one you can put another one here
     #getAttributeLocationIdToUse(){
         let useAttributeId = this.#draggedOverGridPieceId;
@@ -398,7 +403,7 @@ class BsrSetup{
                 this.#setNewlyPlacedPiece();
             }
         }
-        this.#piecesIdsAndInternals = this.#piecesData.getPiecesWithIdsAndInternals(this.#getAttributeLocationIdToUse());
+        this.#setPieceIdsAndInternals();
         //console.log(this.#piecesData.getPiecesDataTable());
     }
 
@@ -406,7 +411,7 @@ class BsrSetup{
     setRandomPieces(){
         this.#piecesData.fillDataTableRandomly();
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
-        this.setPieceLocationsAndCount();
+        this.#setPieceIdsAndInternals();
         console.log(this.#piecesData.getPiecesDataTable());
     }
 

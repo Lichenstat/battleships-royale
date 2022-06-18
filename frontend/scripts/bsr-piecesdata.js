@@ -113,6 +113,7 @@ class BsrPiecesData extends BsrPlayPieces{
         this.#piecesDataTable = [];
         this.#resetIdsOfPiecesDataTable()
         this.resetPieces();
+        console.log(this.#piecesDataTable);
     }
 
     // return the desired piece from play pieces
@@ -363,13 +364,14 @@ class BsrPiecesData extends BsrPlayPieces{
             // while there are pieces of this type yet still to be placed
             while (this.pieces[iterate].count > 0){
                 let parts = this.#getPieceRandomParts();
-                console.log(parts);
+                //console.log(parts);
                 let locations = this.getPiecePossibleLocations(this.pieces[iterate].name, parts.location, parts.rotation);
                 //console.log(locations);
                 let fits = bsrGrid.checkIfPieceLocationsAreInGridBoundries(locations[0], locations[locations.length - 1], parts.rotation);
                 let overlap = this.getPieceHavingDataTableOverlap(locations);
                 // if the piece does fit, put it in the pieces data table
                 if (fits && !overlap){
+                    //console.log(pieceName, parts.rotation,locations)
                     this.setNewlyPlacedPiece(pieceName, parts.rotation, locations);
                 }
             }

@@ -1,41 +1,41 @@
 /* styling css for the boardpieces (ships) that will be used in the setup*/
 
 .bsr__table--carrier-horizontal{
-    border: 2px solid blue;
+    color: black;
 }
 
 .bsr__table--carrier-vertical{
-
+    color: black;
 }
 
 .bsr__table--battleship-horizontal{
-
+    color: black;
 }
 
 .bsr__table--battleship-vertical{
-
+    color: black;
 }
 
 .bsr__table--destroyer-horizontal{
-
+    color: black;
 }
 
 .bsr__table--destroyer-vertical{
-
+    color: black;
 }
 
 .bsr__table--submarine-horizontal{
-
+    color: black;
 }
 
 .bsr__table--submarine-vertical{
-
+    color: black;
 }
 
 .bsr__table--patrolboat-horizontal{
-
+    color: black;
 }
 
 .bsr__table--patrolboat-vertical{
-
+    color: black;
 }

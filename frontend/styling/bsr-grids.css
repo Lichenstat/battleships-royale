@@ -1,0 +1,89 @@
+/* grids styling sheet for bsr game*/
+
+.bsr__table{
+  /*border: 2px solid black;*/
+  background-color: rgba(128, 128, 128, .5);
+  border-collapse: collapse;
+}
+
+.bsr__table-head{
+  color: whitesmoke;
+  border: 1px solid;
+  text-align: center;
+}
+
+.bsr__table table{
+  border: 1px solid;
+}
+
+.bsr__table th{
+  border: 1px solid;
+}
+
+.bsr__table td{
+  border: 1px solid;
+}
+
+.bsr__table-row{
+  color: whitesmoke;
+  text-align: center;
+}
+
+.bsr__table-cell{
+  /*border: 2px solid black;*/
+  border-collapse: collapse;
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.bsr__placementplot{
+  width: 50px;
+  height: 50px;
+}
+
+.bsr__placementplot--{
+    background-color: rgba(51, 51, 51, .5);
+  }
+
+.bsr__placementplot--enabled{
+  background-color: greenyellow;
+}
+
+.bsr__placementplot--disabled{
+  background-color: red;
+}
+
+.bsr__playerplot{
+  width: 50px;
+  height: 50px;
+}
+
+.bsr__boardbutton{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.bsr__pieceimage{
+  position: absolute;
+  max-width: 100%;
+  top: 0px;
+  left: 0px;
+}
+
+.bsr__outcomeimage{
+  position: absolute;
+  max-width: 100%;
+  top: 0px;
+  left: 0px;
+}
+
+.bsr__boardpiece{
+  border-collapse: collapse;
+  position: relative;
+  width: 50px;
+  height: 50px;
+}

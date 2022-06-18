@@ -148,7 +148,6 @@ class BsrPlay{
         let ending = container.substring(container.lastIndexOf('<'), container.length);
         let shipPieces = bsrPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
         let shipCount = bsrPiecesData.getPiecesLeftThatHaveLocations();
-        console.log(shipCount);
         for (const [key, item] of Object.entries(shipPieces)){
             let currentBeginning = Helper.parsePartOfStringToReplace(
             beginning, 

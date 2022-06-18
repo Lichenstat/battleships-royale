@@ -363,7 +363,7 @@ class BsrPiecesData extends BsrPlayPieces{
             // while there are pieces of this type yet still to be placed
             while (this.pieces[iterate].count > 0){
                 let parts = this.#getPieceRandomParts();
-                //console.log(parts);
+                console.log(parts);
                 let locations = this.getPiecePossibleLocations(this.pieces[iterate].name, parts.location, parts.rotation);
                 //console.log(locations);
                 let fits = bsrGrid.checkIfPieceLocationsAreInGridBoundries(locations[0], locations[locations.length - 1], parts.rotation);

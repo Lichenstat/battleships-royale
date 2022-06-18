@@ -154,9 +154,9 @@ class BsrPlayAbstraction{
         this.#gridContainerElement = gridContainerElement;
         this.#playerShipInfoElement = playerShipInfoElement;
         this.#enemyShipInfoElement = enemyShipInfoElement;
-        console.log(this.#gridContainerElement);
-        console.log(this.#playerShipInfoElement);
-        console.log(this.#enemyShipInfoElement);
+        //console.log(this.#gridContainerElement);
+        //console.log(this.#playerShipInfoElement);
+        //console.log(this.#enemyShipInfoElement);
 
         this.loadPlayingGrids(this.#gridContainerElement);
         this.setEventListenersOfGridButtons();

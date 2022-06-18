@@ -5,11 +5,12 @@
     <title>Battleships - Play</title>
     <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
     <!--<meta name="author" content="SitePoint">-->
-    <!--<base href=".">-->
+    <base href=".">
     <link href="./styling/stylesheet.css" rel="stylesheet" />
+</head>
 <body>
     <div class='bsr bsr__container'>
-        <div class="bsr__title">Battleships</div>
+        <div class="bsr__title bsr--text-large bsr--white bsr--text-underline">Battleships</div>
         <!--
         <div class='bsr__nav'>
             <a class="bsr__link bsr__link--active" href="play.html">Play</a>
@@ -73,24 +74,24 @@
             </div>
         </div>
         -->
-        <div id="bsr__shipinfoshell" class="bsr__shipinfoshell">
-            <div id="bsr__playershipinfo" class="bsr__playershipinfo"></div>
-            <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo"></div>
+        <div id="bsr__shipinfoshell" class="bsr__shipinfoshell bsr--rounded">
+            <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--rounded bsr--background-dark bsr--white"></div>
+            <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--rounded bsr--background-dark bsr--white"></div>
         </div>
-        <div id="bsr__setupplacement" class="bsr__setupplacement">
-            <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell">
-                <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton">Rotate Pieces</button>
-                <button type="button" id="bsr__piecesremove" class="bsr__setupbutton">Remove All Pieces</button>
-                <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton">Randomly Place Pieces</button>
+        <div id="bsr__setupplacement" class="bsr__setupplacement bsr--rounded bsr--background-dark">
+            <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--rounded">
+                <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--rounded">Rotate Pieces</button>
+                <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--rounded">Remove All Pieces</button>
+                <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--rounded">Randomly Place Pieces</button>
             </div>
-            <div class="bsr__piecesshell" id="bsr__piecesshell"></div>
+            <div id="bsr__piecesshell" class="bsr__piecesshell bsr--text bsr--rounded bsr--white"></div>
             <div id="bsr__piecesremover"></div>
-            <div class="bsr__gridplacement" id="bsr__gridplacement"></div>
+            <div id="bsr__gridplacement" class="bsr__gridplacement bsr--text bsr--rounded"></div>
         </div>
         <div id="testt">
             
         </div>
-        <div id="bsr__changestates" class="bsr__changestates"><button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button></div>
+        <div id="bsr__changestates" class="bsr__changestates bsr--text-center"><button id="bsr__generateplayertable" class="bsr__generateplayertable bsr--text">Start Game</button></div>
         <!--<div id="bsr__gridspacer" class="bsr__gridspacer"></div>-->
     </div>
     <!--
@@ -276,35 +277,38 @@
 
         let playing;
 
+        const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--text">Start Game</button>';
+        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--text">End Game</button>';
+
         // check items on event click
 
         document.addEventListener('click', item => {
 
             // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
-                //let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
-                //changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
-                //if (placeablePiecesCount){
-                //    setTimeout(() => {
-                //        if (setup != null)
-                //            changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
-                //    }, 3000)
-                //}
-                //if (!placeablePiecesCount){
+                let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                if (placeablePiecesCount){
+                    setTimeout(() => {
+                        if (setup != null)
+                            changeStatesElement.innerHTML = playerTableButton;
+                    }, 3000)
+                }
+                if (!placeablePiecesCount){
                     let playingAgainstAi = true;
                     console.log('making player table');
-                    changeStatesElement.innerHTML = '<button id="bsr__generateplacementgrid" class="bsr__generateplacementgrid">Stop Game</button>';
+                    changeStatesElement.innerHTML = setupTableButton;
                     removeNodesForPlaying();
                     playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
                     playing.initializePlay(gridContainerElement, playerShipInfoElement, enemyShipInfoElement);
                     setup = null;
-                //}
+                }
             }
 
             // set teh game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
-                changeStatesElement.innerHTML = '<button id="bsr__generateplayertable" class="bsr__generateplayertable">Start Game</button>';
+                changeStatesElement.innerHTML = playerTableButton;
                 playerShipInfoElement.innerHTML = '';
                 enemyShipInfoElement.innerHTML = '';
                 resetNodesForSetup();
@@ -318,9 +322,10 @@
         //-------------------------------------------------------------------------
         
     </script>
-</body>
-<hr>
-<footer>
+    
+    <hr class="bsr__split bsr--theme-white">
+    <div>
 
-</footer>
+    </div>
+</body>
 </html>

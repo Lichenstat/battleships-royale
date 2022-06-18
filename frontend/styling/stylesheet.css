@@ -5,9 +5,14 @@
 
 /* placesable pieces */
 @import 'bsr-pieces.css';
+/*grid pieces*/
+@import 'bsr-grids.css';
 
 body{
-    font-family: 'Stardos Stencil', cursive;
+  border: 2px solid greenyellow;
+  font-family: 'Stardos Stencil', cursive;
+  background-image: url("../assets/images/sea1.jpg");
+  background-size: cover;
 }
 
 button{
@@ -15,20 +20,59 @@ button{
   font-size: 16px;
 }
 
+footer{
+  position: fixed;
+}
+
+.bsr--rounded{
+  border-radius: 20px;
+}
+
+.bsr--rounded-top{
+  border-radius: 20px, 20px, 0px, 0px;
+}
+
+.bsr--rounded-bottom{
+  border-radius: 0px 0px 20px, 20px;
+}
+
+.bsr--text-underline{
+  text-decoration: underline;
+}
+
+.bsr--text{
+  font-size: 18px;
+}
+
+.bsr--text-large{
+  font-size: 75px;
+}
+
+.bsr--text-center{
+  text-align: center;
+}
+
+.bsr--white{
+  color: whitesmoke;
+}
+
+.bsr--background-dark{
+  background-color: rgba(51, 51, 51, .8)
+}
+
 /* bsr is shorthand for battleships royale*/
 .bsr__container{
+  border: 2px solid blue;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width : 1200px;
-  border: 2px solid blue;
+  width : 1225px;
 }
 
 .bsr__title{
   text-align: center;
-  font-size: 75px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  margin-top: -10px;
+  margin-bottom: -10px;
 }
 
 .bsr__shipinfoshell{
@@ -41,27 +85,24 @@ button{
   border: 2px solid black;
   width: fit-content;
   height: fit-content;
+  margin-left: 2px;
+  padding: 10px;
 }
 
 .bsr__enemyshipinfo{
   border: 2px solid black;
   width: fit-content;
-  margin-left: auto;
-  margin-right: 0;
   height: fit-content;
-  /*
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: column;
-  float: right;
-  */
+  margin-left: auto;
+  margin-right: 2px;
+  padding: 10px;
 }
 
 .bsr__nav{
+  border: 3px solid green;
     text-align: center;
     margin: auto;
     width: 50%;
-    border: 3px solid green;
     padding: 10px;
 }
 
@@ -80,8 +121,11 @@ button{
 .bsr__setupplacement{
   border: 2px solid purple;
   display: flex;
-  margin: auto;
   justify-content: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
 }
 
 .bsr__setupbuttonsshell{
@@ -114,6 +158,12 @@ button{
 
 .bsr__piecescontainer{
   border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
   min-width: 145px;
   width: fit-content;
   height: fit-content;
@@ -127,6 +177,12 @@ button{
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.bsr__piecesshell div{
+  border-radius: 25px;
 }
 
 .bsr__pieceremover{
@@ -136,74 +192,8 @@ button{
   height: 635px;
 }
 
-.bsr__placementplot{
-  background-color: lightgrey;
-  width: 50px;
-  height: 50px;
-  /*display: block;*/
-  /*border-collapse: collapse;*/
-  /*border: 2px solid black;*/
-}
-
-.bsr__playerplot{
-  width: 50px;
-  height: 50px;
-}
-
-.bsr__boardbutton{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-  height: 100%;
-}
-
-.bsr__pieceimage{
-  position: absolute;
-  max-width: 100%;
-  top: 0px;
-  left: 0px;
-}
-
-.bsr__outcomeimage{
-  position: absolute;
-  max-width: 100%;
-  top: 0px;
-  left: 0px;
-}
-
-.bsr__placementplot--enabled{
-  background-color: greenyellow;
-}
-
-.bsr__placementplot--disabled{
-  background-color: red;
-}
-
-.bsr__boardpiece{
-  border-collapse: collapse;
-  position: relative;
-  width: 50px;
-  height: 50px;
-}
-
-.bsr__table{
-  background-color: grey;
-  border-collapse: collapse;
-  height: 40px;
-  /*border: 2px solid black;*/
-}
-
-.bsr__table-cell{
-  border-collapse: collapse;
-  position: relative;
-  width: 50px;
-  height: 50px;
-  /*border: 2px solid black;*/
-}
-
 .bsr__changestates{
-  padding: 20px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -217,17 +207,8 @@ button{
   height: 50px;
 }
 
-table{
-    border: 1px solid;
-}
-
-th{
-  border: 1px solid;
-}
-
-td{
-  border: 1px solid;
-  width: 50px;
+.bsr__split{
+  margin-top: 25px;
 }
 
   .color{

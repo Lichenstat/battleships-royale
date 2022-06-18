@@ -40,9 +40,8 @@ class BsrSetupAbstraction{
         this.#canPlacePiece = false;
         this.#removedPreviousPiece = false;
         this.#tempGrid;
-        this.#time = 10;
+        this.#time = 50;
         this.#dragging = false;
-
     }
 
     // get the setup pieces data

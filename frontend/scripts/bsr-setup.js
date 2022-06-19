@@ -1,4 +1,4 @@
-// Methods for interacting with the players using grid pieces and grid (player interaction on clientside)
+// Methods for interacting with the players grid setup using grid pieces and grid (player interaction on clientside)
 
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";

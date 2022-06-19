@@ -3,6 +3,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Stardos+Stencil:wght@700&display=swap');
 
+/*animation pieces*/
+@import 'animations.css';
+
 /* placesable pieces */
 @import 'bsr-pieces.css';
 /*grid pieces*/
@@ -52,12 +55,38 @@ footer{
   text-align: center;
 }
 
+.bsr--appear{
+  opacity: 0;
+  animation: appear 2s forwards;
+  animation-delay: 1s;
+}
+
+.bsr--appear-and-glow{
+  animation: appear 2s,  textLightupWhite 2s;
+  animation-fill-mode: forwards;
+}
+
+.bsr--appear-and-glow-temporary{
+  opacity: 0;
+  animation: appear 2s forwards,  boxLightupWhite 2s 2s alternate-reverse;
+  animation-delay: 1s;
+}
+
 .bsr--white{
   color: whitesmoke;
 }
 
 .bsr--background-dark{
   background-color: rgba(51, 51, 51, .8)
+}
+
+.bsr--slight-background-movement{
+  animation: slightBackgroundMovement 15s linear infinite alternate;
+}
+
+.bsr--slidein-bottom{
+  animation: slideInFromBottom 2s forwards;
+  animation-delay: 1s;
 }
 
 /* bsr is shorthand for battleships royale*/
@@ -70,7 +99,6 @@ footer{
 }
 
 .bsr__title{
-  text-align: center;
   margin-top: -10px;
   margin-bottom: -10px;
 }
@@ -78,53 +106,42 @@ footer{
 .bsr__shipinfoshell{
   border: 2px solid brown;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   padding-bottom: 10px;
 }
 
 .bsr__playershipinfo{
   border: 2px solid black;
+  margin-left: 2px;
   width: fit-content;
   height: fit-content;
-  margin-left: 2px;
+  padding: 10px;
+}
+
+.bsr__playinfo{
+  border: 2px solid yellow;
+  margin-top: auto;
+  width: fit-content;
+  height: fit-content;
   padding: 10px;
 }
 
 .bsr__enemyshipinfo{
   border: 2px solid black;
+  margin-right: 2px;
   width: fit-content;
   height: fit-content;
-  margin-left: auto;
-  margin-right: 2px;
   padding: 10px;
-}
-
-.bsr__nav{
-  border: 3px solid green;
-    text-align: center;
-    margin: auto;
-    width: 50%;
-    padding: 10px;
-}
-
-.bsr__link{
-
-}
-
-.bsr__link--active{
-
-}
-
-.bsr__link--inactive{
-
 }
 
 .bsr__setupplacement{
   border: 2px solid purple;
   display: flex;
   justify-content: center;
-  width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  width: fit-content;
   padding: 10px;
 }
 
@@ -172,13 +189,13 @@ footer{
 
 .bsr__piecesshell{
   border: 2px solid peachpuff;
-  width: 300px;
-  height: 635px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  width: 300px;
+  height: 635px;
 }
 
 .bsr__piecesshell div{
@@ -194,7 +211,6 @@ footer{
 
 .bsr__changestates{
   padding: 10px;
-  text-align: center;
 }
 
 .bsr__generateplacementgrid{
@@ -211,15 +227,37 @@ footer{
   margin-top: 25px;
 }
 
-  .color{
-    color: brown;
-  }
+/*
+.color{
+  color: brown;
+}
 
-  .test__color{
-    font-size: 24px;
-  }
+.test__color{
+  font-size: 24px;
+}
 
-  .test__color--border{
-      color: green;
-      border: 2px solid green;
-  }
+.test__color--border{
+    color: green;
+    border: 2px solid green;
+}
+
+.bsr__nav{
+  border: 3px solid green;
+    text-align: center;
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.bsr__link{
+
+}
+
+.bsr__link--active{
+
+}
+
+.bsr__link--inactive{
+
+}
+*/

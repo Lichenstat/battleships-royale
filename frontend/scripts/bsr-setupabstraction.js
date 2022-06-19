@@ -29,18 +29,18 @@ class BsrSetupAbstraction{
         this.#setup = new BsrSetup();
 
         // parts for event listeners
-        this.#gridContainerElement = "some__html-element";
-        this.#piecesContainerElement = "some__html-element";
-        this.#rotatePiecesElement = "some__html-element";
-        this.#removeAllPiecesElement = "some__html-element"
-        this.#removePiecesElement = "some__html-element";
-        this.#randomPlacementElement = "some__html-element";
+        this.#gridContainerElement;
+        this.#piecesContainerElement;
+        this.#rotatePiecesElement;
+        this.#removeAllPiecesElement;
+        this.#removePiecesElement;
+        this.#randomPlacementElement;
 
         // properties to use in interfacing
         this.#canPlacePiece = false;
         this.#removedPreviousPiece = false;
         this.#tempGrid;
-        this.#time = 50;
+        this.#time = 100;
         this.#dragging = false;
     }
 

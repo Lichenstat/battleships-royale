@@ -1,0 +1,35 @@
+/* css stylesheet for various animations*/
+
+@keyframes appear{
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes textLightupWhite{
+    from {text-shadow: 0px 0px 0px whitesmoke;}
+    to {text-shadow: 0px 0px 6px whitesmoke;}
+}
+
+@keyframes boxLightupWhite{
+    from {box-shadow: 0px 0px 0px whitesmoke;}
+    to {box-shadow: 0px 0px 16px whitesmoke;}
+}
+
+@keyframes slightBackgroundMovement{
+    0% {background-position: 0% 0%;}
+    10% {background-position: 0.3% 0.3%;}
+    20% {background-position: 1% 1%;}
+    30% {background-position: 2% 2%;}
+    40% {background-position: 3% 3%;}
+    50% {background-position: 5% 5%;}
+    60% {background-position: 7% 7%;}
+    70% {background-position: 8% 8%;}
+    80% {background-position: 9% 9%;}
+    90% {background-position: 9.7% 9.7%;}
+    100% {background-position: 10% 10%;}
+}
+
+@keyframes slideInFromBottom{
+    from {transform: translateY(100px);}
+    to {transform: translateY(0px);}
+}

@@ -21,9 +21,9 @@ class BsrPlayAbstraction{
         this.#play = new BsrPlay(bsrPlayerPiecesData, isPlayingAgainstAi);
 
         // for updating parts in game
-        this.#gridContainerElement = "some__html-element";
-        this.#playerShipInfoElement = "some__html-element";
-        this.#enemyShipInfoElement = "some__html-element";
+        this.#gridContainerElement;
+        this.#playerShipInfoElement;
+        this.#enemyShipInfoElement;
 
         // set functions to run during play runtime
         this.#play.setOutsideFunctionToRunOnUpdate(() => this.setChosenPiecesOutcome());

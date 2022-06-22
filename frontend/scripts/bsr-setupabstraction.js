@@ -49,37 +49,15 @@ class BsrSetupAbstraction{
         return this.#setup.getPiecesData();
     }
 
-    // put all the placeable pieces together
-    #combinedPieces(){
-        let container = bsrPieceInteractors.piecesContainer;
-        let beginning = container.substring(0, container.indexOf('>') + 1);
-        let ending = container.substring(container.lastIndexOf('<'), container.length);
-        let pieces = this.#setup.getUpdatedRotatedPieces();
-        let piecesLeft = this.#setup.getNumberOfPlaceablePiecesLeft();
-        let combined = '';
-        //console.log(pieces);
-        for (const [key, item] of Object.entries(pieces)){
-            let currentBeginning = Helper.parsePartOfStringToReplace(
-                beginning, 
-                'class="' + bsrPieceInteractors.piecesContainerId + '"', 
-                'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
-                );
-                let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
-                if (uppercaseKey == 'Patrolboat') uppercaseKey = 'Patrol Boat';
-            combined = combined + (currentBeginning + uppercaseKey + ': ' + piecesLeft[key] + item + ending);
-        }
-        return combined;
-    }
-
     // update the drag and drop pieces that can be put on the grid
     updateDragAndDropPieces(piecesContainerElement, combineRemoverElement){
         // if we want to combine the pieces remover and the pieces drag and drop do so
         if (combineRemoverElement){
             let remover = bsrPieceInteractors.dragAndDropPieceRemover;
-            piecesContainerElement.innerHTML = remover + this.#combinedPieces();
+            piecesContainerElement.innerHTML = remover + this.#setup.getUpdatedDragAndDropPieces();
         }
         if(combineRemoverElement == undefined){
-            piecesContainerElement.innerHTML = this.#combinedPieces();
+            piecesContainerElement.innerHTML = this.#setup.getUpdatedDragAndDropPieces();
         }
     }
 

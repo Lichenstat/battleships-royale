@@ -22,6 +22,9 @@ class BsrPlay{
     #sendInitialInfo;
     #sendLocations;
 
+    #lastPlayerPiecesCount;
+    #lastEnemyPiecesCount;
+
     #playerDefaultGridCellId;
 
     #playerGrid;
@@ -59,6 +62,9 @@ class BsrPlay{
         this.#sendInitialInfo = { boardPieces : {}}
         this.#sendLocations = { piecesClicked : [[]] };
         //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , pieceLocations : [[]], gameover : false}
+
+        this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
+        this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
 
         this.#playerDefaultGridCellId = "bsr__table-cell-(0,0)";
 
@@ -129,7 +135,10 @@ class BsrPlay{
 
     // check if it is our players turn or not
     checkIfPlayerTurn(){
-        return this.#playerTurn;
+        if (this.#currentPlayInfo.playerTurn == this.#playerNumber){
+            return true;
+        }
+        return false;
     }
 
     // check if we are playing agianst ai or not
@@ -143,15 +152,19 @@ class BsrPlay{
     //}
 
     // get the updated ship pieces info
-    getUpdatedPiecesInfo(bsrPiecesData = new BsrPiecesData()){
+    getUpdatedPiecesInfo(bsrPiecesCount = {}){
         let gamePieces = ''
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
         let ending = container.substring(container.lastIndexOf('<'), container.length);
-        let shipPieces = bsrPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
-        let shipCount = bsrPiecesData.getPiecesLeftThatHaveLocations();
+        let shipPieces = this.#playerPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
+        let shipCount = bsrPiecesCount;
         for (const [key, item] of Object.entries(shipPieces)){
+            // if a piece was set as a changing piece, make sure the container blinks to show that
             let change = " ";
+            if (key == this.#currentPlayInfo.pieceName){
+                change = " bsr--blink-red ";
+            }
             let currentBeginning = Helper.parsePartOfStringToReplace(
             beginning, 
             'class="' + bsrPieceInteractors.piecesContainerId + '"', 
@@ -314,6 +327,13 @@ class BsrPlay{
         if (Helper.checkIfArraysAreEqual(this.#currentPlayInfo.piecesClicked[0], [])){
             hitMiss = '--------'
         }
+        // has piece sunk
+        let pieceSunk = "";
+        if (this.#currentPlayInfo.pieceName){
+            pieceSunk = Helper.parsePartOfStringToReplace(this.#currentPlayInfo.pieceName, "patrolboat", "Patrol Boat");
+            pieceSunk = Helper.capitalizeFirstCharacterInString(pieceSunk);
+            pieceSunk = "Sank " + pieceSunk + "!"
+        }
         // whos turn is it
         let turn = this.#currentPlayInfo.playerTurn;
         let turnString = '';
@@ -328,7 +348,7 @@ class BsrPlay{
             //console.log('we will now have game over <----------');
             return "- Game Over -<br>" + outcome;
         }
-        return clicked + "<br>" + hitMiss + "<br>" + turnString;
+        return clicked + "<br>" + hitMiss + "<br>" + pieceSunk + "<br>" + turnString;
     }
 
     //-------------------------------------------------------------------------
@@ -357,6 +377,9 @@ class BsrPlay{
                 console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
                 this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
+                let newPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
+                this.#currentPlayInfo = BsrPlayerAiInteractions.getChangeInPiecesCount(newPiecesCount, this.#lastEnemyPiecesCount, this.#currentPlayInfo);
+                this.#lastEnemyPiecesCount = newPiecesCount
                 //console.log(this.#currentPlayInfo);
                 //this.#setChosenPiecesOutcome();
                 this.#hasInfoUpdated = true;
@@ -372,6 +395,9 @@ class BsrPlay{
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, this.#currentPlayInfo);
+            let newPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations(); 
+            this.#currentPlayInfo = BsrPlayerAiInteractions.getChangeInPiecesCount(newPiecesCount, this.#lastPlayerPiecesCount, this.#currentPlayInfo);
+            this.#lastPlayerPiecesCount = newPiecesCount;
             //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
             this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftThatHaveLocations());
             //console.log(this.#currentPlayInfo);

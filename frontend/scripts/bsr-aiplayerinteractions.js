@@ -1,4 +1,4 @@
-// class for checking interactions between the ai and the player
+// class for checking interactions between the ai and the player (replaces the serevr functionality in this instance)
 
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { Helper } from "./helper.js";
@@ -24,6 +24,19 @@ class BsrPlayerAiInteractions{
             }
         }
         currentPlayInfo.piecesHit = locationsHit;
+        return currentPlayInfo;
+    }
+
+    // check if pieces counts have changed since a certain play
+    static getChangeInPiecesCount(piecesCountOriginal = {}, piecesCountPrevious = {}, currentPlayInfo = {}){
+        for (const [key, item] of Object.entries(piecesCountOriginal)){
+            if (piecesCountOriginal[key] != piecesCountPrevious[key]){
+                console.log('piece changed', key);
+                currentPlayInfo.pieceName = key;
+                return currentPlayInfo;
+            }
+        }
+        currentPlayInfo.pieceName = "";
         return currentPlayInfo;
     }
 

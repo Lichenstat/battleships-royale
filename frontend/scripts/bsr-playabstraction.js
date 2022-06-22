@@ -65,10 +65,10 @@ class BsrPlayAbstraction{
             this.updateTextInfo(this.#textInfoElement);
         }
         // update the proper ship information if it exists
-        if (this.#playerShipInfoElement){
+        if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
             this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesData());
         }
-        if (this.#enemyShipInfoElement){
+        if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
             this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getAiPiecesData());
         }
         let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
@@ -130,7 +130,7 @@ class BsrPlayAbstraction{
 
     // update player info
     updatePlayerInfo(shipInfoElement, bsrPiecesData){
-        shipInfoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesData);
+        shipInfoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesData.getPiecesLeftThatHaveLocations());
     }
 
     // set the updated player info by element pieces

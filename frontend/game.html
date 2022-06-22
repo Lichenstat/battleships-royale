@@ -306,6 +306,7 @@
                     let playingAgainstAi = true;
                     console.log('making player table');
                     gameShellContainerElement.classList = gameShellSlideRightClass;
+                    // timeout is to help with timing animations
                     setTimeout(() => {
                         changeStatesElement.innerHTML = setupTableButton;
                         removeNodesForPlaying();
@@ -321,6 +322,7 @@
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
+                // timeout is to help with timing animations
                 setTimeout(() => {
                     changeStatesElement.innerHTML = playerTableButton;
                     textInfoElement.innerHTML = 'Playing Against AI';

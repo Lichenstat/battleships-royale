@@ -85,7 +85,7 @@ footer{
 }
 
 .bsr--blink-red{
-  animation: backgroundBlinkRed 0s linear alternate-reverse;
+  animation: backgroundBlinkRed 1s alternate-reverse;
 }
 
 .bsr--slight-background-movement{

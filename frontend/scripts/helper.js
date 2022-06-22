@@ -118,6 +118,15 @@ class Helper{
         return string;
     }
 
+    // capitalize first letter in string
+    static capitalizeFirstCharacterInString(string = ""){
+        let first = string.charAt(0);
+        first = first.toUpperCase();
+        let rest = string.substring(1, string.length);
+        let final = first + rest;
+        return final;
+    }
+
     // remove duplicates in an array using a desired remove duplicates array
     static removeDuplicatesFromArrayUsingArray(arrayToClean = [[],[]], arrayForChecking = [[],[]]){
         let keepCleaned = [];

@@ -2,7 +2,7 @@
 
 import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
-//import { BsrPlayParse } from "./bsr-playparse.js";
+import { BsrPlayParse } from "./bsr-playparse.js";
 import { BsrAi } from "./bsr-ai.js";
 import { BsrPlayerAiInteractions } from "./bsr-aiplayerinteractions.js";
 import { bsrGeneralInfo, bsrGridInternals, bsrPieceInteractors } from "./bsr-config.js";
@@ -26,22 +26,23 @@ class BsrPlay{
 
     #playerGrid;
     #buttonGrid;
-    #hitImg;
-    #missImg;
+    //#hitImg;
+    //#missImg;
 
     #playerNumber;
-    #playingAgainstAi;
+    //#playingAgainstAi;
 
     #buttonParentId;
     #buttonLocation;
     #hasButtonUpdated;
     
-    #setTimer;
+    //#setTimer;
 
     #playerTurn;
-    #gameover;
+    //#gameover;
 
-    #outsideFuncs;
+    #runtimeFunctions;
+    #runOnWinFunctions;
 
     constructor(playerPiecesData = new BsrPiecesData(), playingAgainstAi = true){
         this.#playerPiecesData = playerPiecesData;
@@ -63,25 +64,26 @@ class BsrPlay{
 
         this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#playerPiecesData);
         this.#buttonGrid = BsrCreateGrids.getButtonGrid();
-        this.#hitImg = bsrGeneralInfo.hitImage;
-        this.#missImg = bsrGeneralInfo.missImage;
+        //this.#hitImg = bsrGeneralInfo.hitImage;
+        //this.#missImg = bsrGeneralInfo.missImage;
         
         this.#playerNumber  = this.#playSetupInfo.playerNumber;
-        this.#playingAgainstAi = false;
+        //this.#playingAgainstAi = false;
         
         this.#buttonParentId = "";
         this.#buttonLocation = [this.#currentPlayInfo.piecesClicked];
         this.#hasButtonUpdated = false;
         
-        this.#setTimer = 1000; // 1000 = 1 sec
+        //this.#setTimer = 1000; // 1000 = 1 sec
 
         this.#playerTurn = true;
-        this.#gameover = this.#currentPlayInfo.gameover;
+        //this.#gameover = this.#currentPlayInfo.gameover;
 
         //------------------------------------------------
 
         // assign functions from the outside to run on updates
-        this.#outsideFuncs = [];
+        this.#runtimeFunctions = [];
+        this.#runOnWinFunctions = [];
 
     }
 
@@ -140,7 +142,7 @@ class BsrPlay{
     //    this.#playingAgainstAi = true;
     //}
 
-    // get the updated pieces info
+    // get the updated ship pieces info
     getUpdatedPiecesInfo(bsrPiecesData = new BsrPiecesData()){
         let gamePieces = ''
         let container = bsrPieceInteractors.piecesContainer;
@@ -149,10 +151,11 @@ class BsrPlay{
         let shipPieces = bsrPiecesData.getPlacementPieces(bsrGeneralInfo.horizontal);
         let shipCount = bsrPiecesData.getPiecesLeftThatHaveLocations();
         for (const [key, item] of Object.entries(shipPieces)){
+            let change = " ";
             let currentBeginning = Helper.parsePartOfStringToReplace(
             beginning, 
             'class="' + bsrPieceInteractors.piecesContainerId + '"', 
-            'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
+            'class="' + bsrPieceInteractors.piecesContainerId + change + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
             );
             let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
             if (uppercaseKey == 'Patrolboat'){
@@ -184,17 +187,6 @@ class BsrPlay{
     //    this.#playerDefaultGridCellId = cell.id;
     //}
 
-    // set the current players turn (only for 2 players at the moment)
-    #setCurrentTurn(){
-        let turn = this.#currentPlayInfo.playerTurn;
-        if(turn == 1){
-            this.#currentPlayInfo.playerTurn = 2;
-        }
-        if(turn == 2){
-            this.#currentPlayInfo.playerTurn = 1;
-        }
-    }
-
     // set information about the clicked button
     setClickedButtonInfo(button){
         if(this.#playerTurn){
@@ -206,21 +198,26 @@ class BsrPlay{
         }
     }
 
-    // check if there is a winner as of yet
-    #checkIfWinner(){
-        if(this.#currentPlayInfo.gameover){
-            console.log('we got a winner!!!! - ', this.#currentPlayInfo.playerTurn);
-        }
-    }
+    //// check if there is a winner as of yet
+    //#checkIfWinner(){
+    //    if(this.#currentPlayInfo.gameover){
+    //        
+    //    }
+    //}
 
     // set an outside function in the outside functions array to run on game update
-    setOutsideFunctionToRunOnUpdate(func = function(){}){
-        this.#outsideFuncs.push(func);
+    setOutsideFunctionsToRunOnPlayRuntime(func = function(){}){
+        this.#runtimeFunctions.push(func);
+    }
+
+    // set an outside function in the outside functions array to run on game win
+    setOutsideFunctionToRunOnWin(func = function(){}){
+        this.#runOnWinFunctions.push(func);
     }
 
     // run array of functions on player update
     #runOnGameUpdate(){
-        this.#outsideFuncs.forEach(
+        this.#runtimeFunctions.forEach(
             func => {
                 console.log(func);
                 func();
@@ -229,9 +226,13 @@ class BsrPlay{
     }
 
     // run functions on a player win
-    runOnWin = (func = function(){}) => {
+    #runOnWin = (func = function(){}) => {
         if (this.#currentPlayInfo.gameover){
-            func();
+            this.#runOnWinFunctions.forEach(
+                func => {
+                    func();
+                }
+            );
         }
     }
 
@@ -299,22 +300,54 @@ class BsrPlay{
         return {ids : ids, imageSrcs : imagesrc}
     }
 
+    // get current play info as text string (works for 1 hit location as of right now)
+    getCurrentPlayInfoString(){
+        let clicked  = BsrPlayParse.convertIndexLocationToBattleshipIndexLocation(this.#currentPlayInfo.piecesClicked[0]);
+        // hit or miss
+        let hitMiss= '';
+        if (this.#currentPlayInfo.piecesHit[0]){
+            hitMiss = 'Hit!'
+        }
+        if (!this.#currentPlayInfo.piecesHit[0]){
+            hitMiss = 'Miss...'
+        }
+        if (Helper.checkIfArraysAreEqual(this.#currentPlayInfo.piecesClicked[0], [])){
+            hitMiss = '--------'
+        }
+        // whos turn is it
+        let turn = this.#currentPlayInfo.playerTurn;
+        let turnString = '';
+        if (this.#playerTurn) {turnString = "- Your Turn -";}
+        if (!this.#playerTurn) {turnString = "- Enemy Turn -";}
+        // is it gameover and who won
+        if (this.#currentPlayInfo.gameover){
+            let outcome = '';
+            if (turn == this.#playerNumber){outcome = "You Won!";} //console.log('for the win')}
+            if (turn != this.#playerNumber){outcome = "You Lost...";} //console.log('for the loss');}
+            //console.log('turn on gameover: ', this.#currentPlayInfo.playerTurn);
+            //console.log('we will now have game over <----------');
+            return "- Game Over -<br>" + outcome;
+        }
+        return clicked + "<br>" + hitMiss + "<br>" + turnString;
+    }
+
     //-------------------------------------------------------------------------
     // runtime methods
 
     // check if the player vs ai game is over
     #checkPlayerVsAiGameover(){
-        this.#currentPlayInfo = BsrPlayerAiInteractions.setGameover(this.#playerPiecesData, this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
-        this.#checkIfWinner();
+        this.#currentPlayInfo = BsrPlayerAiInteractions.setGameoverIfNeeded(this.#playerPiecesData, this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
+        this.#runOnWin();
     }
 
     // functions to run on ai "thinking" wait time
     #aiThinkingWaitTimeFunctions = () => {
         //this.#setChosenPiecesOutcome();
-        this.#runOnGameUpdate();
         this.#hasInfoUpdated = true;
         this.#playerTurn = true;
-        this.#setCurrentTurn();
+        this.#runOnGameUpdate();
+        this.#checkPlayerVsAiGameover();
+        this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
     }
     
     // runtime functions/methods to take place if the player is fighting against an ai
@@ -323,28 +356,27 @@ class BsrPlay{
             if(this.#hasButtonUpdated){
                 console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
-                this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#buttonLocation);
+                this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
                 //console.log(this.#currentPlayInfo);
                 //this.#setChosenPiecesOutcome();
-                this.#runOnGameUpdate();
                 this.#hasInfoUpdated = true;
                 this.#hasButtonUpdated = false;
                 this.#playerTurn = false;
-                this.#setCurrentTurn();
+                this.#runOnGameUpdate();
+                this.#checkPlayerVsAiGameover();
+                this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
             }
         }
-        this.#checkPlayerVsAiGameover();
         if(this.#currentPlayInfo.playerTurn != this.#playerNumber && !this.#currentPlayInfo.gameover){
             console.log("ai attacked");
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
-            this.#currentPlayInfo.piecesHit = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, aiLocationChoice);
+            this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, this.#currentPlayInfo);
             //console.log(this.#playerPiecesData.getPiecesLeftByLocation());
             this.#aiPlayer.checkIfAttackWasSuccessful(this.#currentPlayInfo.piecesHit, this.#playerPiecesData.getPiecesLeftThatHaveLocations());
             //console.log(this.#currentPlayInfo);
             this.#aiPlayer.thinkingWaitTime(this.#aiThinkingWaitTimeFunctions);
         }
-        this.#checkPlayerVsAiGameover();
     }
 
     // player vs whoever runtime

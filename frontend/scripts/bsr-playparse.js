@@ -32,6 +32,18 @@ class BsrPlayParse{
         return [normaizedRow, normalizedColumn];
     }
 
+    // change the grid location to local battleship location for ease of users
+    static convertIndexLocationToBattleshipIndexLocation(pieceLocation = [0,0]){
+        //console.log(pieceLocation);
+        let bsrGrid = new BsrGrid();
+        if (bsrGrid.checkIfLocationIsPlayableInGrid(pieceLocation)){
+            let offset = bsrGrid.getTableRowsAndNameIndexSize();
+            let rowLocation = (pieceLocation[0] - offset) % 26;
+            return '(' + String.fromCharCode(rowLocation + 64) + ',' + (pieceLocation[1] - 1) + ')';
+        }
+        return 'No Locations';
+    }
+
     // parse pieces data for sending over to server
     static parseDataForServerFormat(piecesData = new BsrPiecesData()){
 

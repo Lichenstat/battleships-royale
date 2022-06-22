@@ -74,10 +74,10 @@
             </div>
         </div>
         -->
-        <div class="bsr__gameshell bsr--slidein-bottom">
+        <div id="bsr__gameshell" class="bsr__gameshell bsr--slidein-bottom">
             <div id="bsr__shipinfoshell" class="bsr__shipinfoshell bsr--rounded">
                 <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
-                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary">alkhjdfl;asdhfh</div>
+                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">Playing Against AI</div>
                 <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
             </div>
             <div id="bsr__setupplacement" class="bsr__setupplacement bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
@@ -86,8 +86,8 @@
                     <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--rounded">Remove All Pieces</button>
                     <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--rounded">Randomly Place Pieces</button>
                 </div>
-                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--text bsr--rounded bsr--white"></div>
-                <div id="bsr__piecesremover"></div>
+                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--text bsr--rounded-left bsr--white"></div>
+                <div id="bsr__piecesremover" class="bsr__piecesremover bsr--rounded-left"></div>
                 <div id="bsr__gridplacement" class="bsr__gridplacement bsr--text"></div>
             </div>
             <div id="testt">
@@ -206,6 +206,11 @@
         //--------------------------------------------------------------
         // get our elements to easily initialize bsr setup
 
+        let gameShellContainerElement = document.getElementById("bsr__gameshell");
+        let gameShellSlideLeftClass = "bsr__gameshell bsr--slidein-left";
+        let gameShellSlideRightClass = "bsr__gameshell bsr--slideout-right";
+
+        let textInfoElement = document.getElementById("bsr__playinfo");
         let playerShipInfoElement = document.getElementById("bsr__playershipinfo");
         let enemyShipInfoElement = document.getElementById("bsr__enemyshipinfo");
 
@@ -290,8 +295,8 @@
             // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
                 let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
-                changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
                 if (placeablePiecesCount){
+                    changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
                     setTimeout(() => {
                         if (setup != null)
                             changeStatesElement.innerHTML = playerTableButton;
@@ -300,33 +305,42 @@
                 if (!placeablePiecesCount){
                     let playingAgainstAi = true;
                     console.log('making player table');
-                    changeStatesElement.innerHTML = setupTableButton;
-                    removeNodesForPlaying();
-                    playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
-                    playing.initializePlay(gridContainerElement, playerShipInfoElement, enemyShipInfoElement);
-                    setup = null;
+                    gameShellContainerElement.classList = gameShellSlideRightClass;
+                    setTimeout(() => {
+                        changeStatesElement.innerHTML = setupTableButton;
+                        removeNodesForPlaying();
+                        playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
+                        playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+                        gameShellContainerElement.classList = gameShellSlideLeftClass;
+                        setup = null;
+                    }, 900);
                 }
             }
 
             // set teh game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
                 console.log('making drag and drop table');
-                changeStatesElement.innerHTML = playerTableButton;
-                playerShipInfoElement.innerHTML = '';
-                enemyShipInfoElement.innerHTML = '';
-                resetNodesForSetup();
-                setup = new BsrSetupAbstraction();
-                setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
-                playing = null;
-            }
+                gameShellContainerElement.classList = gameShellSlideRightClass;
+                setTimeout(() => {
+                    changeStatesElement.innerHTML = playerTableButton;
+                    textInfoElement.innerHTML = 'Playing Against AI';
+                    playerShipInfoElement.innerHTML = '';
+                    enemyShipInfoElement.innerHTML = '';
+                    resetNodesForSetup();
+                    setup = new BsrSetupAbstraction();
+                    setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+                    gameShellContainerElement.classList = gameShellSlideLeftClass;
+                    playing = null;
+                }, 900);
 
+            }
         });
 
         //-------------------------------------------------------------------------
         
     </script>
     
-    <hr class="bsr__split bsr--theme-white">
+    <hr class="bsr__split bsr--white">
     <div>
 
     </div>

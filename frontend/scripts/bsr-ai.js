@@ -119,11 +119,11 @@ class BsrAi{
     //}
 
     // wait on an ai "thinking" wait time
-    thinkingWaitTime = function(runAfterTimeoutOver = function(){}){
+    thinkingWaitTime(runAfterTimeoutOver = function(){}){
         setTimeout(
             () => {
                 runAfterTimeoutOver();
-                this.#setRandomTimerInterval()
+                this.#setRandomTimerInterval();
             }
         ,this.#timer)
     }

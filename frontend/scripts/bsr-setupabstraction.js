@@ -54,8 +54,6 @@ class BsrSetupAbstraction{
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
         let ending = container.substring(container.lastIndexOf('<'), container.length);
-        // we will add the remover here to the play pieces as of now (ease of use)
-        let remover = bsrPieceInteractors.dragAndDropPieceRemover;
         let pieces = this.#setup.getUpdatedRotatedPieces();
         let piecesLeft = this.#setup.getNumberOfPlaceablePiecesLeft();
         let combined = '';
@@ -70,12 +68,19 @@ class BsrSetupAbstraction{
                 if (uppercaseKey == 'Patrolboat') uppercaseKey = 'Patrol Boat';
             combined = combined + (currentBeginning + uppercaseKey + ': ' + piecesLeft[key] + item + ending);
         }
-        return remover + combined;
+        return combined;
     }
 
     // update the drag and drop pieces that can be put on the grid
-    updateDragAndDropPieces(piecesContainerElement){
-        piecesContainerElement.innerHTML = this.#combinedPieces();
+    updateDragAndDropPieces(piecesContainerElement, combineRemoverElement){
+        // if we want to combine the pieces remover and the pieces drag and drop do so
+        if (combineRemoverElement){
+            let remover = bsrPieceInteractors.dragAndDropPieceRemover;
+            piecesContainerElement.innerHTML = remover + this.#combinedPieces();
+        }
+        if(combineRemoverElement == undefined){
+            piecesContainerElement.innerHTML = this.#combinedPieces();
+        }
     }
 
     // load a blank drag and drop grid using some givne element and it's id
@@ -139,7 +144,7 @@ class BsrSetupAbstraction{
         rotateButtonElement.onclick = () => {
             //console.log('rotationg pieces');
             this.#setup.changeBoardPieceRotation();
-            this.updateDragAndDropPieces(piecesContainerElement);
+            this.updateDragAndDropPieces(piecesContainerElement, true);
         }
     }
 
@@ -147,14 +152,14 @@ class BsrSetupAbstraction{
     setRemoveAllPiecesButton(removeAllPiecesElement, piecesContainerElement, gridContainerElement){
         removeAllPiecesElement.onclick = () => {
             this.#setup.getPiecesData().clearPiecesDataTable();
-            this.updateDragAndDropPieces(piecesContainerElement);
+            this.updateDragAndDropPieces(piecesContainerElement, true);
             this.loadBlankGrid(gridContainerElement);
         }
     }
 
     // set the piece remover
     setRemovePiecesElement(removePiecesElement){
-        removePiecesElement.innerHTML = this.getPieceRemover();
+        removePiecesElement.innerHTML = this.#setup.getPieceRemover();
     }
 
     // set random pieces in the given drag and drop grid using a given element as the event handler
@@ -163,7 +168,7 @@ class BsrSetupAbstraction{
             //console.log('randomly placed pieces');
             this.#setup.setRandomPieces();
             this.loadSetGridPieces(gridContainerElement);
-            this.updateDragAndDropPieces(piecesContainerElement);
+            this.updateDragAndDropPieces(piecesContainerElement, true);
         })
     }
 
@@ -233,7 +238,7 @@ class BsrSetupAbstraction{
         //console.log('ran drop from setup.js');
         this.#setup.removePieceIfNeeded();
         this.#setup.setPieceLocationsAndCount();
-        this.updateDragAndDropPieces(this.#piecesContainerElement);
+        this.updateDragAndDropPieces(this.#piecesContainerElement, true);
         if(!this.#canPlacePiece){
             //console.log('using old table');
             this.reloadDragAndDropGrid(this.#gridContainerElement);
@@ -259,8 +264,8 @@ class BsrSetupAbstraction{
         //console.log(this.#removePiecesElement);
         //console.log(this.#randomPlacementElement);
 
-        this.updateDragAndDropPieces(this.#piecesContainerElement);
         this.loadBlankGrid(this.#gridContainerElement);
+        this.updateDragAndDropPieces(this.#piecesContainerElement, this.#removePiecesElement);
         this.setRotatePiecesButton(this.#rotatePiecesElement, this.#piecesContainerElement);
         this.setRemoveAllPiecesButton(this.#removeAllPiecesElement, this.#piecesContainerElement, this.#gridContainerElement);
         this.setRandomPiecesButton(this.#gridContainerElement, this.#piecesContainerElement);

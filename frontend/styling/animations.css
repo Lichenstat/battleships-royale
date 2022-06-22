@@ -15,6 +15,16 @@
     to {box-shadow: 0px 0px 16px whitesmoke;}
 }
 
+@keyframes backgroundBlinkRed{
+    from {background-color: rgba(0, 0, 0, 0);}
+    to{background-color: rgba(255, 0, 0, 1);}
+}
+
+@keyframes backgroundZoomOut{
+    from {background-size: 400%;}
+    to {background-size: 100%;}
+}
+
 @keyframes slightBackgroundMovement{
     0% {background-position: 0% 0%;}
     10% {background-position: 0.3% 0.3%;}
@@ -30,6 +40,16 @@
 }
 
 @keyframes slideInFromBottom{
-    from {transform: translateY(100px);}
+    from {transform: translateY(100%);}
     to {transform: translateY(0px);}
+}
+
+@keyframes slideOffViewRight{
+    from {transform: translateX(0px);}
+    to {transform: translateX(200%);}
+}
+
+@keyframes slideInViewLeft{
+    from {transform: translateX(200%);}
+    to {transform: translateX(0%);}
 }

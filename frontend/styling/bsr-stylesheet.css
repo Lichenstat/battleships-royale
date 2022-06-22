@@ -14,8 +14,8 @@
 body{
   border: 2px solid greenyellow;
   font-family: 'Stardos Stencil', cursive;
-  background-image: url("../assets/images/sea1.jpg");
-  background-size: cover;
+  background-image: url("../assets/images/sea.jpg");
+  background-size: 100%;
 }
 
 button{
@@ -37,6 +37,10 @@ footer{
 
 .bsr--rounded-bottom{
   border-radius: 0px 0px 20px, 20px;
+}
+
+.bsr--rounded-left{
+  border-radius: 20px 0px 0px 20px;
 }
 
 .bsr--text-underline{
@@ -80,13 +84,25 @@ footer{
   background-color: rgba(51, 51, 51, .8)
 }
 
-.bsr--slight-background-movement{
-  animation: slightBackgroundMovement 15s linear infinite alternate;
+.bsr--blink-red{
+  animation: backgroundBlinkRed 0s linear alternate-reverse;
 }
 
-.bsr--slidein-bottom{
-  animation: slideInFromBottom 2s forwards;
+.bsr--slight-background-movement{
+  animation: slightBackgroundMovement 20s linear infinite alternate, backgroundZoomOut 2s;
+}
+
+.bsr--slidein-bottom{ 
+  animation: slideInFromBottom 2s;
   animation-delay: 1s;
+}
+
+.bsr--slidein-left{
+  animation: slideInViewLeft 1s;
+}
+
+.bsr--slideout-right{
+  animation: slideOffViewRight 1s;
 }
 
 /* bsr is shorthand for battleships royale*/
@@ -202,11 +218,20 @@ footer{
   border-radius: 25px;
 }
 
+/*
+.bsr__piecesremover{
+  border: 2px solid red;
+  width: 300px;
+  height: 635px;
+}
+*/
+
 .bsr__pieceremover{
   border: 2px solid darkblue;
   position: absolute;
   width: 300px;
   height: 635px;
+  /*background-image: url('../assets/textures/water.jpg');*/
 }
 
 .bsr__changestates{

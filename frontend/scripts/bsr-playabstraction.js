@@ -11,7 +11,7 @@ class BsrPlayAbstraction{
     #play;
 
     #gridContainerElement;
-
+    #textInfoElement;
     #playerShipInfoElement;
     #enemyShipInfoElement;
 
@@ -22,11 +22,14 @@ class BsrPlayAbstraction{
 
         // for updating parts in game
         this.#gridContainerElement;
+        this.#textInfoElement;
         this.#playerShipInfoElement;
         this.#enemyShipInfoElement;
 
         // set functions to run during play runtime
-        this.#play.setOutsideFunctionToRunOnUpdate(() => this.setChosenPiecesOutcome());
+        this.#play.setOutsideFunctionsToRunOnPlayRuntime(() => this.setChosenPiecesOutcome());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.setGameoverImages());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.updateTextInfo(this.#textInfoElement));
     }
 
     // load the player grid with all the pieces in some element(s)
@@ -36,7 +39,7 @@ class BsrPlayAbstraction{
             elementTwo.innerHTML = this.#play.getButtonsGrid().getGrid();
         }
         else{
-            let gridSpacer = '<div id="bsr__gridspacer" class="bsr__gridspacer"></div>';
+            const gridSpacer = '<div id="bsr__gridspacer" class="bsr__gridspacer"></div>';
             elementOne.innerHTML = this.#play.getPlayerGrid().getGrid() + gridSpacer + this.#play.getButtonsGrid().getGrid();
         }
     }
@@ -57,7 +60,10 @@ class BsrPlayAbstraction{
 
     // set pieces after they have been checked and sent back after ai/server updates
     setChosenPiecesOutcome(){
-        console.log('ran pieces outocme');
+        console.log('ran pieces outcome');
+        if (this.#textInfoElement){
+            this.updateTextInfo(this.#textInfoElement);
+        }
         // update the proper ship information if it exists
         if (this.#playerShipInfoElement){
             this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesData());
@@ -96,7 +102,7 @@ class BsrPlayAbstraction{
         if (this.#play.checkIfPlayingAgainstAi()){
             pieces = this.#play.getGameoverShipIdsWithImages(this.#play.getOriginalAiPiecesData());
         }
-        console.log(pieces);
+        //console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
         let length = ids.length;
@@ -117,15 +123,22 @@ class BsrPlayAbstraction{
         }
     }
 
+    // update text info
+    updateTextInfo(infoElement){
+        infoElement.innerHTML = this.#play.getCurrentPlayInfoString();
+    }
+
     // update player info
-    updatePlayerInfo(infoElement, bsrPiecesData){
-        infoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesData);
+    updatePlayerInfo(shipInfoElement, bsrPiecesData){
+        shipInfoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesData);
     }
 
     // set the updated player info by element pieces
-    setUpdatePlayerInfo(playerShipsInfoElement, enemyShipsInfoElement){
+    setUpdatePlayerInfo(textInfoElement, playerShipsInfoElement, enemyShipsInfoElement){
+        this.#textInfoElement = textInfoElement;
         this.#playerShipInfoElement = playerShipsInfoElement;
         this.#enemyShipInfoElement = enemyShipsInfoElement;
+        this.updateTextInfo(textInfoElement);
         this.updatePlayerInfo(playerShipsInfoElement, this.#play.getPlayerPiecesData());
         this.updatePlayerInfo(enemyShipsInfoElement, this.#play.getAiPiecesData());
     }
@@ -140,8 +153,6 @@ class BsrPlayAbstraction{
                 this.#play.setClickedButtonInfo(elemItem.target);
                 this.#setButtonsPushDisabled();
                 this.#play.playRuntime();
-                this.setChosenPiecesOutcome();
-                this.#play.runOnWin(() => this.setGameoverImages());
             }
             //console.log(this.#playerPiecesData.getPiecesDataTable());
             console.log('player pieces left', this.#play.getPlayerPiecesData().getPiecesLeftThatHaveLocations());
@@ -150,17 +161,10 @@ class BsrPlayAbstraction{
     }
 
     // quick way to setup all the various game elements
-    initializePlay(gridContainerElement, playerShipInfoElement, enemyShipInfoElement){
-        this.#gridContainerElement = gridContainerElement;
-        this.#playerShipInfoElement = playerShipInfoElement;
-        this.#enemyShipInfoElement = enemyShipInfoElement;
-        //console.log(this.#gridContainerElement);
-        //console.log(this.#playerShipInfoElement);
-        //console.log(this.#enemyShipInfoElement);
-
-        this.loadPlayingGrids(this.#gridContainerElement);
+    initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement){
+        this.loadPlayingGrids(gridContainerElement);
         this.setEventListenersOfGridButtons();
-        this.setUpdatePlayerInfo(playerShipInfoElement, enemyShipInfoElement);
+        this.setUpdatePlayerInfo(textInfoElement, playerShipInfoElement, enemyShipInfoElement);
     }
 
   }

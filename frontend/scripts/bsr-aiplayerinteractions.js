@@ -8,14 +8,14 @@ export { BsrPlayerAiInteractions }
 class BsrPlayerAiInteractions{
 
     // check if the location chosen to attack has hit a location or not
-    static checkIfHitOrMiss(attackedPiecesData = new BsrPiecesData(), chosenLocation = [[0,0]]){
+    static checkIfHitOrMiss(attackedPiecesData = new BsrPiecesData(), currentPlayInfo = {}){
         let locationsHit = []
-        let chosenLocationLength = chosenLocation.length;
+        let chosenLocationLength = currentPlayInfo.piecesClicked.length;
         for (let i = 0; i < chosenLocationLength; i++){
-            let checkIfHit = attackedPiecesData.getPieceHavingDataTableOverlap([chosenLocation[i]]);
+            let checkIfHit = attackedPiecesData.getPieceHavingDataTableOverlap([currentPlayInfo.piecesClicked[i]]);
             if(checkIfHit){
                 locationsHit.push(true);
-                attackedPiecesData.removeLocationsWithInternalsFromPiecesInDataTable([chosenLocation[i]]);
+                attackedPiecesData.removeLocationsWithInternalsFromPiecesInDataTable([currentPlayInfo.piecesClicked[i]]);
                 //console.log('hit');
             }
             if(!checkIfHit){
@@ -23,11 +23,27 @@ class BsrPlayerAiInteractions{
                 //console.log('miss');
             }
         }
-        return locationsHit
+        currentPlayInfo.piecesHit = locationsHit;
+        return currentPlayInfo;
+    }
+
+    // set the current turn using the current play info (works for 2 players at the moment)
+    static setCurrentTurn(currentPlayInfo = {}){
+        let turn = currentPlayInfo.playerTurn;
+        let changed = false;
+        if(turn == 1 && !changed){
+            currentPlayInfo.playerTurn = 2;
+            changed = true;
+        }
+        if(turn != 1 && !changed){
+            currentPlayInfo.playerTurn = 1;
+            changed = true;
+        }
+        return currentPlayInfo;
     }
 
     // check if there has been a winner during the match yet or not
-    static setGameover(playerPiecesData = new BsrPiecesData(), aiPiecesData = new BsrPiecesData, currentPlayInfo = {}){
+    static setGameoverIfNeeded(playerPiecesData = new BsrPiecesData(), aiPiecesData = new BsrPiecesData, currentPlayInfo = {}){
         if(!Helper.accumulateObjectValues(playerPiecesData.getPiecesLeftThatHaveLocations())){
             //console.log('player should lose')
             currentPlayInfo.gameover = true;

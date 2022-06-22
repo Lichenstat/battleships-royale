@@ -31,7 +31,7 @@ class BsrPlayerAiInteractions{
     static getChangeInPiecesCount(piecesCountOriginal = {}, piecesCountPrevious = {}, currentPlayInfo = {}){
         for (const [key, item] of Object.entries(piecesCountOriginal)){
             if (piecesCountOriginal[key] != piecesCountPrevious[key]){
-                console.log('piece changed', key);
+                //console.log('piece changed', key);
                 currentPlayInfo.pieceName = key;
                 return currentPlayInfo;
             }

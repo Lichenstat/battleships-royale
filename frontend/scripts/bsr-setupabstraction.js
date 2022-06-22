@@ -17,6 +17,17 @@ class BsrSetupAbstraction{
     #removePiecesElement;
     #randomPlacementElement;
 
+    #carrierh;
+    #carrierv;
+    #battleshiph;
+    #battleshipv;
+    #destroyerh ;
+    #destroyerv ;
+    #submarineh ;
+    #submarinev ;
+    #patrolboath;
+    #patrolboatv;
+
     #canPlacePiece;
     #removedPreviousPiece;
     #tempGrid;
@@ -35,6 +46,18 @@ class BsrSetupAbstraction{
         this.#removeAllPiecesElement;
         this.#removePiecesElement;
         this.#randomPlacementElement;
+
+        // pre load all required whole ship scaled pieces
+        this.#carrierh = new Image();    this.#carrierh.src    = "./assets/board-pieces/horizontal/whole/carrierscaled.png";
+        this.#carrierv = new Image();    this.#carrierv.src    = "./assets/board-pieces/vertical/whole/carrierscaled.png";
+        this.#battleshiph = new Image(); this.#battleshiph.src = "./assets/board-pieces/horizontal/whole/battleshipscaled.png";
+        this.#battleshipv = new Image(); this.#battleshipv.src = "./assets/board-pieces/vertical/whole/battleshipscaled.png";
+        this.#destroyerh = new Image();  this.#destroyerh.src  = "./assets/board-pieces/horizontal/whole/destroyerscaled.png";
+        this.#destroyerv = new Image();  this.#destroyerv.src  = "./assets/board-pieces/vertical/whole/destroyerscaled.png";
+        this.#submarineh = new Image();  this.#submarineh.src  = "./assets/board-pieces/horizontal/whole/submarinescaled.png";
+        this.#submarinev = new Image();  this.#submarinev.src  = "./assets/board-pieces/vertical/whole/submarinescaled.png";
+        this.#patrolboath = new Image(); this.#patrolboath.src = "./assets/board-pieces/horizontal/whole/patrolboatscaled.png";
+        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./assets/board-pieces/vertical/whole/patrolboatscaled.png";
 
         // properties to use in interfacing
         this.#canPlacePiece = false;
@@ -150,11 +173,60 @@ class BsrSetupAbstraction{
         })
     }
 
+    // function to get the proper desired src string
+    getImageSrc(pieceName, rotation){
+        if(rotation == 'horizontal'){
+            if(pieceName == 'carrier')    return this.#carrierh;
+            if(pieceName == 'battleship') return this.#battleshiph;
+            if(pieceName == 'destroyer')  return this.#destroyerh;
+            if(pieceName == 'submarine')  return this.#submarineh;
+            if(pieceName == 'patrolboat') return this.#patrolboath;
+        }
+        if(rotation == 'vertical'){
+            if(pieceName == 'carrier')    return this.#carrierv;
+            if(pieceName == 'battleship') return this.#battleshipv;
+            if(pieceName == 'destroyer')  return this.#destroyerv;
+            if(pieceName == 'submarine')  return this.#submarinev;
+            if(pieceName == 'patrolboat') return this.#patrolboatv;
+        }
+    }
+
+    // set the pieces drag image when it starts to be dragged
+    setPieceDragImage(item){
+            // get location of image to later show whole piece being picked up
+            let imgLocation = item.target.src;
+            let imgString = imgLocation.match(/[^\/]+(?=\.png)/g);
+            // get string location of image to properly show image in relation to mouse cursor adjustment
+            let imgAdjust = imgString.toString().match(/\(.*\)/g);
+            imgAdjust = imgAdjust.toString().replace(/\(|\)/g, '');
+            let imgXAdjust = imgAdjust.toString().replace(/.+,/g, '');
+            let imgYAdjust = imgAdjust.toString().match(/.+(?=,)/g).toString();
+            //console.log(imgXAdjust, imgYAdjust);
+            // set piece location to adjust to match mouse cliciked piece location
+            if(imgXAdjust == 1){
+                imgXAdjust = 50;
+                imgYAdjust = (imgYAdjust * 100) - 50;
+            }
+            if(imgYAdjust == 1){
+                imgXAdjust = (imgXAdjust * 100) - 50;
+                imgYAdjust = 50;
+            }
+            //console.log(imgXAdjust, imgYAdjust);
+            // get piece name and rotation
+            let imgRotation = imgLocation.toString().match(/horizontal(?=\/)|vertical(?=\/)/g).toString();
+            let imgPieceName = imgString.toString().replace(/-.*/g, '').toString();
+            //console.log(imgRotation, imgPieceName);
+            let img = this.getImageSrc(imgPieceName, imgRotation);
+            item.dataTransfer.setDragImage(img, imgXAdjust/2, imgYAdjust/2);
+            item.dataTransfer.setData("text", item.target.id);
+    }
+
     // event on the start of the drag
     dragStart(item){
         //console.log('ran dragstart from setup.js');
         this.saveDragAndDropGrid(this.#gridContainerElement);
         if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
+            this.setPieceDragImage(item);
             this.#setup.setClickedPieceInfo(item.target.parentNode);
         }
     }

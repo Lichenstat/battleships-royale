@@ -3,98 +3,31 @@
 <head>
     <meta charset="utf-8">
     <title>Battleships - Play</title>
-    <!--<meta name="description" content="A simple HTML5 Template for new projects.">-->
+    <!--<meta name="description" content="A simple HTML5 Template for projects.">-->
     <!--<meta name="author" content="SitePoint">-->
-    <base href=".">
+    <!--<base href=".">-->
     <link href="./styling/bsr-stylesheet.css" rel="stylesheet" />
 </head>
 <body class="bsr--slight-background-movement">
     <div class='bsr bsr__container '>
         <div class="bsr__title bsr--text-large bsr--text-center bsr--white bsr--text-underline bsr--appear-and-glow">Battleships</div>
-        <!--
-        <div class='bsr__nav'>
-            <a class="bsr__link bsr__link--active" href="play.html">Play</a>
-            <a class="bsr__link bsr__link--inactive" href="leaderboard.html">Leaderboard</a>
-            <a class="bsr__link bsr__link--inactive" href="about.html">About</a>
-        </div>
-        -->
-        <!--
-        <div class="bsr__menu">
-            <div class="bsr__game">
-                *32 player limit at the moment*
-                <br>
-                <button class="bsr__choice bsr__choice--disabled">Join A Match</button>
-                <div class="bsr__dropdown bsr__dropdown--disabled">
-                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__join">Join Match</button>
-                    Got A Code? Enter It Here:
-                    <input type="text" class="bsr__code" id="bsr__code" minlength="32" maxlength="32" size="46" placeholder="################################">
-                </div>
-                <button class="bsr__choice bsr__choice--disabled">Create A Match</button>
-                <div class="bsr__dropdown bsr__dropdown--disabled">
-                    <label for="bsr_checkbox--ai">A.I. Enabled?</label>
-                    <input type="checkbox" class="bsr__checkbox bsr__checkbox--disabled" id="bsr__checkbox--ai" name="bsr__checkbox--ai" value=false>
-                    <label for="bsr__checkbox--public">Public Game? (Random people can join)</label>
-                    <input type="checkbox" class="bsr__checkbox bsr__checkbox--disabled" id="bsr__checkbox--public" name="bsr__checkbox--public" value=false>
-                    <label for="bsr__players--count">A.I. Count</label>
-                    <input type="number" class="bsr__players bsr__players--count" id="bsr__players--count" name="bsr__players--count" min=1 max=31 size="3">
-                    <br>
-                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__prepare">Prepare Game</button>
-                    <br>
-                    Match will start when countdown is finished or match is manually started...
-                    <br>
-                    (match time here)
-                    <br>
-                    Match Code:
-                    <br>
-                    <button type="button" class="bsr__choice bsr__choice--disabled" id="bsr__start">Start Game</button>
-                    <br>
-
-                    <div class="test__drag" id="test__drag" draggable="true" ondragstart="dragBoardPiece(event)">
-                        drag stuff
-                        = 9 damage
-                    </div>
-                </div>
-            </div>
-            <div class="bsr__options" id="bsr__options">
-
-            </div>
-            <div class="bsr__players" id="bsr__players">
-
-            </div>
-        </div> 
-        -->
-        <!--
-        <div class="color">
-            test
-            <div class="test__color">
-                test
-                <div class="test__color--border">
-                    test 
-                </div>
-            </div>
-        </div>
-        -->
         <div id="bsr__gameshell" class="bsr__gameshell bsr--slidein-bottom">
-            <div id="bsr__shipinfoshell" class="bsr__shipinfoshell bsr--rounded">
-                <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
-                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">Playing Against AI</div>
-                <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
+            <div id="bsr__shipinfoshell" class="bsr__shipinfoshell">
+                <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
+                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--border bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">No Server Connection - Playing Against AI</div>
+                <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
             </div>
-            <div id="bsr__setupplacement" class="bsr__setupplacement bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
-                <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--rounded">
-                    <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--rounded">Rotate Pieces</button>
-                    <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--rounded">Remove All Pieces</button>
-                    <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--rounded">Randomly Place Pieces</button>
+            <div id="bsr__setupplacement" class="bsr__setupplacement bsr--border bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
+                <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--border-no-right bsr--rounded-left">
+                    <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Rotate Pieces</button>
+                    <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Remove All Pieces</button>
+                    <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Randomly Place Pieces</button>
                 </div>
-                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--text bsr--rounded-left bsr--white"></div>
-                <div id="bsr__piecesremover" class="bsr__piecesremover bsr--rounded-left"></div>
+                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--border-top-bottom bsr--text bsr--white"></div>
+                <div id="bsr__piecesremover" class="bsr__piecesremover"></div>
                 <div id="bsr__gridplacement" class="bsr__gridplacement bsr--text"></div>
             </div>
-            <div id="testt">
-
-            </div>
             <div id="bsr__changestates" class="bsr__changestates bsr--text-center"><button id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text bsr--appear-and-glow-temporary">Start Game</button></div>
-            <!--<div id="bsr__gridspacer" class="bsr__gridspacer"></div>-->
         </div>
     </div>
     <!--
@@ -103,36 +36,6 @@
     -->
     <script>
 
-        // pre load all required whole ship scaled pieces
-        let carrierh = new Image();    carrierh.src    = "./assets/board-pieces/horizontal/whole/carrierscaled.png";
-        let carrierv = new Image();    carrierv.src    = "./assets/board-pieces/vertical/whole/carrierscaled.png";
-        let battleshiph = new Image(); battleshiph.src = "./assets/board-pieces/horizontal/whole/battleshipscaled.png";
-        let battleshipv = new Image(); battleshipv.src = "./assets/board-pieces/vertical/whole/battleshipscaled.png";
-        let destroyerh = new Image();  destroyerh.src  = "./assets/board-pieces/horizontal/whole/destroyerscaled.png";
-        let destroyerv = new Image();  destroyerv.src  = "./assets/board-pieces/vertical/whole/destroyerscaled.png";
-        let submarineh = new Image();  submarineh.src  = "./assets/board-pieces/horizontal/whole/submarinescaled.png";
-        let submarinev = new Image();  submarinev.src  = "./assets/board-pieces/vertical/whole/submarinescaled.png";
-        let patrolboath = new Image(); patrolboath.src = "./assets/board-pieces/horizontal/whole/patrolboatscaled.png";
-        let patrolboatv = new Image(); patrolboatv.src = "./assets/board-pieces/vertical/whole/patrolboatscaled.png";
-
-        // function to get the proper desired src string
-        function getImageSrc(pieceName, rotation){
-            if(rotation == 'horizontal'){
-                if(pieceName == 'carrier')    return carrierh;
-                if(pieceName == 'battleship') return battleshiph;
-                if(pieceName == 'destroyer')  return destroyerh;
-                if(pieceName == 'submarine')  return submarineh;
-                if(pieceName == 'patrolboat') return patrolboath;
-            }
-            if(rotation == 'vertical'){
-                if(pieceName == 'carrier')    return carrierv;
-                if(pieceName == 'battleship') return battleshipv;
-                if(pieceName == 'destroyer')  return destroyerv;
-                if(pieceName == 'submarine')  return submarinev;
-                if(pieceName == 'patrolboat') return patrolboatv;
-            }
-        }
-
         // set data to transfer over on the use of the drag and drop api
         function allowDropBoardPiece(event) {
             event.preventDefault();
@@ -140,32 +43,6 @@
 
         // on dragging of the board piece
         function dragBoardPiece(event) {
-            // get location of image to later show whole piece being picked up
-            let imgLocation = event.target.src;
-            let imgString = imgLocation.match(/[^\/]+(?=\.png)/g);
-            // get string location of image to properly show image in relation to mouse cursor adjustment
-            let imgAdjust = imgString.toString().match(/\(.*\)/g);
-            imgAdjust = imgAdjust.toString().replace(/\(|\)/g, '');
-            let imgXAdjust = imgAdjust.toString().replace(/.+,/g, '');
-            let imgYAdjust = imgAdjust.toString().match(/.+(?=,)/g).toString();
-            //console.log(imgXAdjust, imgYAdjust);
-            // set piece location to adjust to match mouse cliciked piece location
-            if(imgXAdjust == 1){
-                imgXAdjust = 50;
-                imgYAdjust = (imgYAdjust * 100) - 50;
-            }
-            if(imgYAdjust == 1){
-                imgXAdjust = (imgXAdjust * 100) - 50;
-                imgYAdjust = 50;
-            }
-            //console.log(imgXAdjust, imgYAdjust);
-            // get piece name and rotation
-            let imgRotation = imgLocation.toString().match(/horizontal(?=\/)|vertical(?=\/)/g).toString();
-            let imgPieceName = imgString.toString().replace(/-.*/g, '').toString();
-            //console.log(imgRotation, imgPieceName);
-            let img = getImageSrc(imgPieceName, imgRotation);
-            event.dataTransfer.setDragImage(img, imgXAdjust/2, imgYAdjust/2);
-            event.dataTransfer.setData("text", event.target.id);
         }
 
         // on dropping board piece
@@ -176,32 +53,10 @@
 
     </script>
     <script type="module">
+
         import { Helper } from "./scripts/helper.js";
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
-
-        //--------------------------------------------------------------
-        //let joinGame = document.getElementById('bsr__join');
-        //let gameCode = document.getElementById('bsr__code');
-
-        //let aiCheckbox = document.getElementById('bsr__checkbox--ai');
-        //let publicGame = document.getElementById('bsr__checkbox--public');
-        //let playerCount = document.getElementById('bsr__players--count');
-        //let prepareGame = document.getElementById('bsr__prepare');
-        //let startGame = document.getElementById('bsr__start');
-
-        //playerCount.onchange = () => {
-        //    if (playerCount.value < 1)
-        //        playerCount.value = 1;
-        //    if (playerCount.value > 31)
-        //        playerCount.value = 31;
-        //}
-
-        //--------------------------------------------------------------
-        
-        //let testt = document.getElementById("testt");
-        //let buttonGrid = BsrCreateGrids.getButtonGrid();
-        //testt.innerHTML = buttonGrid.getGrid();
 
         //--------------------------------------------------------------
         // get our elements to easily initialize bsr setup
@@ -304,7 +159,7 @@
                 }
                 if (!placeablePiecesCount){
                     let playingAgainstAi = true;
-                    console.log('making player table');
+                    console.log('making play tables');
                     gameShellContainerElement.classList = gameShellSlideRightClass;
                     // timeout is to help with timing animations
                     setTimeout(() => {
@@ -320,7 +175,7 @@
 
             // set teh game to the setup phase
             if(item.target.id == "bsr__generateplacementgrid"){
-                console.log('making drag and drop table');
+                console.log('making setup table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
                 // timeout is to help with timing animations
                 setTimeout(() => {

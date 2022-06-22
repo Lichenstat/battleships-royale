@@ -12,7 +12,7 @@
 @import 'bsr-grids.css';
 
 body{
-  border: 2px solid greenyellow;
+  /*border: 2px solid greenyellow;*/
   font-family: 'Stardos Stencil', cursive;
   background-image: url("../assets/images/sea.jpg");
   background-size: 100%;
@@ -25,6 +25,18 @@ button{
 
 footer{
   position: fixed;
+}
+
+.bsr--border{
+  border-style: outset;
+}
+
+.bsr--border-top-bottom{
+  border-style: outset none outset none;
+}
+
+.bsr--border-no-right{
+  border-style: outset none outset outset;
 }
 
 .bsr--rounded{
@@ -107,7 +119,7 @@ footer{
 
 /* bsr is shorthand for battleships royale*/
 .bsr__container{
-  border: 2px solid blue;
+  /*border: 2px solid blue;*/
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -120,7 +132,7 @@ footer{
 }
 
 .bsr__shipinfoshell{
-  border: 2px solid brown;
+  /*border: 2px solid brown;*/
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -128,15 +140,15 @@ footer{
 }
 
 .bsr__playershipinfo{
-  border: 2px solid black;
-  margin-left: 2px;
+  /*border: 2px solid black;*/
+  margin-left: 6px;
   width: fit-content;
   height: fit-content;
   padding: 10px;
 }
 
 .bsr__playinfo{
-  border: 2px solid yellow;
+  /*border: 2px solid yellow;*/
   margin-top: auto;
   width: fit-content;
   height: fit-content;
@@ -144,15 +156,15 @@ footer{
 }
 
 .bsr__enemyshipinfo{
-  border: 2px solid black;
-  margin-right: 2px;
+  /*border: 2px solid black;*/
+  margin-right: 6px;
   width: fit-content;
   height: fit-content;
   padding: 10px;
 }
 
 .bsr__setupplacement{
-  border: 2px solid purple;
+  /*border: 2px solid purple;*/
   display: flex;
   justify-content: center;
   margin-left: auto;
@@ -162,7 +174,7 @@ footer{
 }
 
 .bsr__setupbuttonsshell{
-  border: 2px solid gold;
+  /*border: 2px solid gold;*/
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -170,13 +182,13 @@ footer{
 }
 
 .bsr__setupbutton{
-  border: 2px solid orange;
+  /*border: 2px solid orange;*/
   width: 100px;
   height: 200px;
 }
 
 .bsr__gridplacement{
-  border: 2px solid green;
+  /*border: 2px solid green;*/
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,12 +197,12 @@ footer{
 }
 
 .bsr__gridspacer{
-  border: 2px solid cyan;
+  /*border: 2px solid cyan;*/
   width: 20px;
 }
 
 .bsr__piecescontainer{
-  border: 2px solid red;
+  /*border: 2px solid red;*/
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -204,14 +216,14 @@ footer{
 }
 
 .bsr__piecesshell{
-  border: 2px solid peachpuff;
+  /*border: 2px solid peachpuff;*/
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 300px;
-  height: 635px;
+  height: 631px;
 }
 
 .bsr__piecesshell div{
@@ -227,15 +239,15 @@ footer{
 */
 
 .bsr__pieceremover{
-  border: 2px solid darkblue;
+  /*border: 2px solid darkblue;*/
   position: absolute;
   width: 300px;
-  height: 635px;
+  height: 631px;
   /*background-image: url('../assets/textures/water.jpg');*/
 }
 
 .bsr__changestates{
-  padding: 10px;
+  margin-top: 16px;
 }
 
 .bsr__generateplacementgrid{

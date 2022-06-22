@@ -44,6 +44,8 @@ class BsrPlay{
     #playerTurn;
     //#gameover;
 
+    #initialized;
+    #runInitializationFunctions;
     #runtimeFunctions;
     #runOnWinFunctions;
 
@@ -88,6 +90,8 @@ class BsrPlay{
         //------------------------------------------------
 
         // assign functions from the outside to run on updates
+        this.#initialized = false;
+        this.#runInitializationFunctions = [];
         this.#runtimeFunctions = [];
         this.#runOnWinFunctions = [];
 
@@ -218,6 +222,11 @@ class BsrPlay{
     //    }
     //}
 
+    // set outside functions to run on initialization
+    setOutsideFunctionsToRunOnInitialization(func = function(){}){
+        this.#runInitializationFunctions.push(func);
+    }
+
     // set an outside function in the outside functions array to run on game update
     setOutsideFunctionsToRunOnPlayRuntime(func = function(){}){
         this.#runtimeFunctions.push(func);
@@ -228,11 +237,22 @@ class BsrPlay{
         this.#runOnWinFunctions.push(func);
     }
 
+    // run functions on initialization
+    #runInitialization(){
+        if (!this.#initialized){
+            this.#runInitializationFunctions.forEach(
+                func => {
+                    func();
+                }
+            )
+            this.#initialized = true;
+        }
+    }
+
     // run array of functions on player update
     #runOnGameUpdate(){
         this.#runtimeFunctions.forEach(
             func => {
-                console.log(func);
                 func();
             }
         )
@@ -335,17 +355,24 @@ class BsrPlay{
             pieceSunk = "Sank " + pieceSunk + "!"
         }
         // whos turn is it
-        let turn = this.#currentPlayInfo.playerTurn;
         let turnString = '';
-        if (this.#playerTurn) {turnString = "- Your Turn -";}
-        if (!this.#playerTurn) {turnString = "- Enemy Turn -";}
+        if (this.#playerTurn){
+            turnString = "- Your Turn -";
+        }
+        if (!this.#playerTurn){
+            turnString = "- Enemy Turn -";
+        }
         // is it gameover and who won
+        let turn = this.#currentPlayInfo.playerTurn;
         if (this.#currentPlayInfo.gameover){
             let outcome = '';
-            if (turn == this.#playerNumber){outcome = "You Won!";} //console.log('for the win')}
-            if (turn != this.#playerNumber){outcome = "You Lost...";} //console.log('for the loss');}
+            if (turn == this.#playerNumber){
+                outcome = "You Win!"; 
+            }
+            if (turn != this.#playerNumber){
+                outcome = "You Lose..."; 
+            }
             //console.log('turn on gameover: ', this.#currentPlayInfo.playerTurn);
-            //console.log('we will now have game over <----------');
             return "- Game Over -<br>" + outcome;
         }
         return clicked + "<br>" + hitMiss + "<br>" + pieceSunk + "<br>" + turnString;
@@ -408,6 +435,7 @@ class BsrPlay{
     // player vs whoever runtime
     playRuntime(){
         console.log('running');
+        this.#runInitialization();
         if(!this.#currentPlayInfo.gameover){
             if(this.#isPlayingAgainstAi){
                 if(this.#playerTurn){

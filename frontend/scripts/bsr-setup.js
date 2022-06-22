@@ -180,7 +180,7 @@ class BsrSetup{
                 'class="' + bsrPieceInteractors.piecesContainerId + '"', 
                 'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
                 );
-                let uppercaseKey = key.charAt(0).toUpperCase() + key.substring(1, key.length);
+                let uppercaseKey = Helper.capitalizeFirstCharacterInString(key);
                 if (uppercaseKey == 'Patrolboat'){
                     uppercaseKey = 'Patrol Boat';
                 }

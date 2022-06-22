@@ -25,11 +25,6 @@ class BsrPlayAbstraction{
         this.#textInfoElement;
         this.#playerShipInfoElement;
         this.#enemyShipInfoElement;
-
-        // set functions to run during play runtime
-        this.#play.setOutsideFunctionsToRunOnPlayRuntime(() => this.setChosenPiecesOutcome());
-        this.#play.setOutsideFunctionToRunOnWin(() => this.setGameoverImages());
-        this.#play.setOutsideFunctionToRunOnWin(() => this.updateTextInfo(this.#textInfoElement));
     }
 
     // load the player grid with all the pieces in some element(s)
@@ -165,6 +160,12 @@ class BsrPlayAbstraction{
         this.loadPlayingGrids(gridContainerElement);
         this.setEventListenersOfGridButtons();
         this.setUpdatePlayerInfo(textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+
+        // set functions to run during overall play runtime
+        //this.#play.setOutsideFunctionsToRunOnInitialization(() => this.updateTextInfo(this.#textInfoElement));
+        this.#play.setOutsideFunctionsToRunOnPlayRuntime(() => this.setChosenPiecesOutcome());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.setGameoverImages());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.updateTextInfo(this.#textInfoElement));
     }
 
   }

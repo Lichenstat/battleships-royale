@@ -322,7 +322,7 @@ class BsrPlay{
     // return the proper outcome for the given button
     getOutcomeIdsWithImagesForUpdating(){
         let ids = this.#getCellIds(this.#currentPlayInfo.piecesClicked);
-        let imagesrc = this.#getOutcomeImagesForUpdating(this.#currentPlayInfo.piecesHit)
+        let imagesrc = this.#getOutcomeImagesForUpdating(this.#currentPlayInfo.piecesHit);
         return {ids : ids, imageSrcs : imagesrc}
     }
 
@@ -401,7 +401,7 @@ class BsrPlay{
     #vsAiRuntime(){
         if(this.#currentPlayInfo.playerTurn == this.#playerNumber && !this.#currentPlayInfo.gameover){
             if(this.#hasButtonUpdated){
-                console.log('player attacked');
+                //console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
                 this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
                 let newPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
@@ -418,7 +418,7 @@ class BsrPlay{
             }
         }
         if(this.#currentPlayInfo.playerTurn != this.#playerNumber && !this.#currentPlayInfo.gameover){
-            console.log("ai attacked");
+            //console.log("ai attacked");
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, this.#currentPlayInfo);
@@ -434,7 +434,7 @@ class BsrPlay{
 
     // player vs whoever runtime
     playRuntime(){
-        console.log('running');
+        //console.log('running');
         this.#runInitialization();
         if(!this.#currentPlayInfo.gameover){
             if(this.#isPlayingAgainstAi){

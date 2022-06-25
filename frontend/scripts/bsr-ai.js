@@ -68,8 +68,8 @@ class BsrAi{
 
     this.#testChoice = [this.#bsrGridMinAndMax.minRowPosition, this.#bsrGridMinAndMax.minColumnPosition - 1];
     
-    this.#minTime = 1;
-    this.#maxTime = 1;
+    this.#minTime = 1000;
+    this.#maxTime = 1000;
     this.#timer = Helper.getRandomInteger(this.#minTime, this.#maxTime);
 
     }
@@ -167,7 +167,7 @@ class BsrAi{
 
     // get location for a random attack
     #getLocationForRandomAttack(){
-        console.log('using random attack location')
+        //console.log('using random attack location')
         let attackLocation = this.#getUnhitLocation();
         this.#aiLastAttackedLocations = [attackLocation];
         return attackLocation;
@@ -175,7 +175,7 @@ class BsrAi{
 
     // get location for a priority attack
     #getLocationForPriorityAttack(){
-        console.log('using priority attack location', this.#aiPriorityAttackLocation);
+        //console.log('using priority attack location', this.#aiPriorityAttackLocation);
         let priortiyAttackLocationIndex = Helper.getIndexLocationOfMatchedArray(this.#aiPriorityAttackLocation, this.#aiPossibleAttackLocations);
         //console.log(priortiyAttackLocationIndex);
         this.#aiPossibleAttackLocations.splice(priortiyAttackLocationIndex, 1);
@@ -185,7 +185,7 @@ class BsrAi{
 
     // get location for a prioritized attack
     #getLocationForPrioritizedAttack(){
-        console.log('using prioritized attack locations', this.#aiPrioritizeAttackLocations);
+        //console.log('using prioritized attack locations', this.#aiPrioritizeAttackLocations);
         //console.log('prioritize attack locations', this.#aiPrioritizeAttackLocations);
         // get a random prioritized attack location and splice it from the prioritied attack locations list
         // and the possible attack locations list, then return it as the attack location
@@ -203,7 +203,7 @@ class BsrAi{
 
     // get location for a possible attack
     #getLocationForPossibleAttack(){
-        console.log('using possible attack locations', this.#aiPossibleAttackLocations);
+        //console.log('using possible attack locations', this.#aiPossibleAttackLocations);
         // if we have possible attack locations but no prioritized attack
         let aiPossibleAttackLocationsLength = this.#aiPossibleAttackLocations.length;
         let randomPossibleAttackLocation = Helper.getRandomInteger(0, aiPossibleAttackLocationsLength - 1);
@@ -217,7 +217,7 @@ class BsrAi{
 
     // do ai checking of parts and choose a best location for attacking
     getNextAttackLocation(){
-        console.log('ai pieces left', this.#aiPiecesData.getPiecesLeftThatHaveLocations())
+        //console.log('ai pieces left', this.#aiPiecesData.getPiecesLeftThatHaveLocations())
         let aiPossibleAttackLocationsLength = this.#aiPossibleAttackLocations.length;
         // if there is no possible attack locations pick a random location and attack with that
         if (!aiPossibleAttackLocationsLength){
@@ -280,7 +280,7 @@ class BsrAi{
     #setStartingLocationHit(location = []){
         if (!this.#aiStartingLocationHit.length){
             this.#aiStartingLocationHit = location;
-            console.log(this.#aiStartingLocationHit);
+            //console.log(this.#aiStartingLocationHit);
         }
     }
 
@@ -303,7 +303,7 @@ class BsrAi{
 
     // set opposite direction to attack in
     #setOppositeDirectionToAttakIn(){
-        console.log('swapping direction');
+        //console.log('swapping direction');
         let direction = Helper.getSubtractedArray(this.#aiSuccessfulAttackLocation, this.#aiLastSuccessfulAttackLocation);
         //console.log(direction);
         let newDirection = Helper.swapPositiveNegativeArrayValues(direction);
@@ -318,7 +318,7 @@ class BsrAi{
         // if we cannot find the priority location for the follow up swapped direction (already clicked), then we ignore priortiy info 
         let isInPossibleLocations = Helper.checkIfArrayIsInArrayOfArrays(this.#aiPriorityAttackLocation, this.#aiPossibleAttackLocations);
         if (!isInPossibleLocations){
-            console.log('no possible locations, remove priority');
+            //console.log('no possible locations, remove priority');
             this.#setCleanPriorityInfo();
         }
     }
@@ -346,7 +346,7 @@ class BsrAi{
                 // set the next possible attack locations
                 let nextPossibleAttackLocations = this.#bsrGrid.getPlayableLocationsAroundLocation(this.#aiLastAttackedLocations[i]);
                 nextPossibleAttackLocations = Object.values(nextPossibleAttackLocations);
-                console.log('next possible attack locations', nextPossibleAttackLocations);
+                //console.log('next possible attack locations', nextPossibleAttackLocations);
                 this.#setPossibleAttackLocations(nextPossibleAttackLocations);
                 // check if our attack can go in a certain direction
                 this.#setNextPossibleAttackLocationInDirection();

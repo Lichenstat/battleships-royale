@@ -21,10 +21,10 @@ class BsrSetupAbstraction{
     #carrierv;
     #battleshiph;
     #battleshipv;
-    #destroyerh ;
-    #destroyerv ;
-    #submarineh ;
-    #submarinev ;
+    #destroyerh;
+    #destroyerv;
+    #submarineh;
+    #submarinev;
     #patrolboath;
     #patrolboatv;
 
@@ -73,15 +73,20 @@ class BsrSetupAbstraction{
     }
 
     // update the drag and drop pieces that can be put on the grid
-    updateDragAndDropPieces(piecesContainerElement, combineRemoverElement){
+    updateDragAndDropPieces(piecesContainerElement, combineRemoverElement, additionalContainerClasses = ""){
         // if we want to combine the pieces remover and the pieces drag and drop do so
         if (combineRemoverElement){
             let remover = bsrPieceInteractors.dragAndDropPieceRemover;
-            piecesContainerElement.innerHTML = remover + this.#setup.getUpdatedDragAndDropPieces();
+            piecesContainerElement.innerHTML = remover + this.#setup.getUpdatedDragAndDropPieces(additionalContainerClasses);
         }
         if(combineRemoverElement == undefined){
-            piecesContainerElement.innerHTML = this.#setup.getUpdatedDragAndDropPieces();
+            piecesContainerElement.innerHTML = this.#setup.getUpdatedDragAndDropPieces(additionalContainerClasses);
         }
+    }
+
+    // update the drag and drop pieces with a red flash (indiciate all pieces haven't been placed)
+    updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, combineRemoverElement){
+        this.updateDragAndDropPieces(piecesContainerElement, combineRemoverElement, "bsr--blink-red");
     }
 
     // load a blank drag and drop grid using some givne element and it's id
@@ -239,10 +244,12 @@ class BsrSetupAbstraction{
         //console.log(item.target.parentNode.parentNode.parentNode)
         if(item.target.parentNode){
             //console.log(item.target.parentNode);
-            if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
-                if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
-                    this.#setup.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
-                    setDraggedOver = true;
+            if(item.target.parentNode.parentNode){
+                if(item.target.parentNode.parentNode.parentNode.id != null && !setDraggedOver){
+                    if(item.target.parentNode.parentNode.parentNode.id.includes('bsr__table-cell')){
+                        this.#setup.setDraggedOverPieceInfo(item.target.parentNode.parentNode);
+                        setDraggedOver = true;
+                    }
                 }
             }
             if(!setDraggedOver){

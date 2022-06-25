@@ -10,6 +10,11 @@
     to {text-shadow: 0px 0px 6px whitesmoke;}
 }
 
+@keyframes textLightupWhiteReverse{
+    from {text-shadow: 0px 0px 6px whitesmoke;}
+    to {text-shadow: 0px 0px 0px whitesmoke;}
+}
+
 @keyframes boxLightupWhite{
     from {box-shadow: 0px 0px 0px whitesmoke;}
     to {box-shadow: 0px 0px 16px whitesmoke;}

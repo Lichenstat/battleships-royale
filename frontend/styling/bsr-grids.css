@@ -67,6 +67,10 @@
   height: 100%;
 }
 
+.bsr__boardbutton--enabled{
+  border-style: outset;
+}
+
 .bsr__pieceimage{
   position: absolute;
   max-width: 100%;

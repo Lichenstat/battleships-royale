@@ -6,29 +6,61 @@
     <!--<meta name="description" content="A simple HTML5 Template for projects.">-->
     <!--<meta name="author" content="SitePoint">-->
     <!--<base href=".">-->
-    <link href="./styling/bsr-stylesheet.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+    <link  rel="stylesheet"  href="./styling/bsr-stylesheet.css"/>
 </head>
 <body class="bsr--slight-background-movement">
     <div class='bsr bsr__container '>
-        <div class="bsr__title bsr--text-large bsr--text-center bsr--white bsr--text-underline bsr--appear-and-glow">Battleships</div>
+        <div class="bsr__title bsr--text-large bsr--text-center bsr--white bsr--text-underline bsr--appear-and-glow">
+            Battleships
+        </div>
         <div id="bsr__gameshell" class="bsr__gameshell bsr--slidein-bottom">
             <div id="bsr__shipinfoshell" class="bsr__shipinfoshell">
                 <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
-                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--border bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">No Server Connection - Playing Against AI</div>
+                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--border bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">
+                    No Server Connection - Playing Against AI
+                </div>
                 <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
             </div>
             <div id="bsr__setupplacement" class="bsr__setupplacement bsr--border bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
                 <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--border-no-right bsr--rounded-left">
-                    <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Rotate Pieces</button>
-                    <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Remove All Pieces</button>
-                    <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">Randomly Place Pieces</button>
+                    <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage shiny" src="./assets/images/rotate.png" alt="Rotate Ships">
+                    </button>
+                    <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage" src="./assets/images/random.png" alt="Randomly Place Ships">
+                    </button>
+                    <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage" src="./assets/images/delete.png" alt="Remove All Ships">
+                    </button>
                 </div>
-                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--border-top-bottom bsr--text bsr--white"></div>
+                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--background-show-remove bsr--border-top-bottom bsr--text bsr--white"></div>
                 <div id="bsr__piecesremover" class="bsr__piecesremover"></div>
                 <div id="bsr__gridplacement" class="bsr__gridplacement bsr--text"></div>
             </div>
-            <div id="bsr__changestates" class="bsr__changestates bsr--text-center"><button id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text bsr--appear-and-glow-temporary">Start Game</button></div>
+            <div id="bsr__changestates" class="bsr__changestates bsr--text-center">
+                <button id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text bsr--appear-and-glow-temporary">
+                    Start Game
+                </button>
+            </div>
         </div>
+    </div>
+    <div class="bsr__infoshell bsr--white">
+        <hr class="bsr__split bsr--white bsr--appear-and-glow-temporary-delayed">
+        <div class="bsr--appear-and-glow-temporary-delayed-text">Battleships by Lichenstat - circa 2022</div>
+        <div class="bsr__lookhere bsr--white bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <a class="bsr--white bsr--glow-mouseover" href="https://github.com/Lichenstat/battleships-royale">Project Repository</a>
+        </div>
+        <br>
+        <div class="bsr--appear-and-glow-temporary-delayed-text">Want to get in touch?</div>
+        <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <div id="bsr__getintouch" class="bsr--glow-mouseover">Bugs / Recommendations / Personal Comments</div>
+        </div>
+        <!--
+        <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <div class="bsr--glow-mouseover">Possible Business Inquiry</div>
+        </div>
+        -->
     </div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
@@ -57,6 +89,7 @@
         import { Helper } from "./scripts/helper.js";
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
+        import { arbitraryThingy } from "./scripts/sus.js";
 
         //--------------------------------------------------------------
         // get our elements to easily initialize bsr setup
@@ -140,18 +173,18 @@
 
         let playing;
 
-        const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text">Start Game</button>';
-        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--rounded bsr--text">End Game</button>';
+        const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';
+        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
 
         // check items on event click
-
         document.addEventListener('click', item => {
 
             // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
                 let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
                 if (placeablePiecesCount){
-                    changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                    changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                    setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
                     setTimeout(() => {
                         if (setup != null)
                             changeStatesElement.innerHTML = playerTableButton;
@@ -159,7 +192,7 @@
                 }
                 if (!placeablePiecesCount){
                     let playingAgainstAi = true;
-                    console.log('making play tables');
+                    //console.log('making play tables');
                     gameShellContainerElement.classList = gameShellSlideRightClass;
                     // timeout is to help with timing animations
                     setTimeout(() => {
@@ -174,13 +207,13 @@
             }
 
             // set teh game to the setup phase
-            if(item.target.id == "bsr__generateplacementgrid"){
-                console.log('making setup table');
+            if (item.target.id == "bsr__generateplacementgrid"){
+                //console.log('making setup table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
                 // timeout is to help with timing animations
                 setTimeout(() => {
                     changeStatesElement.innerHTML = playerTableButton;
-                    textInfoElement.innerHTML = 'Playing Against AI';
+                    textInfoElement.innerHTML = 'No Server Connection - Playing Against AI';
                     playerShipInfoElement.innerHTML = '';
                     enemyShipInfoElement.innerHTML = '';
                     resetNodesForSetup();
@@ -191,15 +224,16 @@
                 }, 900);
 
             }
+
+            // to get in touch
+            if (item.target.id == "bsr__getintouch"){
+                window.location.href = arbitraryThingy("virntuanlep7rogn", "gm#aigl.*cojm");
+            }
+
         });
 
         //-------------------------------------------------------------------------
         
     </script>
-    
-    <hr class="bsr__split bsr--white">
-    <div>
-
-    </div>
 </body>
 </html>

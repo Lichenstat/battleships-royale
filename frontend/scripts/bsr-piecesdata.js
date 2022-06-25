@@ -113,7 +113,7 @@ class BsrPiecesData extends BsrPlayPieces{
         this.#piecesDataTable = [];
         this.#resetIdsOfPiecesDataTable()
         this.resetPieces();
-        console.log(this.#piecesDataTable);
+        //console.log(this.#piecesDataTable);
     }
 
     // return the desired piece from play pieces

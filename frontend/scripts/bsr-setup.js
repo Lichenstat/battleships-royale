@@ -166,7 +166,7 @@ class BsrSetup{
     }
 
     // put all the placeable pieces together
-    getUpdatedDragAndDropPieces(){
+    getUpdatedDragAndDropPieces(addClassEffectToNonEmptyPieces = ""){
         let container = bsrPieceInteractors.piecesContainer;
         let beginning = container.substring(0, container.indexOf('>') + 1);
         let ending = container.substring(container.lastIndexOf('<'), container.length);
@@ -175,10 +175,14 @@ class BsrSetup{
         let combined = '';
         //console.log(pieces);
         for (const [key, item] of Object.entries(pieces)){
+            let addEffect = "";
+            if (piecesLeft[key]){
+                addEffect = addClassEffectToNonEmptyPieces;
+            }
             let currentBeginning = Helper.parsePartOfStringToReplace(
                 beginning, 
                 'class="' + bsrPieceInteractors.piecesContainerId + '"', 
-                'class="' + bsrPieceInteractors.piecesContainerId + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
+                'class="' + bsrPieceInteractors.piecesContainerId + " " + addEffect + " " + bsrPieceInteractors.piecesContainerId + "--" + key + '"'
                 );
                 let uppercaseKey = Helper.capitalizeFirstCharacterInString(key);
                 if (uppercaseKey == 'Patrolboat'){
@@ -210,14 +214,14 @@ class BsrSetup{
         let name = pieceDraggedId.match(/--.*-/g);
         name = name.toString().replace(/--|-/g, '');
         this.#draggedPieceName = name.toString();
-        console.log("clicked piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
+        //console.log("clicked piece", this.#draggedPieceClickedLocation, this.#draggedPieceName);
         
         let pieceLocalId = piece.parentNode.parentNode.id;
         this.#gridPieceClickedId = pieceLocalId;
         this.#gridPieceClickedLocation = Helper.parseElementIdForMatrixLocation(pieceLocalId);
         this.#gridPieceLocationChecked = false;
         this.#gridPieceIds = [];
-        console.log("local click piece", this.#gridPieceClickedLocation);
+        //console.log("local click piece", this.#gridPieceClickedLocation);
     }
 
     // get content that piece was dragged over
@@ -436,7 +440,7 @@ class BsrSetup{
         this.#piecesData.fillDataTableRandomly();
         this.#draggedOverGridPieceId = this.#defaultDraggedOverId;
         this.#setPieceIdsAndInternals();
-        console.log(this.#piecesData.getPiecesDataTable());
+        //console.log(this.#piecesData.getPiecesDataTable());
     }
 
     //-------------------------------------------------------------------------

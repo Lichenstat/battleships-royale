@@ -55,7 +55,7 @@ class BsrPlayAbstraction{
 
     // set pieces after they have been checked and sent back after ai/server updates
     setChosenPiecesOutcome(){
-        console.log('ran pieces outcome');
+        //console.log('ran pieces outcome');
         if (this.#textInfoElement){
             this.updateTextInfo(this.#textInfoElement);
         }
@@ -82,10 +82,12 @@ class BsrPlayAbstraction{
             if(currentTurn == playerTurn){
                 let images = allSameCellIds[1].children[0].innerHTML;
                 allSameCellIds[1].innerHTML = images;
+                allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
                 allSameCellIds[1].children[1].src = srcs[i];
             }
             // client player grid
             if(currentTurn != playerTurn){
+                allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
                 allSameCellIds[0].children[0].children[1].src = srcs[i]
             }
         }
@@ -150,7 +152,7 @@ class BsrPlayAbstraction{
                 this.#play.playRuntime();
             }
             //console.log(this.#playerPiecesData.getPiecesDataTable());
-            console.log('player pieces left', this.#play.getPlayerPiecesData().getPiecesLeftThatHaveLocations());
+            //console.log('player pieces left', this.#play.getPlayerPiecesData().getPiecesLeftThatHaveLocations());
             })
         })
     }

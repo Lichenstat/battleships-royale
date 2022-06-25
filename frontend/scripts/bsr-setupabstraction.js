@@ -48,16 +48,16 @@ class BsrSetupAbstraction{
         this.#randomPlacementElement;
 
         // pre load all required whole ship scaled pieces
-        this.#carrierh = new Image();    this.#carrierh.src    = "./assets/board-pieces/horizontal/whole/carrierscaled.png";
-        this.#carrierv = new Image();    this.#carrierv.src    = "./assets/board-pieces/vertical/whole/carrierscaled.png";
-        this.#battleshiph = new Image(); this.#battleshiph.src = "./assets/board-pieces/horizontal/whole/battleshipscaled.png";
-        this.#battleshipv = new Image(); this.#battleshipv.src = "./assets/board-pieces/vertical/whole/battleshipscaled.png";
-        this.#destroyerh = new Image();  this.#destroyerh.src  = "./assets/board-pieces/horizontal/whole/destroyerscaled.png";
-        this.#destroyerv = new Image();  this.#destroyerv.src  = "./assets/board-pieces/vertical/whole/destroyerscaled.png";
-        this.#submarineh = new Image();  this.#submarineh.src  = "./assets/board-pieces/horizontal/whole/submarinescaled.png";
-        this.#submarinev = new Image();  this.#submarinev.src  = "./assets/board-pieces/vertical/whole/submarinescaled.png";
-        this.#patrolboath = new Image(); this.#patrolboath.src = "./assets/board-pieces/horizontal/whole/patrolboatscaled.png";
-        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./assets/board-pieces/vertical/whole/patrolboatscaled.png";
+        this.#carrierh = new Image();    this.#carrierh.src    = "./frontend/assets/board-pieces/horizontal/whole/carrierscaled.png";
+        this.#carrierv = new Image();    this.#carrierv.src    = "./frontend/assets/board-pieces/vertical/whole/carrierscaled.png";
+        this.#battleshiph = new Image(); this.#battleshiph.src = "./frontend/assets/board-pieces/horizontal/whole/battleshipscaled.png";
+        this.#battleshipv = new Image(); this.#battleshipv.src = "./frontend/assets/board-pieces/vertical/whole/battleshipscaled.png";
+        this.#destroyerh = new Image();  this.#destroyerh.src  = "./frontend/assets/board-pieces/horizontal/whole/destroyerscaled.png";
+        this.#destroyerv = new Image();  this.#destroyerv.src  = "./frontend/assets/board-pieces/vertical/whole/destroyerscaled.png";
+        this.#submarineh = new Image();  this.#submarineh.src  = "./frontend/assets/board-pieces/horizontal/whole/submarinescaled.png";
+        this.#submarinev = new Image();  this.#submarinev.src  = "./frontend/assets/board-pieces/vertical/whole/submarinescaled.png";
+        this.#patrolboath = new Image(); this.#patrolboath.src = "./frontend/assets/board-pieces/horizontal/whole/patrolboatscaled.png";
+        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./frontend/assets/board-pieces/vertical/whole/patrolboatscaled.png";
 
         // properties to use in interfacing
         this.#canPlacePiece = false;

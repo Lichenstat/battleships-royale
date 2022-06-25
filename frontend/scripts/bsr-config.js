@@ -67,8 +67,8 @@ const bsrGridInternals = {
     playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
 
     // src for certain images
-    missImage : "./assets/board-pieces/outcome/miss.png",
-    hitImage : "./assets/board-pieces/outcome/hit.png",
+    missImage : "./frontend/assets/board-pieces/outcome/miss.png",
+    hitImage : "./frontend/assets/board-pieces/outcome/hit.png",
 }
 
 // for interacting with various grid pieces

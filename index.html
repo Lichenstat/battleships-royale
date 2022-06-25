@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Battleships - Play</title>
+    <!--<meta name="description" content="A simple HTML5 Template for projects.">-->
+    <!--<meta name="author" content="SitePoint">-->
+    <!--<base href=".">-->
+    <link rel="icon" type="image/x-icon" href="./frontend/assets/images/favicon.ico">
+    <link  rel="stylesheet"  href="./frontend/styling/bsr-stylesheet.css"/>
+</head>
+<body class="bsr--slight-background-movement">
+    <div class='bsr bsr__container '>
+        <div class="bsr__title bsr--text-large bsr--text-center bsr--white bsr--text-underline bsr--appear-and-glow">
+            Battleships
+        </div>
+        <div id="bsr__gameshell" class="bsr__gameshell bsr--slidein-bottom">
+            <div id="bsr__shipinfoshell" class="bsr__shipinfoshell">
+                <div id="bsr__playershipinfo" class="bsr__playershipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
+                <div id="bsr__playinfo" class="bsr__playinfo bsr--text bsr--border bsr--rounded bsr--text-center bsr--background-dark bsr--white bsr--appear-and-glow-temporary">
+                    No Server Connection - Playing Against AI
+                </div>
+                <div id="bsr__enemyshipinfo" class="bsr__enemyshipinfo bsr--text bsr--border bsr--rounded bsr--background-dark bsr--white bsr--appear-and-glow-temporary"></div>
+            </div>
+            <div id="bsr__setupplacement" class="bsr__setupplacement bsr--border bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
+                <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--border-no-right bsr--rounded-left">
+                    <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage shiny" src="./frontend/assets/images/rotate.png" alt="Rotate Ships">
+                    </button>
+                    <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage" src="./frontend/assets/images/random.png" alt="Randomly Place Ships">
+                    </button>
+                    <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
+                        <img class="bsr__buttonimage" src="./frontend/assets/images/delete.png" alt="Remove All Ships">
+                    </button>
+                </div>
+                <div id="bsr__piecesshell" class="bsr__piecesshell bsr--background-show-remove bsr--border-top-bottom bsr--text bsr--white"></div>
+                <div id="bsr__piecesremover" class="bsr__piecesremover"></div>
+                <div id="bsr__gridplacement" class="bsr__gridplacement bsr--text"></div>
+            </div>
+            <div id="bsr__changestates" class="bsr__changestates bsr--text-center">
+                <button id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text bsr--appear-and-glow-temporary">
+                    Start Game
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="bsr__infoshell bsr--white">
+        <hr class="bsr__split bsr--white bsr--appear-and-glow-temporary-delayed">
+        <div class="bsr--appear-and-glow-temporary-delayed-text">Battleships by Lichenstat - circa 2022</div>
+        <div class="bsr__lookhere bsr--white bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <a class="bsr--white bsr--glow-mouseover" href="https://github.com/Lichenstat/battleships-royale">Project Repository</a>
+        </div>
+        <br>
+        <div class="bsr--appear-and-glow-temporary-delayed-text">Want to get in touch?</div>
+        <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <div id="bsr__getintouch" class="bsr--glow-mouseover">Bugs / Recommendations / Personal Comments</div>
+        </div>
+        <!--
+        <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
+            <div class="bsr--glow-mouseover">Possible Business Inquiry</div>
+        </div>
+        -->
+    </div>
+    <!--
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
+    </script>
+    -->
+    <script>
+
+        // set data to transfer over on the use of the drag and drop api
+        function allowDropBoardPiece(event) {
+            event.preventDefault();
+        }
+
+        // on dragging of the board piece
+        function dragBoardPiece(event) {
+        }
+
+        // on dropping board piece
+        function dropBoardPiece(event) {
+            event.preventDefault();
+            let data = event.dataTransfer.getData("text");
+        }
+
+    </script>
+    <script type="module">
+
+        import { Helper } from "./frontend/scripts/helper.js";
+        import { BsrSetupAbstraction } from "./frontend/scripts/bsr-setupabstraction.js";
+        import { BsrPlayAbstraction } from "./frontend/scripts/bsr-playabstraction.js";
+        import { arbitraryThingy } from "./frontend/scripts/sus.js";
+
+        //--------------------------------------------------------------
+        // get our elements to easily initialize bsr setup
+
+        let gameShellContainerElement = document.getElementById("bsr__gameshell");
+        let gameShellSlideLeftClass = "bsr__gameshell bsr--slidein-left";
+        let gameShellSlideRightClass = "bsr__gameshell bsr--slideout-right";
+
+        let textInfoElement = document.getElementById("bsr__playinfo");
+        let playerShipInfoElement = document.getElementById("bsr__playershipinfo");
+        let enemyShipInfoElement = document.getElementById("bsr__enemyshipinfo");
+
+        let setupPlacement = document.getElementById("bsr__setupplacement");
+        let originalSetup = setupPlacement.innerHTML;
+        let piecesContainerElement = document.getElementById("bsr__piecesshell");
+        let buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
+        let rotatePiecesElement = document.getElementById("bsr__piecesrotate");
+        let removeAllPiecesElement = document.getElementById("bsr__piecesremove");
+        let removePiecesElement = document.getElementById("bsr__piecesremover");
+        let randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
+        let gridContainerElement = document.getElementById("bsr__gridplacement");
+        let changeStatesElement = document.getElementById("bsr__changestates");
+
+        let removeNodesForPlaying = () => {
+            piecesContainerElement.remove();
+            buttonsContainerElement.remove();
+            removePiecesElement.remove();
+        }
+
+        // function to reset all replaced elements when they are put back into the document
+        let resetNodesForSetup = () => {
+            setupPlacement.innerHTML = originalSetup;
+            piecesContainerElement = document.getElementById("bsr__piecesshell");
+            buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
+            rotatePiecesElement = document.getElementById("bsr__piecesrotate");
+            removeAllPiecesElement = document.getElementById("bsr__piecesremove");
+            removePiecesElement = document.getElementById("bsr__piecesremover");
+            randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
+            gridContainerElement = document.getElementById("bsr__gridplacement");
+        }
+
+        let setup = new BsrSetupAbstraction();
+        setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+
+        //-------------------------------------------------------------------------
+        // for grid and pieces using drag and drop
+
+        // event on the start of the drag
+        document.addEventListener('dragstart', item => {
+            if (setup != null){
+                setup.dragStart(item);
+            }
+        });
+
+        // event to take place on dragging over container pieces
+        document.addEventListener('dragover', item => {
+            //console.log('ran dragover');
+            if (setup != null){
+                setup.dragOver(item);
+            }
+        });
+
+        // if the piece leaves any droppable position, we will have to reload the grid with the temporary grid
+        document.addEventListener('dragleave', item => {
+            //console.log('ran dragleave');
+            if (setup != null){
+                setup.dragLeave(item);
+            }
+        });
+
+        // on the drop of the piece
+        document.addEventListener('drop', item => {
+            //console.log('ran drop');
+            if (setup != null){
+                setup.dragDrop(item);
+            }
+        });
+
+        //-------------------------------------------------------------------------
+        // for playing events (choosing square, player turns, etc.)
+
+        let playing;
+
+        const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';
+        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
+
+        // check items on event click
+        document.addEventListener('click', item => {
+
+            // set up the playing phase if possible
+            if (item.target.id == "bsr__generateplayertable"){
+                let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                if (placeablePiecesCount){
+                    changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                    setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
+                    setTimeout(() => {
+                        if (setup != null)
+                            changeStatesElement.innerHTML = playerTableButton;
+                    }, 3000)
+                }
+                if (!placeablePiecesCount){
+                    let playingAgainstAi = true;
+                    //console.log('making play tables');
+                    gameShellContainerElement.classList = gameShellSlideRightClass;
+                    // timeout is to help with timing animations
+                    setTimeout(() => {
+                        changeStatesElement.innerHTML = setupTableButton;
+                        removeNodesForPlaying();
+                        playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
+                        playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+                        gameShellContainerElement.classList = gameShellSlideLeftClass;
+                        setup = null;
+                    }, 900);
+                }
+            }
+
+            // set teh game to the setup phase
+            if (item.target.id == "bsr__generateplacementgrid"){
+                //console.log('making setup table');
+                gameShellContainerElement.classList = gameShellSlideRightClass;
+                // timeout is to help with timing animations
+                setTimeout(() => {
+                    changeStatesElement.innerHTML = playerTableButton;
+                    textInfoElement.innerHTML = 'No Server Connection - Playing Against AI';
+                    playerShipInfoElement.innerHTML = '';
+                    enemyShipInfoElement.innerHTML = '';
+                    resetNodesForSetup();
+                    setup = new BsrSetupAbstraction();
+                    setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+                    gameShellContainerElement.classList = gameShellSlideLeftClass;
+                    playing = null;
+                }, 900);
+
+            }
+
+            // to get in touch
+            if (item.target.id == "bsr__getintouch"){
+                window.location.href = arbitraryThingy("virntuanlep7rogn", "gm#aigl.*cojm");
+            }
+
+        });
+
+        //-------------------------------------------------------------------------
+        
+    </script>
+</body>
+</html>

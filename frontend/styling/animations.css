@@ -26,22 +26,22 @@
 }
 
 @keyframes backgroundZoomOut{
-    from {background-size: 400%;}
-    to {background-size: 100%;}
+    from {background-size: 400%}
+    to {background-size: 135%}
 }
 
 @keyframes slightBackgroundMovement{
     0% {background-position: 0% 0%;}
-    10% {background-position: 0.3% 0.3%;}
-    20% {background-position: 1% 1%;}
-    30% {background-position: 2% 2%;}
-    40% {background-position: 3% 3%;}
-    50% {background-position: 5% 5%;}
-    60% {background-position: 7% 7%;}
-    70% {background-position: 8% 8%;}
-    80% {background-position: 9% 9%;}
-    90% {background-position: 9.7% 9.7%;}
-    100% {background-position: 10% 10%;}
+    10% {background-position: 0.3% 0%;}
+    20% {background-position: 1% 0%;}
+    30% {background-position: 2% 0%;}
+    40% {background-position: 3% 0%;}
+    50% {background-position: 5% 0%;}
+    60% {background-position: 7% 0%;}
+    70% {background-position: 8% 0%;}
+    80% {background-position: 9% 0%;}
+    90% {background-position: 9.7% 0%;}
+    100% {background-position: 10% 0%;}
 }
 
 @keyframes slideInFromBottom{

@@ -6,7 +6,7 @@
     <!--<meta name="description" content="A simple HTML5 Template for projects.">-->
     <!--<meta name="author" content="SitePoint">-->
     <!--<base href=".">-->
-    <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./assets/images/icon/favicon.ico">
     <link  rel="stylesheet"  href="./styling/bsr-stylesheet.css"/>
 </head>
 <body class="bsr--slight-background-movement">
@@ -25,13 +25,13 @@
             <div id="bsr__setupplacement" class="bsr__setupplacement bsr--border bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
                 <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--border-no-right bsr--rounded-left">
                     <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage shiny" src="./assets/images/rotate.png" alt="Rotate Ships">
+                        <img class="bsr__buttonimage shiny" src="./assets/images/setup/rotate.png" alt="Rotate Ships">
                     </button>
                     <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage" src="./assets/images/random.png" alt="Randomly Place Ships">
+                        <img class="bsr__buttonimage" src="./assets/images/setup/random.png" alt="Randomly Place Ships">
                     </button>
                     <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage" src="./assets/images/delete.png" alt="Remove All Ships">
+                        <img class="bsr__buttonimage" src="./assets/images/setup/delete.png" alt="Remove All Ships">
                     </button>
                 </div>
                 <div id="bsr__piecesshell" class="bsr__piecesshell bsr--background-show-remove bsr--border-top-bottom bsr--text bsr--white"></div>
@@ -86,12 +86,16 @@
     </script>
     <script type="module">
 
-        import { Helper } from "./scripts/helper.js";
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
+        import { Helper } from "./scripts/helper.js";
         import { arbitraryThingy } from "./scripts/sus.js";
 
         //--------------------------------------------------------------
+
+        // play audio on page load
+        new Audio("./assets/audio/ocean-wave-quick.mp3").play();
+
         // get our elements to easily initialize bsr setup
 
         let gameShellContainerElement = document.getElementById("bsr__gameshell");
@@ -172,6 +176,9 @@
         // for playing events (choosing square, player turns, etc.)
 
         let playing;
+        let buzz = new Audio("./assets/audio/buzzer.mp3");
+        let swooshIn = new Audio("./assets/audio/woosh-blow-reverse.mp3");
+        let swooshOut = new Audio("./assets/audio/woosh-blow.mp3");
 
         const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';
         const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
@@ -184,6 +191,7 @@
                 let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
                 if (placeablePiecesCount){
                     changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                    buzz.play();
                     setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
                     setTimeout(() => {
                         if (setup != null)
@@ -191,11 +199,13 @@
                     }, 3000)
                 }
                 if (!placeablePiecesCount){
+                    swooshOut.play();
                     let playingAgainstAi = true;
                     //console.log('making play tables');
                     gameShellContainerElement.classList = gameShellSlideRightClass;
                     // timeout is to help with timing animations
                     setTimeout(() => {
+                        swooshIn.play()
                         changeStatesElement.innerHTML = setupTableButton;
                         removeNodesForPlaying();
                         playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
@@ -208,10 +218,12 @@
 
             // set the game to the setup phase
             if (item.target.id == "bsr__generateplacementgrid"){
+                swooshOut.play();
                 //console.log('making setup table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
                 // timeout is to help with timing animations
                 setTimeout(() => {
+                    swooshIn.play();
                     changeStatesElement.innerHTML = playerTableButton;
                     textInfoElement.innerHTML = 'No Server Connection - Playing Against AI';
                     playerShipInfoElement.innerHTML = '';

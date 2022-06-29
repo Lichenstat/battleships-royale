@@ -1,6 +1,6 @@
 // bsr properties to use with various other bsr files
 
-export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
+export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors, bsrAudio }
 
 // for the bsr tables
 const bsrGridProperties = {
@@ -67,8 +67,8 @@ const bsrGridInternals = {
     playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
 
     // src for certain images
-    missImage : "./assets/board-pieces/outcome/miss.png",
-    hitImage : "./assets/board-pieces/outcome/hit.png",
+    missImage : "./assets/images/board-pieces/outcome/miss.png",
+    hitImage : "./assets/images/board-pieces/outcome/hit.png",
 }
 
 // for interacting with various grid pieces
@@ -78,4 +78,26 @@ const bsrPieceInteractors = {
 
     piecesContainerId : "bsr__piecescontainer",
     piecesContainer : '<div class="bsr__piecescontainer" id="bsr__piecescontainer"></div>'
+}
+
+// for sound effects and music
+const bsrAudio = {
+
+    // mostly meant for setup interactions
+    buzz : "./assets/audio/buzz.mp3",
+    rotate : "./assets/audio/rotate.mp3",
+    random : "./assets/audio/random.mp3",
+    remove : "./assets/audio/remove.mp3",
+    dragStart : "./assets/audio/button-up.mp3",
+    dragOver : "./assets/audio/slight-tap.mp3",
+    dragStop : "./assets/audio/button-down.mp3",
+
+    // mostly meant for play interactions
+    playerPush : "./assets/audio/player-push.mp3",
+    enemyPush : "./assets/audio/enemy-push.mp3",
+    miss : "./assets/audio/miss.mp3",
+    hit : "./assets/audio/hit.mp3",
+    sunk : "./assets/audio/sunk.mp3",
+    win : "./assets/audio/tada-trumpet.mp3",
+    lose : "./assets/audio/sad-trumpet.mp3",
 }

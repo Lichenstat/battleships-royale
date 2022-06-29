@@ -151,7 +151,7 @@ button:active{
 }
 
 .bsr--background-show-remove{
-  background-image: url("../assets/images/remove-ship.png");
+  background-image: url("../assets/images/setup/remove-ship.png");
   background-size: 50px 50px;
   background-position: center center;
 }
@@ -253,6 +253,7 @@ button:active{
   margin-left: -7px;
   width: 150px;
   height: 150px;
+  pointer-events: none;
   -webkit-user-drag: none;
 }
 

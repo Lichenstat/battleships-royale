@@ -2,7 +2,8 @@
 
 import { BsrPlay } from "./bsr-play.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
-import { bsrGridInternals } from "./bsr-config.js";
+import { bsrAudio, bsrGridInternals } from "./bsr-config.js";
+import { Helper } from "./helper.js";
 
 export { BsrPlayAbstraction };
 
@@ -15,6 +16,15 @@ class BsrPlayAbstraction{
     #playerShipInfoElement;
     #enemyShipInfoElement;
 
+    #playerPushAudio;
+    #enemyPushAudio;
+    #hitAudio;
+    #missAudio;
+    #sunkAudio;
+    #winAudio;
+    #loseAudio;
+
+
     constructor(bsrPlayerPiecesData = new BsrPiecesData(), isPlayingAgainstAi = true){
 
         // need new bsr play setup
@@ -25,6 +35,15 @@ class BsrPlayAbstraction{
         this.#textInfoElement;
         this.#playerShipInfoElement;
         this.#enemyShipInfoElement;
+
+        // audio for various interactions
+        this.#playerPushAudio = new Audio(bsrAudio.playerPush);
+        this.#enemyPushAudio = new Audio(bsrAudio.enemyPush);
+        this.#hitAudio = new Audio(bsrAudio.hit);
+        this.#missAudio = new Audio(bsrAudio.miss);
+        this.#sunkAudio = new Audio(bsrAudio.sunk);
+        this.#winAudio = new Audio(bsrAudio.win);
+        this.#loseAudio = new Audio(bsrAudio.lose);
     }
 
     // load the player grid with all the pieces in some element(s)
@@ -53,19 +72,40 @@ class BsrPlayAbstraction{
         }
     }
 
-    // set pieces after they have been checked and sent back after ai/server updates
-    setChosenPiecesOutcome(){
-        //console.log('ran pieces outcome');
+    // update certain things on a chosen pieces outcome
+    #chosenPieceOutcomeUpdates(){
+        let currentPlayInfo = this.#play.getCurrentPlayInfo();
+        // update our text info
         if (this.#textInfoElement){
             this.updateTextInfo(this.#textInfoElement);
         }
         // update the proper ship information if it exists
         if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
             this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesData());
+            this.#playerPushAudio.play();
         }
         if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
             this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getAiPiecesData());
+            this.#enemyPushAudio.play();
         }
+        // check if we hit or missed a piece to play proper audio
+        let checkHit = Helper.checkIfValueIsInArray(true, currentPlayInfo.piecesHit);
+        if (checkHit){
+            this.#hitAudio.play();
+        }
+        if (!checkHit){
+            this.#missAudio.play();
+        }
+        // check if we have suken 1 or more ships
+        if (currentPlayInfo.pieceName){
+            this.#sunkAudio.play();
+        }
+    }
+
+    // set pieces after they have been checked and sent back after ai/server updates
+    setChosenPiecesOutcome(){
+        //console.log('ran pieces outcome');
+        this.#chosenPieceOutcomeUpdates();
         let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
         let currentTurn = this.#play.getCurrentPlayInfo().playerTurn;
         let playerTurn = this.#play.getPlayerNumber();
@@ -93,8 +133,23 @@ class BsrPlayAbstraction{
         }
     }
 
+    // update certain things on gameover
+    #gameoverUpdates(){
+        let currentPlayInfo = this.#play.getCurrentPlayInfo();
+        // check if it is gameover and play right audio for such (at the moment this works with 2 players)
+        if (currentPlayInfo.gameover){
+            if (currentPlayInfo.playerTurn != this.#play.getPlayerNumber()){
+                this.#loseAudio.play();
+            }
+            if (currentPlayInfo.playerTurn == this.#play.getPlayerNumber()){
+                this.#winAudio.play();
+            }
+        }
+    }
+
     // set button grids ship images after the game is over
     setGameoverImages(){
+        this.#gameoverUpdates();
         let pieces = {}
         if (this.#play.checkIfPlayingAgainstAi()){
             pieces = this.#play.getGameoverShipIdsWithImages(this.#play.getOriginalAiPiecesData());

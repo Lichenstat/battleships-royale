@@ -100,7 +100,7 @@ class BsrPlayPieces{
                 // set piece class and id with locations
                 let newString = Helper.parsePartOfStringToReplace(bsrGridInternals.dragAndDropItem, 'bsr__boardpiece--', 'bsr__boardpiece--' + pieceName + '-' + location);
                 // as well as set the image for use with the piece
-                newString = Helper.parsePartOfStringToReplace(newString, 'src=""', 'src="./assets/board-pieces/' + pieceRotation + '/' + pieceName + '-' + location + '.png"');
+                newString = Helper.parsePartOfStringToReplace(newString, 'src=""', 'src="./assets/images/board-pieces/' + pieceRotation + '/' + pieceName + '-' + location + '.png"');
                 bsrPiecesContent[location] = newString;
             }
         }

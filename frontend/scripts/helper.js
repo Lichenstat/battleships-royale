@@ -190,6 +190,17 @@ class Helper{
         return true;
     }
 
+    // check if a value exists within an array
+    static checkIfValueIsInArray(value, array = []){
+        let arrayLength = array.length;
+        for (let i = 0; i < arrayLength; i++){
+            if (value == array[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
     // check if arrays are equal by position and size
     static checkIfArraysAreEqual(arrayOne, arrayTwo){
         let arrOne = arrayOne.length;

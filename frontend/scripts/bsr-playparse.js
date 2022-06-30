@@ -2,6 +2,7 @@
 
 import { BsrGrid } from "./bsr-grid.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
+import { BsrPlayPieces } from "./bsr-playpieces.js";
 
 export {BsrPlayParse}
 
@@ -46,7 +47,40 @@ class BsrPlayParse{
 
     // parse pieces data for sending over to server
     static parseDataForServerFormat(piecesData = new BsrPiecesData()){
+        let piecesDataTable = structuredClone(piecesData.getPiecesDataTable());
+        let tableLength = piecesDataTable.length;
+        // go to individual piece in pieces data table, delete internals
+        for (let i = 0; i < tableLength; i++){
+            delete piecesDataTable[i].internals;
+            let locationLength = piecesDataTable[i].locations.length;
+            let newLocations = [];
+            // replace current locations with raw locations without the given index grid shift of numbers or letters
+            for (let j = 0; j < locationLength; j++){
+                newLocations.push(this.convertLocationPieceToRawLocation(piecesDataTable[i].locations[j]));
+            }
+            piecesDataTable[i].locations = newLocations;
+        }
+        //console.log("going to send to server ", piecesDataTable);
+        return piecesDataTable;
+    }
 
+    // parse pieces data table for client format (return as pieces data)
+    static parseDataForClientFormat(piecesDataTable = []){
+        let playPieces = new BsrPlayPieces();
+        let tableLength = piecesDataTable.length;
+        // go to individual piece and get its internals
+        for (let i = 0; i < tableLength; i++){
+            piecesDataTable[i].internals = playPieces.getInternalsOfPiece(piecesDataTable[i].name, piecesDataTable[i].rotation);
+            let locaionsLength = piecesDataTable[i].locations.length;
+            let newLocations = [];
+            // replace current raw locations with normalized grid locations (add the number and letter indexes size onto the location)
+            for (let j = 0; j < locaionsLength; j++){
+                newLocations.push(this.normalizeLocationPieceToGrid(piecesDataTable[i].locations[j]));
+            }
+            piecesDataTable[i].locations = newLocations;
+        }
+        //console.log("after getting from server ", piecesDataTable);
+        return new BsrPiecesData(piecesDataTable);
     }
 
 }

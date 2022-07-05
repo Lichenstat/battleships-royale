@@ -1,4 +1,8 @@
 // bsr properties to use with various other bsr files
+// if you plan on changing some of the configurations here you might have to
+// change them as well as in the bsr-config in php as well, as that is
+// seperate and not dependent on this config. (This will most likely be due 
+// to chang in ship counts or grid sizes).
 
 export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors, bsrAudio }
 

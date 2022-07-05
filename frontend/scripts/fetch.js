@@ -31,7 +31,6 @@ class FetchMethod{
     // text data gets kept the same
     #setData(dataName = "", data = {}){
         let setData = data;
-        console.log("type of data will be object");
         let formData = new FormData();
         formData.append(dataName, JSON.stringify(data));
         setData = formData;
@@ -46,7 +45,7 @@ class FetchMethod{
      * @param {String} credentials - include, same-origin, omit
      * @param {Object} arg - arguments, 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Type': 'application/json', 'Content-Type': 'multipart/form-data' there are more than this but these are commonly used
      * @param {String} redirect - manual, follow, error
-     * @param {String} referrerPolicy - no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+     * @param {String} referrerPolicy - no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
      * @param {String} bodyName - name of body that will be recieved serverside in php
      * @param {Object|String} body - body of data that will be sent (will be json formatted)
      */
@@ -115,7 +114,7 @@ class FetchMethod{
     async fetchMethod(url = "", request = {}, responseType = 'json', specificKey = ""){
         let setUrl = url;
         if (specificKey){
-            setUrl = setUrl + "/?" + specificKey + "=";
+            setUrl = setUrl + "/?" + specificKey;
         }
         const response = await fetch(setUrl, request);
         return this.#responseType(response, responseType);

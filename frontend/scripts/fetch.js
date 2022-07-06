@@ -34,6 +34,7 @@ class FetchMethod{
         let formData = new FormData();
         formData.append(dataName, JSON.stringify(data));
         setData = formData;
+        console.log(setData);
         return setData;
     }
 
@@ -60,12 +61,12 @@ class FetchMethod{
                   body = { property : "property" }
                   ){
 
-        let bodyData = this.#setData(bodyName, body);
-
         let createdRequest = {};
 
         // since body is primarily used for PUT, POST, and PATCH, have a request that allows for those
+        // PUT method gets changed into a GET method by default
         if (method == "PUT" || method == "POST" || method == "PATCH"){
+            let bodyData = this.#setData(bodyName, body);
             createdRequest = {
                 method : method, 
                 mode : mode, 
@@ -109,7 +110,7 @@ class FetchMethod{
      * @param {String} url - url string to connect with php (http://example.php)
      * @param {Object} request = the kind of request the fetch will use
      * @param {String} responseType - what type of data should the fetch call return (text | json | nothing for info)
-     * @param {String} specificKey - a key we can use to check for a match case in global php for specific function calling during $_SOMETHING['key']
+     * @param {String} specificKey - a key we can use to check for a match case in global php for specific function calling during $_SOMETHING['key']. $_PUT methods that get sent with a body are changed to $_GET requests and the sent info must be part of the specificKey i.e. "key='item'"
      */
     async fetchMethod(url = "", request = {}, responseType = 'json', specificKey = ""){
         let setUrl = url;

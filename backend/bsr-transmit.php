@@ -39,8 +39,11 @@
         echo $chk -> test();
     }
 
-    if(isset($_GET["getGameCode"])){
-        echo "test gamecode 10101010";
+    if(isset($_GET["checkGameCode"])){
+        echo "got to gameoced - ";
+        var_dump($_GET["checkGameCode"]);
+        //echo $code;
+        //echo BsrDatabaseMethods::checkGameCode($code);
     }
 
 ?> 

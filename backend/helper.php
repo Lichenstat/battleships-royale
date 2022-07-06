@@ -28,6 +28,12 @@
             $distance = abs($arrayLocationTwo[0] - $arrayLocationOne[0]) + abs($arrayLocationTwo[1] - $arrayLocationOne[1]);
             return $distance;
         }
+
+        // get a randomly generated string
+        public static function getRandomString($length = 10){
+            return substr(str_shuffle(MD5(microtime())), 0, $length);
+        }
+
     }
 
 ?>

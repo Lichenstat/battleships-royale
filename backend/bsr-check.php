@@ -5,7 +5,7 @@
 
 // requre the configuration file to get ship and pieces for checking
 require "bsr-config.php";
-require "helper.php";
+require_once ("helper.php");
 
 // check the pieces data to store properly in sql
 class BsrCheckPiecesData{

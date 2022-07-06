@@ -39,11 +39,11 @@
         echo $chk -> test();
     }
 
-    if(isset($_GET["checkGameCode"])){
+    if(isset($_POST["checkGameCode"])){
         echo "got to gameoced - ";
-        var_dump($_GET["checkGameCode"]);
+        $code = json_decode($_POST["checkGameCode"]);
+        $code = BsrDatabaseMethods::checkGameCode($code -> gameCode);
         //echo $code;
-        //echo BsrDatabaseMethods::checkGameCode($code);
     }
 
 ?> 

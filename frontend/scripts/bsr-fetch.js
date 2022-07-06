@@ -13,7 +13,7 @@ class BsrFetchMethods{
 
     constructor(){
         this.#fetchMethod = new FetchMethod();
-        this.#playerGameCode = "";
+        this.#playerGameCode = "158fbc0cea421236105a66788868d9";
         this.#enemyGameCode = "";
     }
 
@@ -21,9 +21,13 @@ class BsrFetchMethods{
     retrieveGameCode(){
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("PUT", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "checkGameCode", {one : "onme"});
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text", "checkGameCode={one : 'one'}")
-        .then(data => {console.log(data)})
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "checkGameCode", {gameCode : this.#playerGameCode});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
         .catch(error => console.log(`fetch error: ${error}`));
     }
     

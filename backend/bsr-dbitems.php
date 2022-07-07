@@ -44,6 +44,7 @@
             $db -> connectedColumn = "ConnectedCode";
             $db -> connectedBsrDataColumn = "ConnectedBsrData";
             $db -> connectedLocationsColumn = "ConnectedShipLocations";
+            $db -> updateCountColumn = "UpdateCount";
 
             return $db;
         }

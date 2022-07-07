@@ -32,8 +32,17 @@ class BsrFetchMethods{
     }
     
     // search for a given player and 
-    searchForPlayer(gameCode= ""){
-
+    searchForPlayer(){
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "joinPlayer", {gameCode : "5", joinCode : "5"});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
     }
 
     // send player game info to the server to use during game processing

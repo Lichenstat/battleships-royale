@@ -11,10 +11,14 @@ class BsrFetchMethods{
     #playerGameCode;
     #enemyGameCode;
 
+    #readyState;
+
     constructor(){
         this.#fetchMethod = new FetchMethod();
-        this.#playerGameCode = "158fbc0cea421236105a66788868d9";
+        this.#playerGameCode = "2";
         this.#enemyGameCode = "";
+
+        this.#readyState = 1;
     }
 
     // retrieve a player code for sharing a game
@@ -36,6 +40,32 @@ class BsrFetchMethods{
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
         let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "joinPlayer", {gameCode : "5", joinCode : "5"});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
+    updateReadyState(){
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "updateReadyState", {gameCode : "5", readyState: this.#readyState});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
+    disconnectFromGame(){
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "disconnectFromGame", {gameCode : "7"});
         fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
             //let ndat = JSON.parse(data)

@@ -17,7 +17,7 @@
             $db -> name = "Players";
             $db -> playerColumn = "PlayerCode";
             $db -> timeoutColumn = "Timeout";
-            $db -> baseTimeoutCount = 5;
+            $db -> baseTimeoutCount = 3;
 
             return $db;
         }
@@ -38,7 +38,7 @@
         public static function getPlayingTableInfo(){
 
             $db -> name = "Playing";
-            $db -> playerOneColumn = "PlayerCode";
+            $db -> playerColumn = "PlayerCode";
             $db -> playerBsrDataColumn = "PlayerBsrData";
             $db -> playerLocationsColumn = "PlayerShipLocations";
             $db -> connectedColumn = "ConnectedCode";

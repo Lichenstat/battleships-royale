@@ -14,40 +14,16 @@
 
     echo "Got to transmit - ";
 
-    if(isset($_POST["data"])){
-        echo "Got the data POST method ";
-        $obj = json_decode($_POST["data"]);
-        echo "Data is ". $obj->answer;
-
-    }
-
-    if(isset($_POST["posts"])){
-        echo "Got the data";
-        echo "Data is ". $_POST["data"];
-
-    }
-
-    if(isset($_GET["data"])){
-        echo "Got the data GET method ";
-        echo "Data is ". $_POST["data"];
-
-    }
-
-    if(isset($_GET["test"])){
-        echo "Using test - ";
-        $chk = new BsrCheckPiecesData(1);
-        echo $chk -> test();
-    }
-
     // call a post with a possible game code or return one if there isnt a game code yet
     if(isset($_POST["checkGameCode"])){
         echo "got to gameoced - ";
         $code = json_decode($_POST["checkGameCode"]);
-        $code = BsrDatabaseMethods::checkGameCode($code -> gameCode);
+        $gameCode = $code -> gameCode;
+        $code = BsrDatabaseMethods::checkGameCode($gameCode);
         echo $code;
     }
 
-    // join a player to play a game if he exists and has given you a match code
+    // join a player to play a game if they exists and has given you a match code
     if(isset($_POST["joinPlayer"])){
         echo "got to join match - ";
         $code = json_decode($_POST["joinPlayer"]);
@@ -62,6 +38,28 @@
     // update the ready state of the current player
     if(isset($_POST["updateReadyState"])){
         echo "got to updating player state - ";
+        $code = json_decode($_POST["updateReadyState"]);
+        $gameCode = $code -> gameCode;
+        $readyState = $code -> readyState;
+        $readyState = (int)$readyState;
+        $code = BsrDatabaseMethods::updateReadyState($gameCode, $readyState);
+        //return $code;
+    }
+    
+    //check if the game is ready or not
+    if(isset($_POST["checkGameReady"])){
+        echo "Checking if the game is ready or not - ";
+        $code = json_decode($_POST["checkGameReady"]);
+        $gameCode = $code -> gameCode;
+        BsrDatabaseMethods::checkGameReady($gameCode);
+    }
+
+    // disconnect from game 
+    if (isset($_POST["disconnectFromGame"])){
+        echo "Got to disconnect from game - ";
+        $code = json_decode($_POST["disconnectFromGame"]);
+        $gameCode = $code -> gameCode;
+        BsrDatabaseMethods::disconnectFromGame($gameCode);
     }
 
     // set all the neccessary pieces up to start and play the game

@@ -39,7 +39,7 @@ class BsrFetchMethods{
     searchForPlayer(){
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "joinPlayer", {gameCode : "5", joinCode : "5"});
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "joinMatch", {gameCode : "5", joinCode : "5"});
         fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
             //let ndat = JSON.parse(data)
@@ -75,6 +75,32 @@ class BsrFetchMethods{
         .catch(error => console.log(`fetch error: ${error}`));
     }
 
+    setupInitialGame(){
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "setupGame", {gameCode : "12"});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
+    quitGame(){
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "quitGame", {gameCode : "13"});
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
     // send player game info to the server to use during game processing
     sendGameInfo(bsrPiecesData = new BsrPiecesData()){
         
@@ -83,6 +109,20 @@ class BsrFetchMethods{
     // send clicked piece to the server and retrieve updated game information
     playTurn(chosenLocation = []){
 
+    }
+
+    test(){
+        let bodyItems = {bsrPiecesData : [{id: 0,  locations : [[1,1],[1,2],[1,3]]},{id: 1, locations : [[1,1],[2,3],[3,3]]}]};
+        let fetchMethod = new FetchMethod();
+        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
+        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "test", bodyItems);
+        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            //let ndat = JSON.parse(data)
+            console.log(data);
+            //this.#playerGameCode = ndat;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
     }
 
 }

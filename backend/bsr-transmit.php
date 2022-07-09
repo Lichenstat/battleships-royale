@@ -10,13 +10,13 @@
     // print_r
 
     require "bsr-dbmethods.php";
-    require "bsr-check.php";
+    //require "bsr-check.php";
 
     echo "Got to transmit - ";
 
     // call a post with a possible game code or return one if there isnt a game code yet
     if(isset($_POST["checkGameCode"])){
-        echo "got to gameoced - ";
+        echo " Got to gameoced - ";
         $code = json_decode($_POST["checkGameCode"]);
         $gameCode = $code -> gameCode;
         $code = BsrDatabaseMethods::checkGameCode($gameCode);
@@ -24,9 +24,9 @@
     }
 
     // join a player to play a game if they exists and has given you a match code
-    if(isset($_POST["joinPlayer"])){
-        echo "got to join match - ";
-        $code = json_decode($_POST["joinPlayer"]);
+    if(isset($_POST["joinMatch"])){
+        echo " Got to join match - ";
+        $code = json_decode($_POST["joinMatch"]);
         //echo var_dump($code);
         $gameCode = $code -> gameCode;
         $joinCode = $code -> joinCode;
@@ -37,7 +37,7 @@
 
     // update the ready state of the current player
     if(isset($_POST["updateReadyState"])){
-        echo "got to updating player state - ";
+        echo " Got to updating player state - ";
         $code = json_decode($_POST["updateReadyState"]);
         $gameCode = $code -> gameCode;
         $readyState = $code -> readyState;
@@ -64,12 +64,27 @@
 
     // set all the neccessary pieces up to start and play the game
     if(isset($_POST["setupGame"])){
-        echo "got to setting up game - ";
+        echo " Got to setting up game - ";
+        $code = json_decode($_POST["setupGame"]);
+        $gameCode = $code -> gameCode;
+        echo BsrDatabaseMethods::setGamePlayingCode($gameCode);
     }
 
     // update the current game for the player that made a move and return the updated game state if necessary
-    if(isset($_POST["gameTurn"])){
-        echo " playing a game turn - ";
+    if(isset($_POST["quitGame"])){
+        echo " Quit game - ";
+        $code = json_decode($_POST["quitGame"]);
+        $gameCode = $code -> gameCode;
+        BsrDatabaseMethods::removePlayingInfo($gameCode);
+    }
+
+    if(isset($_POST["test"])){
+        echo " Testing - ";
+        $json = json_decode($_POST["test"]);
+        $json = $json -> bsrPiecesData;
+        echo "JSON $json - ";
+        //$t = new BsrCheckPiecesData($json);
+        //$t -> test();
     }
 
 ?> 

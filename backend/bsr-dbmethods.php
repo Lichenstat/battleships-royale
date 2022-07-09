@@ -6,6 +6,7 @@
 
     require "bsr-dbinfo.php";
     require "bsr-dbitems.php";
+    require "bsr-check.php";
     require_once("helper.php");
 
     class BsrDatabaseMethods{
@@ -29,10 +30,11 @@
 
         // check a game code and create one if it doesn't exist, as well as update it if it does exist
         public static function checkGameCode($gameCode = ""){
-            echo " Checking our game code - ";
             $dbInfo = self::getDatabaseInfo();
             $dbPlayersTable = self::getPlayersTableInfo();
             $currentGameCode = $gameCode;
+            
+            echo " Checking our game code - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -93,7 +95,7 @@
             echo $gameCode." - ";
             echo $matchCode." - ";
             
-            echo " match code checking - ";
+            echo " Match code checking - ";
             
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -174,9 +176,10 @@
 
         // update the ready state of our players
         public static function updateReadyState($gameCode = "", $readyState = 0){
-            echo " Updating the game ready states - ";
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
+            
+            echo " Updating the game ready states - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -213,7 +216,8 @@
             // check if both players are ready or not
             $query = "SELECT COUNT(*) 
                       FROM ".$dbGameSearch -> name." 
-                      WHERE ".$dbGameSearch -> playerReadyColumn."=1 AND ".$dbGameSearch -> connectedReadyColumn."=1";
+                      WHERE ".$dbGameSearch -> playerReadyColumn."=1 AND ".$dbGameSearch -> connectedReadyColumn."=1 
+                              AND (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
             foreach($db -> query($query) as $row){
                 $ready = $row[0];
                 echo " Ready state $ready - ";
@@ -223,11 +227,10 @@
             return $ready;
         }
 
-        // disconnect from a game if desired (also clean game playing table if there is a game being played)
+        // disconnect from a game if desired
         public static function disconnectFromGame($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
-            $dbGamePlay = self::getPlayingTableInfo();
 
             echo "Disconnecting player from curent game $gameCode - ";
 
@@ -238,39 +241,153 @@
                       WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
             $db -> query($query);
 
-            // update the game playing row using the disconnected players id
-            //$query = "UPDATE ".$dbGamePlay -> name." SET ".$dbGamePlay -> playerColumn.""
-            $query = "DELETE FROM ".$dbGamePlay -> name." 
-                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            $db -> query($query);
-
             $db = null;
         }
 
         //---------------------------------------------------------------------
         // playing table methods
 
-        // assign all the proper game data after recieving it
-        public static function setGameData($gameCode){
+        // remove playing info for the person who quits the game
+        public static function removePlayingInfo($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+
+            echo " Quit game, removing game info $gameCode - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // update the game playing table info using the quitting players id
+            $query = "UPDATE ".$dbGamePlay -> name." 
+                      SET ".$dbGamePlay -> playerColumn."=NULL ,".$dbGamePlay -> playerLocationsColumn."=NULL ,".$dbGamePlay -> playerUpdateColumn."=NULL ,".$dbGamePlay -> locationUpdateColumn."=NULL 
+                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
+                      //echo $query;
+            $db -> query($query);
+
+            $query = "UPDATE ".$dbGamePlay -> name." 
+                      SET ".$dbGamePlay -> connectedColumn."=NULL ,".$dbGamePlay -> connectedLocationsColumn."=NULL ,".$dbGamePlay -> connectedUpdateColumn."=NULL ,".$dbGamePlay -> locationUpdateColumn."=NULL 
+                      WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+                      //echo $query;
+            $db -> query($query);
+        
+            $db = null;
+        }
+
+        // check if the players codes have been inserted into the playing table yet
+        public static function checkPlayersCodeIsPlaying($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $exists;
+
+            echo " Check players code to see if they exist - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "SELECT COUNT(*) FROM ".$dbGamePlay -> name." 
+                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+            
+            $db = null;
+            return $exists;
+        }
+
+        // assign game playing codes once one players codes are recieved
+        public static function setGamePlayingCode($gameCode){
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
+            echo " Setting play codes in playing $gameCode - ";
+
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
+            $check = self::checkPlayersCodeIsPlaying($gameCode);
+            
+            // if the game code does not yet exist in playing table, 
+            // pull code info out from search/sync table and put it in game playing table
+            if (!$check){
+                $query = "INSERT INTO ".$dbGamePlay -> name." (".$dbGamePlay -> playerColumn.", ".$dbGamePlay -> connectedColumn.") 
+                          SELECT ".$dbGameSearch -> playerColumn.", ".$dbGameSearch -> connectedColumn." 
+                          FROM ".$dbGameSearch -> name." 
+                          WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
+                $db -> query($query);
+            }
             
             $db = null;
         }
 
-
-
-        //test
-        public function test(){
+        // set game data up properly by putting bsrPiecesData with ship locations into right cells respectively
+        public static function setGameData($gameCode = "", $bsrPiecesData){
             $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $exists;
+
+            echo " Inserting data into proper locations - ";
+
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
-            //$sql = 'SELECT * FROM'.$dbInfo -> name.".".$dbInfo -> playerTable
+            
+            // check to see if the current code exists in the game table
+            $query = "";
+            $db -> query($query);
+            
             $db = null;
         }
+
+        // return necessary starting game information
+        public static function getInitialGameInfo($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $exists;
+
+            echo " Returning starting information - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "";
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+            
+            $db = null;
+        }             
+
+        // update ship location if necessary
+        public static function updateShipLocation($gameCode = "", $location = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+
+            echo " Updating ship location $location - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "";
+            $db -> query($query);
+            
+            $db = null;
+        }        
+
+        // return information on game update
+        public static function returnUpdateInformation($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $exists;
+
+            echo " Returning necessary update information - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "";
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+            
+            $db = null;
+        }     
 
     }
 

@@ -34,7 +34,7 @@ class FetchMethod{
         let formData = new FormData();
         formData.append(dataName, JSON.stringify(data));
         setData = formData;
-        console.log(setData);
+        //console.log(setData);
         return setData;
     }
 

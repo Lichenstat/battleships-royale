@@ -13,7 +13,7 @@
           // get grid sizes
           public static function getGridSizes(){
 
-               // set grid size information
+               // set grid size information (max sizes)
                $gridSizes -> width = 9;
                $gridSizes -> height = 9;
 

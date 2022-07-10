@@ -80,9 +80,14 @@
 
     if(isset($_POST["test"])){
         echo " Testing - ";
-        $json = json_decode($_POST["test"]);
-        $json = $json -> bsrPiecesData;
-        echo "JSON $json - ";
+        $n = json_decode($_POST["test"]);
+        $bsr = $n -> bsrPiecesData;
+        $locations = $n -> locations;
+        $gameCode = $n -> gameCode;
+        //echo $gameCode;
+        //BsrDatabaseMethods::setGameData($gameCode, $bsr);
+        $t = BsrDatabaseMethods::updateShipLocations($gameCode, $locations);
+        //echo "position ".$t;
         //$t = new BsrCheckPiecesData($json);
         //$t -> test();
     }

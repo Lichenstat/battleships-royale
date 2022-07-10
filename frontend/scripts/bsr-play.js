@@ -19,7 +19,6 @@ class BsrPlay{
     #currentPlayInfo;
     #hasInfoUpdated;
     
-    #sendInitialInfo;
     #sendLocations;
 
     #lastPlayerPiecesCount;
@@ -61,7 +60,6 @@ class BsrPlay{
         this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
         this.#hasInfoUpdated = false;
 
-        this.#sendInitialInfo = { boardPieces : {}}
         this.#sendLocations = { piecesClicked : [[]] };
         //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , pieceLocations : [[]], gameover : false}
 

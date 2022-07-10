@@ -53,6 +53,7 @@
             $db -> connectedLocationsColumn = "ConnectedShipLocations";
 
             $db -> locationUpdateColumn = "LocationUpdate";
+            $db -> previousMoveColumn = "PreviousMoveCode";
 
             return $db;
         }

@@ -34,6 +34,18 @@
             return substr(str_shuffle(MD5(microtime())), 0, $length);
         }
 
+        // remove desired array from multi-dimentional array (DOES NOT DELETE ALL DUPLICATES, JUST 1 ARRAY OF SAME TYPE)
+        public static function removeArraysFromMultidimentionalArray($arraysToRemove = [[]], $array = [[]]){
+            $newArray = $array;
+            $removalArrayLength = count($arraysToRemove);
+            for ($i = 0; $i < $removalArrayLength; $i++){
+                if(($key = array_search($arraysToRemove[$i], $newArray)) !== false){
+                    unset($newArray[$key]);
+                }
+            }
+            return $newArray;
+        }
+
     }
 
 ?>

@@ -68,13 +68,10 @@ class BsrCheckPiecesData{
     }
 
     // check if piece locations are individual and not overlaping
-    // (defunct at the moment, possibly make way to check for multi-dimentional arrays later
-    /*)
+    /*
     private function checkCombinedLocationsForDuplicates($combinedLocations = []){
-        echo var_dump(array_unique($combinedLocations));
-        $combinedLength = count($combinedLocations);
-        $newLength = count(array_unique($combinedLocations));
-        if ($combinedLocations == $newLength){
+        $shouldBeEmpty = Helper::removeArraysFromMultidimentionalArray($combinedLocations, $combinedLocations);
+        if (empty($shouldBeEmpty)){
             return false;
         }
         return true;
@@ -96,7 +93,7 @@ class BsrCheckPiecesData{
             }
             /*
             if ($this -> checkCombinedLocationsForDuplicates($this -> piecesLocations)){
-                echo "found duplciated";
+                //echo "found duplciate";
                 $this -> piecesLocations = [];
             }
             */

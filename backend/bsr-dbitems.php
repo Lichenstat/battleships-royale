@@ -46,14 +46,17 @@
             $db -> playerUpdateColumn = "PlayerUpdate";
             $db -> playerBsrDataColumn = "PlayerBsrData";
             $db -> playerLocationsColumn = "PlayerShipLocations";
+            $db -> playerShipsColumn = "PlayerShipsWithLocations";
 
             $db -> connectedColumn = "ConnectedCode";
             $db -> connectedUpdateColumn = "ConnectedUpdate";
             $db -> connectedBsrDataColumn = "ConnectedBsrData";
             $db -> connectedLocationsColumn = "ConnectedShipLocations";
+            $db -> connectedShipsColumn = "ConnectedShipsWithLocations";
 
             $db -> locationUpdateColumn = "LocationUpdate";
             $db -> locationHitColumn = "LocationHit";
+            $db -> shipRemovedColumn = "ShipsRemoved";
             $db -> previousMoveColumn = "PreviousMoveCode";
 
             return $db;

@@ -117,11 +117,11 @@ class BsrCheckPiecesData{
         //}
     }
 
-    public function getCombinedLocations(){
+    public function getCheckedCombinedLocations(){
         return $this -> piecesLocations;
     }
 
-    public function getCombinedPiecesAndShips(){
+    public function getLocationsAndShips(){
         return $this -> piecesShipAndLocation;
     }
 

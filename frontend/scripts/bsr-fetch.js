@@ -113,7 +113,7 @@ class BsrFetchMethods{
 
     test(){
         let bodyItems = {gameCode : "15", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
-        //let bodyItems = {gameCode : "15", locations : [[1,3]]};
+        //let bodyItems = {gameCode : "14", locations : [[1,3]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
         let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "test", bodyItems);

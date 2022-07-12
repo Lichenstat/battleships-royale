@@ -477,7 +477,7 @@
         }
 
         // set game data up properly by putting bsrPiecesData with ship locations into right cells respectively
-        public static function setGameData($gameCode = "", $bsrPiecesData){
+        public static function setInitialGameData($gameCode = "", $bsrPiecesData){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
@@ -489,21 +489,22 @@
             
             // serialize our gotten locations
             $check = new BsrCheckPiecesData($bsrPiecesData);
-            $locations = $check -> getCombinedLocations();
+            $locations = $check -> getCheckedCombinedLocations();
+            $ships = $check -> getLocationsAndShips();
             //echo print_r($locations);
             $bsrPiecesSerialzied = serialize($bsrPiecesData);
             $locationsSerialized = serialize($locations);
-
+            $shipsSerialized = serialize($ships);
             
             // set the pieces into the playing table to reference for pieces and locations of ships
             $query = "UPDATE ".$dbGamePlay -> name."  
-                      SET ".$dbGamePlay -> playerBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> playerLocationsColumn."='".$locationsSerialized."' 
+                      SET ".$dbGamePlay -> playerBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> playerLocationsColumn."='".$locationsSerialized."', ".$dbGamePlay -> playerShipsColumn."='".$shipsSerialized."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
             echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name."  
-                      SET ".$dbGamePlay -> connectedBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> connectedLocationsColumn."='".$locationsSerialized."' 
+                      SET ".$dbGamePlay -> connectedBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> connectedLocationsColumn."='".$locationsSerialized."', ".$dbGamePlay -> connectedShipsColumn."='".$shipsSerialized."' 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
             echo $query;
             $db -> query($query);
@@ -532,7 +533,8 @@
 
             // if the code is from the first slot, return 1
             if ($gameCode == $check){
-                return 1;
+                $playerNumber -> number = 1;
+                return $playerNumber;
             }
 
             $query = "SELECT ".$dbGamePlay -> connectedColumn." 
@@ -546,7 +548,8 @@
 
             // if the code is from the second slot, return 2
             if ($gameCode == $check){
-                return 2;
+                $playerNumber -> number = 2;
+                return $playerNumber;
             }
             
             $db = null;
@@ -619,6 +622,49 @@
             
         }
 
+        // get ships with locations of enemy player
+        public static function getShipsWithLocationsOfEnemyPlayer($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+               $dbGamePlay = self::getPlayingTableInfo();
+            $locations;
+
+            echo " Getting ship locations $location - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // return the game code ship locations to update them for player columm
+            $query = "SELECT ".$dbGamePlay -> connectedShipsColumn." 
+                      FROM ".$dbGamePlay -> name." 
+                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
+            echo $query;
+            $db -> query($query);
+            foreach($db -> query($query) as $row){
+                $locations = $row[0];
+            }
+            
+            if (!empty($locations)){
+                $locations = unserialize($locations);
+                $db = null;
+                return $locations;
+            }
+
+            // return the game code ship locations to update them for connected column
+            $query = "SELECT ".$dbGamePlay -> playerShipsColumn." 
+                      FROM ".$dbGamePlay -> name." 
+                      WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+            echo $query;
+            $db -> query($query);
+            foreach($db -> query($query) as $row){
+                $locations = $row[0];
+            }
+
+            if (!empty($locations)){
+                $locations = unserialize($locations);
+                $db = null;
+                return $locations;
+            }
+        }
+
         // get both ship locations of same game from a game code (works for 2 players atm)
         public static function getShipLocationsOfBothPlayers($gameCode){
             $dbInfo = self::getDatabaseInfo();
@@ -644,10 +690,12 @@
             return $locations;
         }
 
-        // update ship location if necessary
+        // update ship locations to set proper hits and locations left
         public static function updateShipLocationsAndHits($gameCode = "", $locations = [[]]){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
+            $shipsRemoved = [];
+            $newUpdateShips = [];
             
             echo " Updating ship location - ";
             
@@ -656,32 +704,85 @@
             //echo print_r($updateLocations)."<br>";
             $updateLocations = Helper::removeArraysFromMultidimentionalArrayReturnWithBools($locations, $updateLocations);
             //echo print_r($updateLocations)."<br>";
+            
+            $updateShips = self::getShipsWithLocationsOfEnemyPlayer($gameCode);
+            $shipsLength = count($updateShips -> ships);
+            $newUpdateShips = $updateShips;
+
+            // check and remove necessary ships with locations pieces
+            for ($i = 0; $i < $shipsLength; $i++){
+                $ship = $updateShips -> ships[$i];
+                $shipLocations = $updateShips -> locations[$i];
+                $locationsLength = count($locations);
+                // check if piece has changed in size and if it has no length left (empty) remove ship from array
+                for ($j = 0; $j < $locationsLength; $j++){
+                    $check = Helper::removeArraysFromMultidimentionalArray($locations, $shipLocations);
+                    $newUpdateShips -> locations[$i] = $check;
+                    $checkSize = count($check);
+                    // if our pieces locations are empty, unset the locations and name and set the name of the piece as a removed piece
+                    if (!$checkSize){
+                        $shipsSank[] = $ship;
+                        unset($newUpdateShips -> locations[$i]);
+                        $shipsRemoved[] = ($newUpdateShips -> ships[$i]);
+                        $shipsRemoved = array_values($shipsRemoved);
+                        unset($newUpdateShips -> ships[$i]);
+                    }
+                }
+                // reindex arrays
+                $newUpdateShips -> locations = array_values($newUpdateShips -> locations);
+                $newUpdateShips -> ships = array_values($newUpdateShips -> ships);
+            }       
+
             $updateHits = serialize($updateLocations -> bools);
             $updateLocations = serialize($updateLocations -> array);
+            $updateShips = serialize($newUpdateShips);
+            $shipsRemoved = serialize($shipsRemoved);
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
             // update the pieces location table based on player code
             $query = "UPDATE ".$dbGamePlay -> name." 
-                      SET ".$dbGamePlay -> connectedLocationsColumn."='".$updateLocations."' 
+                      SET ".$dbGamePlay -> connectedLocationsColumn."='".$updateLocations."' ,".$dbGamePlay -> connectedShipsColumn."='".$updateShips."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
             echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name." 
-                      SET ".$dbGamePlay -> playerLocationsColumn."='".$updateLocations."' 
+                      SET ".$dbGamePlay -> playerLocationsColumn."='".$updateLocations."' ,".$dbGamePlay -> playerShipsColumn."='".$updateShips."' 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
             echo $query;
             $db -> query($query);
 
-            // set location hit with proper bools
+            // set location hit with removed ships
             $query = "UPDATE ".$dbGamePlay -> name." 
-                      SET ".$dbGamePlay -> locationHitColumn."='".$updateHits."' 
+                      SET ".$dbGamePlay -> locationHitColumn."='".$updateHits."' , ".$dbGamePlay -> shipRemovedColumn."='".$shipsRemoved."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
             echo $query;
             $db -> query($query);
             
             $db = null;
+        }
+
+        // get ship name that has been removed from either players table
+        public static function getRemovedShips($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $removed;
+
+            echo " Getting removed (sank) ships - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "SELECT ".$dbGamePlay -> shipRemovedColumn." 
+                      FROM ".$dbGamePlay -> name." 
+                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+            foreach($db -> query($query) as $row){
+                $removed = unserialize($row[0]);
+            }
+
+            $db = null;
+            return $removed;
         }
 
         // check if the game is over (empty ship locations for one of the players)

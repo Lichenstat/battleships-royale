@@ -56,12 +56,12 @@ class BsrPlay{
             this.#aiPlayer = new BsrAi();
         }
         this.#playSetupInfo = { playerNumber : 1 }
-        //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
-        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , pieceLocations : [[]], gameover : false}
+        //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}
+        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}
         this.#hasInfoUpdated = false;
 
         this.#sendLocations = { piecesClicked : [[]] };
-        //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , pieceLocations : [[]], gameover : false}
+        //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , gameover : false}
 
         this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
         this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();

@@ -15,6 +15,7 @@ class BsrCheckPiecesData{
     private $ships;
     private $gridSize;
     private $piecesLocations;
+    private $piecesShipAndLocation;
     private $piecesWork;
 
     // constructor function
@@ -25,8 +26,11 @@ class BsrCheckPiecesData{
         $this -> gridSize = $this -> getGridSizes();
 
         $this -> piecesLocations = array();
+        $this -> piecesShipAndLocation -> locations = array();
+        $this -> piecesShipAndLocation -> ships = array();
         $this -> piecesWork = false;
 
+        $this -> combinePiecesAndShips();
         $this -> checkPieces();
     }
 
@@ -78,6 +82,19 @@ class BsrCheckPiecesData{
     }
     */
 
+    // put bsr ships and locations into array
+    private function combinePiecesAndShips(){
+        // if we have a correct count of our pieces
+        $bsrPiecesLength = count($this -> bsrPiecesData);
+        //if ($this -> ships -> count == $bsrPiecesLength){
+            for ($i = 0; $i < $bsrPiecesLength; $i++){
+                $bsrPiece = $this -> bsrPiecesData[$i];
+                $this -> piecesShipAndLocation -> locations[] = $bsrPiece -> locations;
+                $this -> piecesShipAndLocation -> ships[] = $bsrPiece -> name;
+            }
+        //}     
+    }
+
     // check all pieces from bsr pieces data
     private function checkPieces(){
         // if we have a correct count of our pieces
@@ -100,8 +117,12 @@ class BsrCheckPiecesData{
         //}
     }
 
-    public function getCombinedPieces(){
+    public function getCombinedLocations(){
         return $this -> piecesLocations;
+    }
+
+    public function getCombinedPiecesAndShips(){
+        return $this -> piecesShipAndLocation;
     }
 
     public function test(){

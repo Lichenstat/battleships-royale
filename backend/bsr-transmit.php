@@ -10,7 +10,7 @@
     // print_r
 
     require "bsr-dbmethods.php";
-    //require "bsr-check.php";
+    require_once("bsr-check.php");
 
     echo "Got to transmit - ";
 
@@ -84,12 +84,23 @@
         $bsr = $n -> bsrPiecesData;
         $locations = $n -> locations;
         $gameCode = $n -> gameCode;
+        $c = new BsrCheckPiecesData($bsr);
+        echo print_r($c -> getCombinedPiecesAndShips());
         //echo $gameCode;
         //BsrDatabaseMethods::setGameData($gameCode, $bsr);
-        $t = BsrDatabaseMethods::updateShipLocations($gameCode, $locations);
-        //echo "position ".$t;
-        //$t = new BsrCheckPiecesData($json);
-        //$t -> test();
+        //$t = BsrDatabaseMethods::updateShipLocationsPlayed($gameCode, $locations);
+        //$t = BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
+        //$t = BsrDatabaseMethods::getShipLocationsOfEnemyPlayer($gameCode);
+        //$t = BsrDatabaseMethods::getShipLocationsOfBothPlayers($gameCode);
+        //$t = BsrDatabaseMethods::getAttackedLocationsWithHits($gameCode);
+        //$t = BsrDatabaseMethods::getCurrentTurn($gameCode);
+        //$t = BsrDatabaseMethods::getEnemiesBsrData($gameCode);
+        //$t = BsrDatabaseMethods::getWhoPreviouslyMoved($gameCode);
+        //$t = BsrDatabaseMethods::checkIfGameOver($gameCode);
+        //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
+        //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
+        //echo print_r($t);
+        
     }
 
 ?> 

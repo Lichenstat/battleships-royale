@@ -2,6 +2,7 @@
 
 import { BsrPlay } from "./bsr-play.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
+import { BsrFetchMethods } from "./bsr-fetch.js";
 import { bsrAudio, bsrGridInternals } from "./bsr-config.js";
 import { Helper } from "./helper.js";
 
@@ -25,10 +26,10 @@ class BsrPlayAbstraction{
     #loseAudio;
 
 
-    constructor(bsrPlayerPiecesData = new BsrPiecesData(), isPlayingAgainstAi = true){
+    constructor(bsrPlayerPiecesData = new BsrPiecesData(), fetchMethods = new BsrFetchMethods()){
 
         // need new bsr play setup
-        this.#play = new BsrPlay(bsrPlayerPiecesData, isPlayingAgainstAi);
+        this.#play = new BsrPlay(bsrPlayerPiecesData, fetchMethods);
 
         // for updating parts in game
         this.#gridContainerElement;

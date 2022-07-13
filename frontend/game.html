@@ -93,8 +93,7 @@
         import { arbitraryThingy } from "./scripts/sus.js";
 
         //--------------------------------------------------------------
-        let n = new BsrFetchMethods();
-        setTimeout(() => {console.log(n.getGameCode())}, 3000);
+
         //--------------------------------------------------------------
 
         // play audio on page load
@@ -180,6 +179,9 @@
         // for playing events (choosing square, player turns, etc.)
 
         let playing;
+        let bsrFetch = new BsrFetchMethods();
+
+        // audio to play during runtime
         let buzz = new Audio("./assets/audio/buzzer.mp3");
         let swooshIn = new Audio("./assets/audio/woosh-blow-reverse.mp3");
         let swooshOut = new Audio("./assets/audio/woosh-blow.mp3");
@@ -193,40 +195,54 @@
             // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
                 let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                
+                // if we have placeable pieces still left to be placed
                 if (placeablePiecesCount){
+
                     changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
                     buzz.play();
                     setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
                     setTimeout(() => {
+
                         if (setup != null)
                             changeStatesElement.innerHTML = playerTableButton;
+
                     }, 3000)
+
                 }
+                // if there are no more placeable pieces left to be placed
                 if (!placeablePiecesCount){
+
                     swooshOut.play();
-                    let playingAgainstAi = true;
                     //console.log('making play tables');
                     gameShellContainerElement.classList = gameShellSlideRightClass;
+
                     // timeout is to help with timing animations
                     setTimeout(() => {
+
                         swooshIn.play()
                         changeStatesElement.innerHTML = setupTableButton;
                         removeNodesForPlaying();
-                        playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
+                        playing = new BsrPlayAbstraction(setup.getPiecesData(), bsrFetch);
                         playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
                         gameShellContainerElement.classList = gameShellSlideLeftClass;
                         setup = null;
+
                     }, 900);
+
                 }
             }
 
             // set the game to the setup phase
             if (item.target.id == "bsr__generateplacementgrid"){
+
                 swooshOut.play();
                 //console.log('making setup table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
+                
                 // timeout is to help with timing animations
                 setTimeout(() => {
+
                     swooshIn.play();
                     changeStatesElement.innerHTML = playerTableButton;
                     textInfoElement.innerHTML = 'No Server Connection - Playing Against AI';
@@ -237,6 +253,7 @@
                     setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
                     gameShellContainerElement.classList = gameShellSlideLeftClass;
                     playing = null;
+
                 }, 900);
 
             }

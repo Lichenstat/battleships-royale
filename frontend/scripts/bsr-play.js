@@ -4,6 +4,7 @@ import { BsrCreateGrids } from "./bsr-creategrids.js";
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { BsrPlayParse } from "./bsr-playparse.js";
 import { BsrAi } from "./bsr-ai.js";
+import { BsrFetchMethods } from "./bsr-fetch.js";
 import { BsrPlayerAiInteractions } from "./bsr-aiplayerinteractions.js";
 import { bsrGeneralInfo, bsrGridInternals, bsrPieceInteractors } from "./bsr-config.js";
 import { Helper } from "./helper.js";
@@ -13,6 +14,7 @@ export { BsrPlay };
 class BsrPlay{
 
     #playerPiecesData;
+    #fetchMethods;
     #isPlayingAgainstAi;
     #aiPlayer;
     #playSetupInfo;
@@ -48,13 +50,20 @@ class BsrPlay{
     #runtimeFunctions;
     #runOnWinFunctions;
 
-    constructor(playerPiecesData = new BsrPiecesData(), playingAgainstAi = true){
+    constructor(playerPiecesData = new BsrPiecesData(), fetchMethods = new BsrFetchMethods()){
         this.#playerPiecesData = playerPiecesData;
-        this.#isPlayingAgainstAi = playingAgainstAi;
+        this.#fetchMethods = fetchMethods;
+        this.#isPlayingAgainstAi = false;
         this.#aiPlayer = false;
-        if(this.#isPlayingAgainstAi){
+
+        if(this.#fetchMethods.getConnectedState()){
+            
+        }
+        else{
+            this.#isPlayingAgainstAi = true;
             this.#aiPlayer = new BsrAi();
         }
+
         this.#playSetupInfo = { playerNumber : 1 }
         //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}
         this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}

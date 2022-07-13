@@ -227,6 +227,29 @@
             return $ready;
         }
 
+        // check if the player is still connected to your game or not
+        public static function checkIfPlayersConnected($gameCode = ""){
+            $dbInfo = self::getDatabaseInfo();
+            $dbGameSearch = self::getGameSearchTableInfo();
+            $connected;
+
+            echo " Checking if players are connected - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // check if players are connected or not
+            $query = "SELECT COUNT(*) 
+                      FROM ".$dbGameSearch -> name." 
+                      WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
+            echo $query;                  
+            foreach($db -> query($query) as $row){
+                $connected = $row[0];
+            }
+
+            $db = null;
+            return $connected;
+        }
+
         // disconnect from a game if desired
         public static function disconnectFromGame($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();

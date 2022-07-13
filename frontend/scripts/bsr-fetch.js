@@ -15,7 +15,9 @@ class BsrFetchMethods{
     #checkGameCodeRequest;
     #checkGameCodeCycleTime;
 
+    #connectedState;
     #readyState;
+    #gameStartState;
 
     constructor(gameCode = ""){
 
@@ -37,14 +39,40 @@ class BsrFetchMethods{
             this.#checkGameCode();
         }, this.#checkGameCodeCycleTime);
 
-        // readystate to send to the server for when the player is ready to play
-        this.#readyState = 1;
+        // checks if the players are connected or not
+        this.#connectedState = 0;
 
+        // readystate to send to the server for when the player is ready to play
+        this.#readyState = 0;
+
+        // game is ready to start
+        this.#gameStartState = false;
+
+    }
+
+    // set the game start state
+    setGameStartState(){
+        if (!this.#gameStartState){
+            this.#gameStartState = true;
+        }
+        else{
+            this.#gameStartState = false;
+        }
+    }
+
+    // get the game start state
+    getGameStartState(){
+        return this.#gameStartState;
     }
 
     // return the players game code to use in some manner
     getGameCode(){
         return this.#playerGameCode;
+    }
+
+    // get the connected state
+    getConnectedState(){
+        return this.#connectedState;
     }
 
     // get our game code if necessary and update the timeout of our game code
@@ -130,7 +158,7 @@ class BsrFetchMethods{
     }
 
     test(){
-        let bodyItems = {gameCode : "15", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
+        let bodyItems = {gameCode : "21", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
         //let bodyItems = {gameCode : "14", locations : [[1,3]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};

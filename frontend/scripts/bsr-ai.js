@@ -68,8 +68,8 @@ class BsrAi{
 
     this.#testChoice = [this.#bsrGridMinAndMax.minRowPosition, this.#bsrGridMinAndMax.minColumnPosition - 1];
     
-    this.#minTime = 1000;
-    this.#maxTime = 1000;
+    this.#minTime = 1;//;
+    this.#maxTime = 1;//1000;
     this.#timer = Helper.getRandomInteger(this.#minTime, this.#maxTime);
 
     }

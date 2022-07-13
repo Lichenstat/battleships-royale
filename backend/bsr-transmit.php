@@ -102,7 +102,7 @@
         $locations = $n -> locations;
         $gameCode = $n -> gameCode;
         //echo $gameCode;
-        BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
+        //BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
         //$t = BsrDatabaseMethods::updateShipLocationsPlayed($gameCode, $locations);
         //$t = BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
         //$t = BsrDatabaseMethods::getShipLocationsOfEnemyPlayer($gameCode);
@@ -113,6 +113,7 @@
         //$t = BsrDatabaseMethods::getWhoPreviouslyMoved($gameCode);
         //$t = BsrDatabaseMethods::getRemovedShips($gameCode);
         //$t = BsrDatabaseMethods::checkIfGameOver($gameCode);
+        $t = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
         //echo print_r($t);

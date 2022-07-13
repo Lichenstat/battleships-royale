@@ -29,18 +29,20 @@
         // player table methods
 
         // check a game code and create one if it doesn't exist, as well as update it if it does exist
-        public static function checkGameCode($gameCode = ""){
+        public static function getGameCode($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbPlayersTable = self::getPlayersTableInfo();
             $currentGameCode = $gameCode;
             
-            echo " Checking our game code - ";
+            //echo " Checking our game code - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
             // if we don't have a game code, then make one for the player and put it in the table
             if (empty($gameCode)){
-                echo " Empty game code - ";
+
+                //echo " Empty game code - ";
+
                 $currentGameCode = Helper::getRandomString(30);
                 $alreadyExists;
 
@@ -62,17 +64,15 @@
                 $db = null;
                 return $currentGameCode;
             }
-
-            // if we do have an existing game code, then just use it and update the Timeout
-            self::resetTimeout($currentGameCode);
         }
 
         // update the game timeout using the game code
         public static function resetTimeout($gameCode = ""){
             if (!empty($gameCode)){
-                echo " Resetting timeout - ";
                 $dbInfo = self::getDatabaseInfo();
                 $dbPlayersTable = self::getPlayersTableInfo();
+                
+                //echo " Resetting timeout - ";
 
                 $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 

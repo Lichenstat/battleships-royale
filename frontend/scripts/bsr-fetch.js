@@ -1,52 +1,70 @@
-// Fetch api calls for clientside/serverside communication for bsr game
+// Fetch calls for clientside/serverside communication for bsr game
 import { BsrPiecesData } from "./bsr-piecesdata.js";
 import { FetchMethod } from "./fetch.js";
+import { Helper } from "./helper.js";
 
 export { BsrFetchMethods };
 
 
 class BsrFetchMethods{
 
-    #fetchMethod;
+    #fetch;
     #playerGameCode;
-    #enemyGameCode;
+
+    #genericArgumentsForRequest;
+    #checkGameCodeRequest;
+    #checkGameCodeCycleTime;
 
     #readyState;
 
-    constructor(){
-        this.#fetchMethod = new FetchMethod();
-        this.#playerGameCode = "2";
-        this.#enemyGameCode = "";
+    constructor(gameCode = ""){
 
+        // create our fetch request
+        this.#fetch = new FetchMethod();
+
+        // our players game code (will be set when initialized and connection to the server is made)
+        this.#playerGameCode = gameCode;
+
+        // generic arguments for making a request
+        this.#genericArgumentsForRequest = {'Content-Type': 'application/x-www-form-urlencoded'};
+        
+        // check game code proeprties
+        this.#checkGameCodeCycleTime = 60000; // or 1 minute (60000)
+
+        // assign our game code and keep updating its timeout
+        this.#checkGameCode();
+        setInterval(() => {
+            this.#checkGameCode();
+        }, this.#checkGameCodeCycleTime);
+
+        // readystate to send to the server for when the player is ready to play
         this.#readyState = 1;
+
     }
 
-    // retrieve a player code for sharing a game
-    retrieveGameCode(){
-        let fetchMethod = new FetchMethod();
-        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "checkGameCode", {gameCode : this.#playerGameCode});
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
-        .then(data => {
-            //let ndat = JSON.parse(data)
-            console.log(data);
-            //this.#playerGameCode = ndat;
-        })
-        .catch(error => console.log(`fetch error: ${error}`));
+    // return the players game code to use in some manner
+    getGameCode(){
+        return this.#playerGameCode;
     }
+
+    // get our game code if necessary and update the timeout of our game code
+    #checkGameCode(){
+        let checkGameCodeRequest = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", "checkGameCode", {gameCode : this.#playerGameCode});
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", checkGameCodeRequest, "json")
+        .then(data => {
+            //console.log(data);
+            if (!Helper.checkIfObjectIsEmpty(data)){
+                this.#playerGameCode = data.gameCode;
+            }
+        })
+        .catch(error => {}/* => console.log(`fetch error: ${error}`)*/);
+    }
+
+    //--------------------------------------------------------------------------------
     
     // search for a given player and 
     searchForPlayer(){
-        let fetchMethod = new FetchMethod();
-        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "joinMatch", {gameCode : "5", joinCode : "5"});
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
-        .then(data => {
-            //let ndat = JSON.parse(data)
-            console.log(data);
-            //this.#playerGameCode = ndat;
-        })
-        .catch(error => console.log(`fetch error: ${error}`));
+
     }
 
     updateReadyState(){

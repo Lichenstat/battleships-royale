@@ -4,23 +4,40 @@
     // Recieving info from clientside to process then transmit back to serverside
 
     // PHP code goes here
-    error_reporting(E_ALL);
-    ini_set("display_errors","On");
+    //error_reporting(E_ALL);
+    //ini_set("display_errors","On");
     // var_dump
     // print_r
 
     require "bsr-dbmethods.php";
-    require_once("bsr-check.php");
+    //require_once("bsr-check.php");
 
-    echo "Got to transmit - ";
+    //echo "Got to transmit - ";
 
-    // call a post with a possible game code or return one if there isnt a game code yet
-    if(isset($_POST["checkGameCode"])){
-        echo " Got to gameoced - ";
-        $code = json_decode($_POST["checkGameCode"]);
-        $gameCode = $code -> gameCode;
-        $code = BsrDatabaseMethods::checkGameCode($gameCode);
-        echo $code;
+    // retrieve a post with a game code or return one if there isnt a game code yet
+    if (isset($_POST["checkGameCode"])){
+        //echo " Checking gamecode - ";
+
+        $decode = json_decode($_POST["checkGameCode"]);
+        $gameCode = $decode -> gameCode;
+
+        // if we have no game code, make one, update the timeout attached to it, and return it
+        if (empty($gameCode)){
+
+            $gameCode -> gameCode = BsrDatabaseMethods::getGameCode($gameCode);
+            BsrDatabaseMethods::resetTimeout($gameCode -> gameCode);
+            $encode = json_encode($gameCode);
+            echo $encode;
+
+        }
+
+        // otherwise simply just update the timeout for the code that does exist
+        else{
+
+            BsrDatabaseMethods::resetTimeout($gameCode);
+
+        }
+        
     }
 
     // join a player to play a game if they exists and has given you a match code

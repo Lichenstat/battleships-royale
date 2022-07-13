@@ -72,6 +72,12 @@ class Helper{
         return 0;
     }
 
+    // check if an object is empty or not
+    static checkIfObjectIsEmpty(object = {}){
+        let isObjectEmpty = Object.keys(object).length === 0;
+        return isObjectEmpty;
+    }
+
     // parse an element id for a location inside a matrix
     // (assumes between parenthesis, ex: (14,7))
     static parseElementIdForMatrixLocation(id = "default__id-(0,0)"){

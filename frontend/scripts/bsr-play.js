@@ -17,8 +17,10 @@ class BsrPlay{
     #fetchMethods;
     #isPlayingAgainstAi;
     #aiPlayer;
+
     #playSetupInfo;
     #currentPlayInfo;
+
     #hasInfoUpdated;
     
     #sendLocations;
@@ -51,26 +53,27 @@ class BsrPlay{
     #runOnWinFunctions;
 
     constructor(playerPiecesData = new BsrPiecesData(), fetchMethods = new BsrFetchMethods()){
+        
         this.#playerPiecesData = playerPiecesData;
         this.#fetchMethods = fetchMethods;
         this.#isPlayingAgainstAi = false;
         this.#aiPlayer = false;
 
+        this.#playSetupInfo = { playerNumber : 1 }
+        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false, bsrPiecesData : []}
+        
         if(this.#fetchMethods.getConnectedState()){
             
         }
         else{
             this.#isPlayingAgainstAi = true;
             this.#aiPlayer = new BsrAi();
+            this.#currentPlayInfo.bsrPiecesData = this.getOriginalAiPiecesData();
         }
 
-        this.#playSetupInfo = { playerNumber : 1 }
-        //this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}
-        this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false}
         this.#hasInfoUpdated = false;
 
         this.#sendLocations = { piecesClicked : [[]] };
-        //this.#currentPlayInfo = { playerTurn : 0, pieceClicked : [], piecesHit : false, pieceName : "" , gameover : false}
 
         this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
         this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
@@ -117,6 +120,10 @@ class BsrPlay{
     // get ai pieces original data
     getOriginalAiPiecesData(){
         return this.#aiPlayer.getAiPiecesDataUntouched();
+    }
+
+    getGameoverShipIdsWithImages(){
+        return this.#getGameoverShipIdsWithImages(this.#currentPlayInfo.bsrPiecesData);
     }
 
     // return the player grid
@@ -334,7 +341,7 @@ class BsrPlay{
     }
 
     // return ship images from a bsr data table over the given buttons after a game over
-    getGameoverShipIdsWithImages(bsrPiecesData = new BsrPiecesData()){
+    #getGameoverShipIdsWithImages(bsrPiecesData = new BsrPiecesData()){
         let ids = this.#getCellIds(bsrPiecesData.getAllPiecesLocationsLeft());
         let imagesrc = bsrPiecesData.getAllPiecesImagesLeft();
         return {ids : ids, imageSrcs : imagesrc}
@@ -406,6 +413,7 @@ class BsrPlay{
     
     // runtime functions/methods to take place if the player is fighting against an ai
     #vsAiRuntime(){
+        // if its the players turn
         if(this.#currentPlayInfo.playerTurn == this.#playerNumber && !this.#currentPlayInfo.gameover){
             if(this.#hasButtonUpdated){
                 //console.log('player attacked');
@@ -424,6 +432,7 @@ class BsrPlay{
                 this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
             }
         }
+        // if its the ai's turn
         if(this.#currentPlayInfo.playerTurn != this.#playerNumber && !this.#currentPlayInfo.gameover){
             //console.log("ai attacked");
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];

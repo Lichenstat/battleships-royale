@@ -77,6 +77,7 @@ class BsrFetchMethods{
 
     // get our game code if necessary and update the timeout of our game code
     #checkGameCode(){
+        //console.log("checking game code");
         let checkGameCodeRequest = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", "checkGameCode", {gameCode : this.#playerGameCode});
         this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", checkGameCodeRequest, "json")
         .then(data => {

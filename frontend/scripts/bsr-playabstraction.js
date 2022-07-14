@@ -151,11 +151,8 @@ class BsrPlayAbstraction{
     // set button grids ship images after the game is over
     setGameoverImages(){
         this.#gameoverUpdates();
-        let pieces = {}
-        if (this.#play.checkIfPlayingAgainstAi()){
-            pieces = this.#play.getGameoverShipIdsWithImages(this.#play.getOriginalAiPiecesData());
-        }
-        //console.log(pieces);
+        let pieces = this.#play.getGameoverShipIdsWithImages();
+        console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
         let length = ids.length;

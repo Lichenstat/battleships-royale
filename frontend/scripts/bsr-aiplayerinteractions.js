@@ -56,7 +56,7 @@ class BsrPlayerAiInteractions{
     }
 
     // check if there has been a winner during the match yet or not
-    static setGameoverIfNeeded(playerPiecesData = new BsrPiecesData(), aiPiecesData = new BsrPiecesData, currentPlayInfo = {}){
+    static setGameoverIfNeeded(playerPiecesData = new BsrPiecesData(), aiPiecesData = new BsrPiecesData(), currentPlayInfo = {}){
         if(!Helper.accumulateObjectValues(playerPiecesData.getPiecesLeftThatHaveLocations())){
             //console.log('player should lose')
             currentPlayInfo.gameover = true;

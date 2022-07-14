@@ -187,7 +187,6 @@
             if (!empty($gameCode)){
 
                 // update and set the current game ready state for either the host or joined
-                // if the code is the "host"
                 $query = "UPDATE ".$dbGameSearch -> name." 
                           SET ".$dbGameSearch -> playerReadyColumn."=".$readyState." 
                           WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."'";

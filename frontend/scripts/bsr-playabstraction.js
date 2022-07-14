@@ -82,11 +82,11 @@ class BsrPlayAbstraction{
         }
         // update the proper ship information if it exists
         if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
-            this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesData());
+            this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
             this.#playerPushAudio.play();
         }
         if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
-            this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getAiPiecesData());
+            this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
             this.#enemyPushAudio.play();
         }
         // check if we hit or missed a piece to play proper audio
@@ -152,7 +152,7 @@ class BsrPlayAbstraction{
     setGameoverImages(){
         this.#gameoverUpdates();
         let pieces = this.#play.getGameoverShipIdsWithImages();
-        console.log(pieces);
+        //console.log(pieces);
         let ids = pieces.ids;
         let srcs = pieces.imageSrcs;
         let length = ids.length;
@@ -179,8 +179,8 @@ class BsrPlayAbstraction{
     }
 
     // update player info
-    updatePlayerInfo(shipInfoElement, bsrPiecesData){
-        shipInfoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesData.getPiecesLeftThatHaveLocations());
+    updatePlayerInfo(shipInfoElement, bsrPiecesCount = {}){
+        shipInfoElement.innerHTML = this.#play.getUpdatedPiecesInfo(bsrPiecesCount);
     }
 
     // set the updated player info by element pieces
@@ -189,8 +189,8 @@ class BsrPlayAbstraction{
         this.#playerShipInfoElement = playerShipsInfoElement;
         this.#enemyShipInfoElement = enemyShipsInfoElement;
         this.updateTextInfo(textInfoElement);
-        this.updatePlayerInfo(playerShipsInfoElement, this.#play.getPlayerPiecesData());
-        this.updatePlayerInfo(enemyShipsInfoElement, this.#play.getAiPiecesData());
+        this.updatePlayerInfo(playerShipsInfoElement, this.#play.getPlayerPiecesCount());
+        this.updatePlayerInfo(enemyShipsInfoElement, this.#play.getEnemyPiecesCount());
     }
 
     // set the event listeners of the grid buttons

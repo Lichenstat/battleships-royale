@@ -103,6 +103,8 @@
         $gameCode = $n -> gameCode;
         //echo $gameCode;
         //BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
+        //BsrDatabaseMethods::joinMatch($gameCode);
+        //BsrDatabaseMethods::disconnectFromGame($gameCode);
         //$t = BsrDatabaseMethods::updateShipLocationsPlayed($gameCode, $locations);
         //$t = BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
         //$t = BsrDatabaseMethods::getShipLocationsOfEnemyPlayer($gameCode);

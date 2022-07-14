@@ -21,12 +21,12 @@ class BsrPlay{
     #playSetupInfo;
     #currentPlayInfo;
 
+    #lastPlayerPiecesCount;
+    #lastEnemyPiecesCount;
+
     #hasInfoUpdated;
     
     #sendLocations;
-
-    #lastPlayerPiecesCount;
-    #lastEnemyPiecesCount;
 
     #playerDefaultGridCellId;
 
@@ -53,7 +53,7 @@ class BsrPlay{
     #runOnWinFunctions;
 
     constructor(playerPiecesData = new BsrPiecesData(), fetchMethods = new BsrFetchMethods()){
-        
+
         this.#playerPiecesData = playerPiecesData;
         this.#fetchMethods = fetchMethods;
         this.#isPlayingAgainstAi = false;
@@ -62,21 +62,22 @@ class BsrPlay{
         this.#playSetupInfo = { playerNumber : 1 }
         this.#currentPlayInfo = { playerTurn : 1, piecesClicked : [[]], piecesHit : [], pieceName : "" , gameover : false, bsrPiecesData : []}
         
+        this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
         if(this.#fetchMethods.getConnectedState()){
-            
+            // for now use original player to get a modifiable pieces count for multiplayer use
+            this.#lastEnemyPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
         }
         else{
             this.#isPlayingAgainstAi = true;
             this.#aiPlayer = new BsrAi();
             this.#currentPlayInfo.bsrPiecesData = this.getOriginalAiPiecesData();
+            this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
         }
 
         this.#hasInfoUpdated = false;
 
         this.#sendLocations = { piecesClicked : [[]] };
 
-        this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
-        this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
 
         this.#playerDefaultGridCellId = "bsr__table-cell-(0,0)";
 
@@ -112,9 +113,19 @@ class BsrPlay{
         return this.#playerPiecesData
     }
 
+    // get the player pieces count
+    getPlayerPiecesCount(){
+        return this.#lastPlayerPiecesCount;
+    }
+
     // get ai pieces data
     getAiPiecesData(){
         return this.#aiPlayer.getAiPiecesData();
+    }
+
+    // get the enemy pieces count
+    getEnemyPiecesCount(){
+        return this.#lastEnemyPiecesCount;
     }
 
     // get ai pieces original data
@@ -295,6 +306,22 @@ class BsrPlay{
 
     //-------------------------------------------------------------------------
     // updating pieces methods
+
+    // change player/enemy ship count using a stated ship
+    #decrementPiecesCount(bsrPiecesCount = {}){
+        // for now the length is only one, in case we decide to change the ships
+        // returned piecesName to an array of sunken ships it will work for that in later implementations
+        let shipsArray = [this.#currentPlayInfo.pieceName];
+        let removeShipLength = shipsArray.length;
+        //console.log(this.#currentPlayInfo.pieceName);
+        for (let i = 0; i < removeShipLength; i++){
+            if (bsrPiecesCount[shipsArray[i]]){
+                bsrPiecesCount[shipsArray[i]] = bsrPiecesCount[shipsArray[i]] - 1;
+            }
+        }
+        //console.log(bsrPiecesCount);
+        return bsrPiecesCount;
+    }
 
     // get buttons enable or disabled on initial button click
     getDisabledPushButtons(){

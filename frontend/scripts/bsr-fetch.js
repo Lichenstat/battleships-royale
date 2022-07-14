@@ -39,7 +39,7 @@ class BsrFetchMethods{
             this.#checkGameCode();
         }, this.#checkGameCodeCycleTime);
 
-        // checks if the players are connected or not
+        // checks if two players are connected or not
         this.#connectedState = 0;
 
         // readystate to send to the server for when the player is ready to play
@@ -159,7 +159,7 @@ class BsrFetchMethods{
     }
 
     test(){
-        let bodyItems = {gameCode : "21", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
+        let bodyItems = {gameCode : "22", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
         //let bodyItems = {gameCode : "14", locations : [[1,3]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};

@@ -239,7 +239,8 @@
             // check if players are connected or not
             $query = "SELECT COUNT(*) 
                       FROM ".$dbGameSearch -> name." 
-                      WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
+                      WHERE (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."') 
+                            AND (".$dbGameSearch -> playerColumn." IS NOT NULL AND ".$dbGameSearch -> connectedColumn." IS NOT NULL)";
             echo $query;                  
             foreach($db -> query($query) as $row){
                 $connected = $row[0];
@@ -254,7 +255,7 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
 
-            echo "Disconnecting player from curent game $gameCode - ";
+            echo "Disconnecting players from curent game $gameCode - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 

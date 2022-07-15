@@ -43,7 +43,7 @@
 
                 //echo " Empty game code - ";
 
-                $currentGameCode = Helper::getRandomString(30);
+                $currentGameCode = Helper::getRandomString($dbPlayersTable -> gameCodeSize);
                 $alreadyExists;
 
                 // check if the player code already exists in the Players table

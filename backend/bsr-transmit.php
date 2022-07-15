@@ -78,8 +78,10 @@
         $gameStates;
         $gameStates -> gameReady = BsrDatabaseMethods::checkGameReady($gameCode);
         $gameStates -> connectedState = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
+
         $gameStates = json_encode($gameStates);
         echo $gameStates;
+        
     }
 
 

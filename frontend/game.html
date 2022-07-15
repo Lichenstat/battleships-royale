@@ -221,8 +221,9 @@
                         swooshIn.play()
                         changeStatesElement.innerHTML = setupTableButton;
                         removeNodesForPlaying();
-                        playing = new BsrPlayAbstraction(setup.getPiecesData(), bsrFetch);
+                        playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
                         playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+                        fetch.clearRuntimeFunctions();
                         gameShellContainerElement.classList = gameShellSlideLeftClass;
                         setup = null;
 
@@ -249,6 +250,7 @@
                     resetNodesForSetup();
                     setup = new BsrSetupAbstraction();
                     setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+                    fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
                     gameShellContainerElement.classList = gameShellSlideLeftClass;
                     playing = null;
 

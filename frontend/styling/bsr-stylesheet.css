@@ -54,7 +54,12 @@ button:active{
   background:linear-gradient( 135deg, #7d8083, rgb(146, 146, 146), #7d8083);
 }
 
-/* stylings for the various elements --------------------------------------- */
+input{
+  font-family: 'Stardos Stencil', cursive;
+  /*font-size: 16px;*/
+}
+
+/* stylings and animations for the various elements --------------------------------------- */
 
 .bsr--border{
   border-style: outset;
@@ -82,6 +87,10 @@ button:active{
 
 .bsr--rounded-left{
   border-radius: 20px 0px 0px 20px;
+}
+
+.bsr--rounded-right{
+  border-radius: 0px 20px 20px 0px;
 }
 
 .bsr--text-underline{
@@ -178,6 +187,7 @@ button:active{
 }
 
 /* these are the elements themselves --------------------------------------- */
+
 .bsr__container{
   /*border: 2px solid blue;*/
   display: block;
@@ -203,6 +213,7 @@ button:active{
   /*border: 2px solid black;*/
   margin-left: 6px;
   width: fit-content;
+  min-height: 32px;
   height: fit-content;
   padding: 10px;
 }
@@ -211,6 +222,7 @@ button:active{
   /*border: 2px solid yellow;*/
   margin-top: auto;
   width: fit-content;
+  min-height: 32px;
   height: fit-content;
   padding: 10px;
 }
@@ -219,8 +231,26 @@ button:active{
   /*border: 2px solid black;*/
   margin-right: 6px;
   width: fit-content;
+  min-height: 32px;
   height: fit-content;
   padding: 10px;
+}
+
+.bsr__gamecodesearch{
+  /*border: 2px solid green;*/
+  display: flex;
+  justify-content: center;
+  
+}
+
+.bsr__gamecodebutton{
+  /*border: 2px solid bisque;*/
+
+}
+
+.bsr__gamecodeinput{
+  /*border: 2px solid violet;*/
+
 }
 
 .bsr__setupplacement{

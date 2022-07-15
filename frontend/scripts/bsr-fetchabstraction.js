@@ -17,11 +17,15 @@ class BsrFetchAbstraction{
     #gameCodeSearchElement;
     #gameReadyElement;
 
+    #gameCodeInput;
+
+    #runtimeFunctions;
+
     constructor(gameCode = ""){
 
         this.#fetch = new BsrFetchMethods(gameCode);
 
-
+        // generic default values
         this.#updateInterval = 1000;
         this.#fetchInfoStringDefault = "No Server Connection - Playing Against AI";
 
@@ -31,28 +35,61 @@ class BsrFetchAbstraction{
         this.#gameCodeSearchElement;
         this.#gameReadyElement;
 
+        // game code input when server proeprly connects
+        this.#gameCodeInput = '<div id="bsr__gamecodesearch" class="bsr__gamecodesearch"> <button id="bsr__gamecodebutton" class="bsr__gamecodebutton bsr--text bsr--rounded-left">Join Random Game</button> <input id="bsr__gamecodeinput" class="bsr__gamecodeinput bsr--text bsr--rounded-right" type="text" placeholder="Game Code Here"> </div>';
+
+        // functions to be ran during th eupdate interval
+        this.#runtimeFunctions = [];
+
+        // run functions on game update interval
+        setInterval(() => {
+            this.#runOnGameUpdate();
+            //console.log(this.#runtimeFunctions);
+        }, this.#updateInterval);
+
+
+    }
+
+    // get the current fetch method from the abstraction
+    getFetch(){
+        return this.#fetch;
+    }
+
+    // clear the runtime functions whenever necessary (most likely for reseting state/information)
+    clearRuntimeFunctions(){
+        this.#runtimeFunctions = [];
+    }
+
+    // push function to array to run on game update
+    #setRuntimeFunction(func = function () { }) {
+        this.#runtimeFunctions.push(func);
+    }
+
+    // run runtime functions set within runtimeFunctions array
+    #runOnGameUpdate() {
+        this.#runtimeFunctions.forEach(
+            func => {
+                func();
+            }
+        )
     }
 
     // set the game status element
     setGameStatusElement(gameStatusElement){
         this.#gameStatusElement = gameStatusElement;
-        setInterval(() => {
-            this.updateFetchInfo(gameStatusElement);
-        }, this.#updateInterval);
+        this.#setRuntimeFunction(() => this.updateFetchInfo(gameStatusElement));
     }
 
     // set the code container element
     setCodeContainerElement(codeContainerElement){
         this.#gameCodeContainerElement = codeContainerElement;
-        codeContainerElement.innerText = "Game Code: ";
-        this.updatePlayerCode(codeContainerElement);
+        this.#setRuntimeFunction(() => this.updatePlayerCode(codeContainerElement));
     }
 
     // set the code search element
     setCodeSearchElement(codeSearchElement){
         this.#gameCodeSearchElement = codeSearchElement;
-
-        codeSearchElement.innerText = "Button and Input";
+        this.#setRuntimeFunction(() => this.updateCodeSearchElement(codeSearchElement));
     }
 
     // set the game ready element
@@ -89,16 +126,35 @@ class BsrFetchAbstraction{
     }
 
     // try to update our player code until we have one
-    updatePlayerCode(gameCodeContainerElement){
+    updatePlayerCode(codeContainerElement){
         let gameCode = this.#fetch.getGameCode();
-        if (gameCode.length <= 0){
-            setTimeout(() => {
-                this.updatePlayerCode(gameCodeContainerElement);
-            }, 1000)
-        }
+
         if (gameCode.length > 0){
-            gameCodeContainerElement.innerText = "Game Code: " + gameCode;
+            codeContainerElement.innerText = "Game Code: " + gameCode;
         }
+
+    }
+
+    // when we get a player code, allow person to join or find a game
+    updateCodeSearchElement(codeSearchElement){
+        let gameCode = this.#fetch.getGameCode();
+
+        if (gameCode.length > 0){
+
+            if (codeSearchElement.innerHTML == ""){
+                codeSearchElement.innerHTML = this.#gameCodeInput;
+            }
+
+            if (codeSearchElement.children[0].children[1].value){
+               codeSearchElement.children[0].children[0].innerText = "Join Game";
+            }
+
+            if (!codeSearchElement.children[0].children[1].value){
+                codeSearchElement.children[0].children[0].innerText = "Join Random Game";
+            }
+
+        }
+
     }
 
     // attempt to join another players game

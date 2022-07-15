@@ -83,7 +83,7 @@
 
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
-        import { BsrFetchMethods } from "./scripts/bsr-fetch.js";
+        import { BsrFetchAbstraction } from "./scripts/bsr-fetchabstraction.js";
         import { Helper } from "./scripts/helper.js";
         import { arbitraryThingy } from "./scripts/sus.js";
 
@@ -115,6 +115,7 @@
         let gridContainerElement = document.getElementById("bsr__gridplacement");
         let changeStatesElement = document.getElementById("bsr__changestates");
 
+        // remove noces once playing starts
         let removeNodesForPlaying = () => {
             piecesContainerElement.remove();
             buttonsContainerElement.remove();
@@ -174,8 +175,9 @@
         // for playing events (choosing square, player turns, etc.)
 
         let playing;
-        let bsrFetch = new BsrFetchMethods();
-        bsrFetch.test();
+        let fetch = new BsrFetchAbstraction();
+        fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
+        
 
         // audio to play during runtime
         let buzz = new Audio("./assets/audio/buzzer.mp3");

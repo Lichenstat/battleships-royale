@@ -40,10 +40,10 @@ class BsrFetchMethods{
         }, this.#checkGameCodeCycleTime);
 
         // checks if two players are connected or not
-        this.#connectedState = 0;
+        this.#connectedState = false;
 
         // readystate to send to the server for when the player is ready to play
-        this.#readyState = 0;
+        this.#readyState = false;
 
         // game is ready to start
         this.#gameStartState = false;
@@ -74,12 +74,16 @@ class BsrFetchMethods{
     getConnectedState(){
         return this.#connectedState;
     }
+    
+    //-------------------------------------------------------------------------
+    // methods to consistently run during runtime of web page
 
     // get our game code if necessary and update the timeout of our game code
     #checkGameCode(){
-        //console.log("checking game code");
-        let checkGameCodeRequest = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", "checkGameCode", {gameCode : this.#playerGameCode});
-        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", checkGameCodeRequest, "json")
+        let bodyContent = {gameCode : this.#playerGameCode};
+        let bodyName = "checkGameCode";
+        let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "json")
         .then(data => {
             //console.log(data);
             if (!Helper.checkIfObjectIsEmpty(data)){
@@ -88,19 +92,53 @@ class BsrFetchMethods{
         })
         .catch(error => {}/* => console.log(`fetch error: ${error}`)*/);
     }
-
-    //--------------------------------------------------------------------------------
     
-    // search for a given player and 
-    searchForPlayer(){
+    //-------------------------------------------------------------------------
+    // methods mostly used for setup during the game
 
+    // search for a given player and join their game if possible
+    searchForPlayer(joinCode = ""){
+        let bodyContent = {gameCode : this.#playerGameCode, joinCode : joinCode};
+        let bodyName = "joinMatch";
+        let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
     }
 
+    // update the current players ready state serverside
     updateReadyState(){
-        let fetchMethod = new FetchMethod();
-        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "updateReadyState", {gameCode : "5", readyState: this.#readyState});
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        let bodyContent = {gameCode : this.#playerGameCode, readyState : this.#readyState};
+        let bodyName = "updateReadyState";
+        let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
+    // check if the players are connected and are ready to play
+    checkConnectedState(){
+        let bodyContent = {gameCode : this.#playerGameCode};
+        let bodyName = "checkGameReady";
+        let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "json")
+        .then(data => {
+            console.log(data);
+            this.#readyState = data.gameReady;
+        })
+        .catch(error => console.log(`fetch error: ${error}`));
+    }
+
+    // disconnect from the current joined game
+    disconnectFromGame(){
+        let bodyContent = {gameCode : this.#playerGameCode};
+        let bodyName = "disconnectFromGame";
+        let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
+        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
             //let ndat = JSON.parse(data)
             console.log(data);
@@ -109,18 +147,8 @@ class BsrFetchMethods{
         .catch(error => console.log(`fetch error: ${error}`));
     }
 
-    disconnectFromGame(){
-        let fetchMethod = new FetchMethod();
-        let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
-        let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "disconnectFromGame", {gameCode : "7"});
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
-        .then(data => {
-            //let ndat = JSON.parse(data)
-            console.log(data);
-            //this.#playerGameCode = ndat;
-        })
-        .catch(error => console.log(`fetch error: ${error}`));
-    }
+    //---------------------------------------------------------------------------
+    // methods that are used to initialize the game and interact with eachother
 
     setupInitialGame(){
         let fetchMethod = new FetchMethod();

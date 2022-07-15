@@ -43,40 +43,56 @@
     // join a player to play a game if they exists and has given you a match code
     if(isset($_POST["joinMatch"])){
         echo " Got to join match - ";
+
         $code = json_decode($_POST["joinMatch"]);
         //echo var_dump($code);
+
         $gameCode = $code -> gameCode;
         $joinCode = $code -> joinCode;
-        //echo "game cpde ".$gameCode;
-        //echo "joion code ", $joinCode;
+
         $code = BsrDatabaseMethods::joinMatch($gameCode, $joinCode);
+
     }
 
     // update the ready state of the current player
     if(isset($_POST["updateReadyState"])){
         echo " Got to updating player state - ";
+
         $code = json_decode($_POST["updateReadyState"]);
+
         $gameCode = $code -> gameCode;
         $readyState = $code -> readyState;
         $readyState = (int)$readyState;
+
         $code = BsrDatabaseMethods::updateReadyState($gameCode, $readyState);
-        //return $code;
+
     }
     
     //check if the game is ready or not
     if(isset($_POST["checkGameReady"])){
-        echo "Checking if the game is ready or not - ";
+        //echo "Checking if the game is ready or not - ";
+
         $code = json_decode($_POST["checkGameReady"]);
         $gameCode = $code -> gameCode;
-        BsrDatabaseMethods::checkGameReady($gameCode);
+
+        $gameStates;
+        $gameStates -> gameReady = BsrDatabaseMethods::checkGameReady($gameCode);
+        $gameStates -> connectedState = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
+        $gameStates = json_encode($gameStates);
+        echo $gameStates;
     }
+
+
 
     // disconnect from game 
     if (isset($_POST["disconnectFromGame"])){
         echo "Got to disconnect from game - ";
+
         $code = json_decode($_POST["disconnectFromGame"]);
         $gameCode = $code -> gameCode;
+
         BsrDatabaseMethods::disconnectFromGame($gameCode);
+
     }
 
     // set all the neccessary pieces up to start and play the game

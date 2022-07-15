@@ -99,78 +99,90 @@
             
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
-            // if there is no match code, we will find a random players game who is also looking for a game to join or add the player in as a random to join
-            if (empty($matchCode)){ 
-                $playerCode = "";
-
-                echo " empty match code - ";
-                $query = "SELECT ".$dbGameSearch -> playerColumn." 
-                          FROM ".$dbGameSearch -> name." 
-                          WHERE ".$dbGameSearch -> connectedColumn." IS NULL LIMIT 1";
-                foreach($db -> query($query) as $row){
-                    $playerCode = $row[0];
-                }
-
-                // if our player code is not empty and is not the same code as our game code, join game
-                if (!empty($playerCode) && $playerCode != $gameCode){
-                    echo " will join their game - ";
-                    echo " plaeyr code - ".$playerCode;
-                    $query = "UPDATE ".$dbGameSearch -> name." 
-                              SET ".$dbGameSearch -> connectedColumn."='".$gameCode."' 
-                              WHERE ".$dbGameSearch -> playerColumn."='".$playerCode."'";
-                    $db -> query($query);
-                }
-
-                // if there is no player code to join simply add ourselves to the searching game table
-                if (empty($playerCode)){
-                    echo " no player code ot join, add self to search - ";
-                    $query = "INSERT INTO ".$dbGameSearch -> name." (".$dbGameSearch -> playerColumn.") 
-                              VALUES ('".$gameCode."')";
-                    $db -> query($query);
-                }
-            }
-
-            // if there is a match code then we will join that game as the connected player
-            if (!empty($matchCode)){
-                $checkPlayerCode;
-                $checkConnectedCode;
-
-                // if the match is not the players game (cannot join your own game)
-                if ($matchCode != $gameCode){
-
-                    // first check if the other player is not in a match
+            // if our game code is not empty (the player assumably exists)
+            if (!empty($gameCode)){
+                
+                // if there is no match code, we will find a random players game who is also looking for a game to join or add the player in as a random to join
+                if (empty($matchCode)){ 
+                    $playerCode = "";
+    
+                    echo " Empty match code - ";
                     $query = "SELECT ".$dbGameSearch -> playerColumn." 
                               FROM ".$dbGameSearch -> name." 
-                              WHERE ".$dbGameSearch -> playerColumn."='".$matchCode."' AND ".$dbGameSearch -> connectedColumn." IS NOT NULL LIMIT 1";
+                              WHERE ".$dbGameSearch -> connectedColumn." IS NULL LIMIT 1";
+                    echo $query;
                     foreach($db -> query($query) as $row){
-                        echo "found their match (they made one) - ".$row[0];
-                        $checkPlayerCode = $row[0];
-                    }
-                    
-                    // just checks the connected side of the table for the player as well
-                    $query = "SELECT ".$dbGameSearch -> connectedColumn." 
-                              FROM ".$dbGameSearch -> name." 
-                              WHERE ".$dbGameSearch -> connectedColumn."='".$matchCode."'";
-                    foreach($db -> query($query) as $row){
-                        echo "found thier match (they joined one) - ".$row[0];
-                        $checkConnectedCode = $row[0];
+                        $playerCode = $row[0];
                     }
 
-                    // if they are not in a match
-                    if (empty($checkPlayerCode) && empty($checkConnectedCode)){
-                        echo " We will use the match code and auto join both - ";
-                        // delete them if they are looking for a game (need a clean join case)
-                        $query = "DELETE FROM ".$dbGameSearch -> name." 
-                                  WHERE ".$dbGameSearch -> playerColumn."='".$matchCode."'";
+                    // if our player code is not empty and is not the same code as our game code, join game
+                    if (!empty($playerCode) && $playerCode != $gameCode){
+                        echo " - Will join their game - ";
+                        echo " - Player code - ".$playerCode;
+                        $query = "UPDATE ".$dbGameSearch -> name." 
+                                  SET ".$dbGameSearch -> connectedColumn."='".$gameCode."' 
+                                  WHERE ".$dbGameSearch -> playerColumn."='".$playerCode."'";
+                        echo $query;
                         $db -> query($query);
-
-                        // now insert both into the search table against one another
-                        $query = "INSERT INTO ".$dbGameSearch -> name." (".$dbGameSearch -> playerColumn.", ".$dbGameSearch -> connectedColumn.") 
-                                  VALUES ('".$matchCode."', '".$gameCode."')";
+                    }
+    
+                    // if there is no player code to join simply add ourselves to the searching game table
+                    if (empty($playerCode)){
+                        echo " No player code ot join, add self to search - ";
+                        $query = "INSERT INTO ".$dbGameSearch -> name." (".$dbGameSearch -> playerColumn.") 
+                                  VALUES ('".$gameCode."')";
+                        echo $query;
                         $db -> query($query);
                     }
                 }
+    
+                // if there is a match code then we will join that game as the connected player
+                if (!empty($matchCode)){
+                    $checkPlayerCode;
+                    $checkConnectedCode;
+    
+                    // if the match is not the players game (cannot join your own game)
+                    if ($matchCode != $gameCode){
+    
+                        // first check if the other player is not in a match
+                        $query = "SELECT ".$dbGameSearch -> playerColumn." 
+                                  FROM ".$dbGameSearch -> name." 
+                                  WHERE ".$dbGameSearch -> playerColumn."='".$matchCode."' AND ".$dbGameSearch -> connectedColumn." IS NOT NULL LIMIT 1";
+                        echo $query;
+                        foreach($db -> query($query) as $row){
+                            echo "found their match (they made one) - ".$row[0];
+                            $checkPlayerCode = $row[0];
+                        }
+                        
+                        // just checks the connected side of the table for the player as well
+                        $query = "SELECT ".$dbGameSearch -> connectedColumn." 
+                                  FROM ".$dbGameSearch -> name." 
+                                  WHERE ".$dbGameSearch -> connectedColumn."='".$matchCode."'";
+                        echo $query;
+                        foreach($db -> query($query) as $row){
+                            echo "found thier match (they joined one) - ".$row[0];
+                            $checkConnectedCode = $row[0];
+                        }
+    
+                        // if they are not in a match
+                        if (empty($checkPlayerCode) && empty($checkConnectedCode)){
+                            echo " We will use the match code and auto join both - ";
+                            // delete them if they are looking for a game (need a clean join case)
+                            $query = "DELETE FROM ".$dbGameSearch -> name." 
+                                      WHERE ".$dbGameSearch -> playerColumn."='".$matchCode."'";
+                            echo $query;                          
+                            $db -> query($query);
+    
+                            // now insert both into the search table against one another
+                            $query = "INSERT INTO ".$dbGameSearch -> name." (".$dbGameSearch -> playerColumn.", ".$dbGameSearch -> connectedColumn.") 
+                                      VALUES ('".$matchCode."', '".$gameCode."')";
+                            echo $query;
+                            $db -> query($query);
+                        }
+                    }
+                }            
             }
+
             $db = null;
         }
 
@@ -208,7 +220,7 @@
             $dbGameSearch = self::getGameSearchTableInfo();
             $ready;
 
-            echo " Checking if game is ready - ";
+            //echo " Checking if game is ready - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -217,22 +229,28 @@
                       FROM ".$dbGameSearch -> name." 
                       WHERE ".$dbGameSearch -> playerReadyColumn."=1 AND ".$dbGameSearch -> connectedReadyColumn."=1 
                               AND (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $ready = $row[0];
-                echo " Ready state $ready - ";
+                //echo " Ready state $ready - ";
+            }
+
+            if (!empty($ready)){
+                $db = null;
+                return true;
             }
 
             $db = null;
-            return $ready;
+            return false;
         }
 
-        // check if the player is still connected to your game or not
+        // check if the player are connected to the game or not
         public static function checkIfPlayersConnected($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
             $connected;
 
-            echo " Checking if players are connected - ";
+            //echo " Checking if players are connected - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -241,13 +259,18 @@
                       FROM ".$dbGameSearch -> name." 
                       WHERE (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."') 
                             AND (".$dbGameSearch -> playerColumn." IS NOT NULL AND ".$dbGameSearch -> connectedColumn." IS NOT NULL)";
-            echo $query;                  
+            //echo $query;                  
             foreach($db -> query($query) as $row){
                 $connected = $row[0];
             }
 
+            if (!empty($connected)){
+                $db = null;
+                return true;
+            }
+
             $db = null;
-            return $connected;
+            return false;
         }
 
         // disconnect from a game if desired

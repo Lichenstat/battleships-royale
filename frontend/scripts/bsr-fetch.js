@@ -15,9 +15,10 @@ class BsrFetchMethods{
     #checkGameCodeRequest;
     #checkGameCodeCycleTime;
 
+    #waitingOnOtherState;
     #connectedState;
     #readyState;
-    #gameStartState;
+    #startState;
 
     constructor(gameCode = ""){
 
@@ -39,6 +40,9 @@ class BsrFetchMethods{
             this.#checkGameCode();
         }, this.#checkGameCodeCycleTime);
 
+        // waiting on other player to join the game
+        this.#waitingOnOtherState = false;
+
         // checks if two players are connected or not
         this.#connectedState = false;
 
@@ -46,23 +50,8 @@ class BsrFetchMethods{
         this.#readyState = false;
 
         // game is ready to start
-        this.#gameStartState = false;
+        this.#startState = false;
 
-    }
-
-    // set the game start state
-    setGameStartState(){
-        if (!this.#gameStartState){
-            this.#gameStartState = true;
-        }
-        else{
-            this.#gameStartState = false;
-        }
-    }
-
-    // get the game start state
-    getGameStartState(){
-        return this.#gameStartState;
     }
 
     // return the players game code to use in some manner
@@ -73,6 +62,27 @@ class BsrFetchMethods{
     // get the connected state
     getConnectedState(){
         return this.#connectedState;
+    }
+
+    // get game ready state
+    getReadyState(){
+        return this.#readyState;
+    }
+
+    // get the game start state
+    getStartState(){
+        return this.#startState;
+    }
+
+    // get if the player is waiting on another player to join or not
+    getWaitingStateOfLobby(){
+        return this.#waitingOnOtherState;
+    }
+
+    // set the ready state of the players game
+    setReadyState(bool = false){
+        this.#readyState = bool;
+        this.updateReadyState();
     }
     
     //-------------------------------------------------------------------------
@@ -103,7 +113,7 @@ class BsrFetchMethods{
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
-            console.log(data);
+            //console.log(data);
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
@@ -115,7 +125,7 @@ class BsrFetchMethods{
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
-            console.log(data);
+            //console.log(data);
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
@@ -127,8 +137,10 @@ class BsrFetchMethods{
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "json")
         .then(data => {
-            console.log(data);
-            this.#readyState = data.gameReady;
+            //console.log(data);
+            this.#connectedState = data.connectedState;
+            this.#waitingOnOtherState = data.waitingOnOtherState;
+            this.#startState = data.startState;
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
@@ -140,9 +152,7 @@ class BsrFetchMethods{
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
         .then(data => {
-            //let ndat = JSON.parse(data)
-            console.log(data);
-            //this.#playerGameCode = ndat;
+            //console.log(data);
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
@@ -187,7 +197,7 @@ class BsrFetchMethods{
     }
 
     test(){
-        let bodyItems = {gameCode : "22", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
+        let bodyItems = {gameCode : "10936a9e088684b74881", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
         //let bodyItems = {gameCode : "14", locations : [[1,3]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};

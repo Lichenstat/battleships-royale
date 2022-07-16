@@ -30,6 +30,7 @@
 
         // check a game code and create one if it doesn't exist, as well as update it if it does exist
         public static function getGameCode($gameCode = ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbPlayersTable = self::getPlayersTableInfo();
             $currentGameCode = $gameCode;
@@ -63,12 +64,46 @@
                 // close the connection and return the game code
                 $db = null;
                 return $currentGameCode;
+
             }
+            
+        }
+
+        // check if the player exists in the playing table
+        public static function checkIfPlayerExists($gameCode = ""){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbPlayersTable = self::getPlayersTableInfo();
+            $exists;
+                
+            //echo " Checking if the player exits or not - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // check if the player exists as an actual playable person
+            $query = "SELECT COUNT(*) 
+                      FROM ".$dbPlayersTable -> name." 
+                      WHERE ".$dbPlayersTable -> playerColumn."='".$gameCode."'";
+            //echo $query;
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+
+            if (!empty($exists)){
+                $db = null;
+                return true;
+            }
+
+            $db = null;
+            return false;
+
         }
 
         // update the game timeout using the game code
         public static function resetTimeout($gameCode = ""){
+
             if (!empty($gameCode)){
+
                 $dbInfo = self::getDatabaseInfo();
                 $dbPlayersTable = self::getPlayersTableInfo();
                 
@@ -82,7 +117,9 @@
                           WHERE ".$dbPlayersTable -> playerColumn."='".$gameCode."'";
                 $db -> query($query);
                 $db = null;
+
             }
+
         }
 
         //---------------------------------------------------------------------
@@ -163,9 +200,12 @@
                             echo "found thier match (they joined one) - ".$row[0];
                             $checkConnectedCode = $row[0];
                         }
+
+                        // check if the player attempting to connect to actually exists or not
+                        $doesPlayerExist = self::checkIfPlayerExists($matchCode);
     
                         // if they are not in a match
-                        if (empty($checkPlayerCode) && empty($checkConnectedCode)){
+                        if (empty($checkPlayerCode) && empty($checkConnectedCode) && $doesPlayerExist){
                             echo " We will use the match code and auto join both - ";
                             // delete them if they are looking for a game (need a clean join case)
                             $query = "DELETE FROM ".$dbGameSearch -> name." 
@@ -214,13 +254,44 @@
             $db = null;
         }
 
+        // check if a player is in the table that is waiting for other players to join a game
+        public static function checkPlayerIsWaitingInGameQueue($gameCode = ""){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbGameSearch = self::getGameSearchTableInfo();
+            $exists;
+
+            //echo " Checking if waiting for another player - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // check if both players are ready or not
+            $query = "SELECT COUNT(*) 
+                      FROM ".$dbGameSearch -> name." 
+                      WHERE ".$dbGameSearch -> playerColumn."='".$gameCode."' AND ".$dbGameSearch -> connectedColumn." IS NULL";
+            //echo $query;
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+
+            if (!empty($exists)){
+                $db = null;
+                return true;
+            }
+
+            $db = null;
+            return false;
+
+        }
+
         // check if both players are ready to play the game or not and return the value
-        public static function checkGameReady($gameCode = ""){
+        public static function checkGameReadyToStart($gameCode = ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
             $ready;
 
-            //echo " Checking if game is ready - ";
+            //echo " Checking if game is ready to start - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -228,11 +299,10 @@
             $query = "SELECT COUNT(*) 
                       FROM ".$dbGameSearch -> name." 
                       WHERE ".$dbGameSearch -> playerReadyColumn."=1 AND ".$dbGameSearch -> connectedReadyColumn."=1 
-                              AND (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."'";
+                              AND (".$dbGameSearch -> playerColumn."='".$gameCode."' OR ".$dbGameSearch -> connectedColumn."='".$gameCode."')";
             //echo $query;
             foreach($db -> query($query) as $row){
                 $ready = $row[0];
-                //echo " Ready state $ready - ";
             }
 
             if (!empty($ready)){
@@ -242,10 +312,12 @@
 
             $db = null;
             return false;
+
         }
 
         // check if the player are connected to the game or not
         public static function checkIfPlayersConnected($gameCode = ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
             $connected;
@@ -271,6 +343,7 @@
 
             $db = null;
             return false;
+
         }
 
         // disconnect from a game if desired

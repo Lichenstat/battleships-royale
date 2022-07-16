@@ -76,8 +76,9 @@
         $gameCode = $code -> gameCode;
 
         $gameStates;
-        $gameStates -> gameReady = BsrDatabaseMethods::checkGameReady($gameCode);
         $gameStates -> connectedState = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
+        $gameStates -> waitingOnOtherState = BsrDatabaseMethods::checkPlayerIsWaitingInGameQueue($gameCode);
+        $gameStates -> startState = BsrDatabaseMethods::checkGameReadyToStart($gameCode);
 
         $gameStates = json_encode($gameStates);
         echo $gameStates;
@@ -132,10 +133,13 @@
         //$t = BsrDatabaseMethods::getEnemiesBsrData($gameCode);
         //$t = BsrDatabaseMethods::getWhoPreviouslyMoved($gameCode);
         //$t = BsrDatabaseMethods::getRemovedShips($gameCode);
+        $t = BsrDatabaseMethods::checkGameReadyToStart($gameCode);
         //$t = BsrDatabaseMethods::checkIfGameOver($gameCode);
-        $t = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
+        //$t = BsrDatabaseMethods::checkIfPlayerExists($gameCode);
+        //$t = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
+        //$t = BsrDatabaseMethods::checkPlayerIsWaitingInGameQueue($gameCode);
         //echo print_r($t);
         
     }

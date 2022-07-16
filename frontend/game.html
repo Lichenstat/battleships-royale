@@ -115,7 +115,7 @@
         let gridContainerElement = document.getElementById("bsr__gridplacement");
         let changeStatesElement = document.getElementById("bsr__changestates");
 
-        // remove noces once playing starts
+        // remove nodes once playing starts
         let removeNodesForPlaying = () => {
             piecesContainerElement.remove();
             buttonsContainerElement.remove();
@@ -177,15 +177,76 @@
         let playing;
         let fetch = new BsrFetchAbstraction();
         fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
-        
+        //fetch.test();
 
         // audio to play during runtime
         let buzz = new Audio("./assets/audio/buzzer.mp3");
         let swooshIn = new Audio("./assets/audio/woosh-blow-reverse.mp3");
         let swooshOut = new Audio("./assets/audio/woosh-blow.mp3");
 
+        // buttons defining state change between setup and playing
         const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';
+        const playerTableButtonOnWait = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Waiting On Other Player</button>';
         const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
+
+        // run this until we are ready for a game to start or pieces count has changed
+        function runWhileReadyOrChange(thisFunc = function(){}){
+            let isPlayerConnected = fetch.getConnectedState();
+            let isPlayerReady = fetch.getReadyState();
+            let isPossibleToStart = fetch.getStartState();
+
+            /*
+            console.log("player connected: ", isPlayerConnected);
+            console.log("player ready: ", isPlayerReady);
+            console.log("can game start: ", isPossibleToStart);
+            */
+
+            // if we are not connected to the game after starting, just reset our change state button
+            if (!isPlayerConnected){
+                changeStatesElement.innerHTML = playerTableButton;
+            }
+
+            // if we are connected as players
+            if (isPlayerConnected){
+                changeStatesElement.innerHTML = playerTableButton;
+
+                // if the player is ready to play
+                if (isPlayerReady){
+
+                    // get pieces count for checking if we are ready or not
+                    let piecesSetCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+
+                    // if pieces count has changed (we have to undo our ready state)
+                    if (piecesSetCount){
+                        console.log("player changed a piece, reset button");
+                        fetch.setReadyState(false);
+                        changeStatesElement.innerHTML = playerTableButton;
+                    }
+
+                    // if pieces count shows no placeable pieces left
+                    if (!piecesSetCount){
+
+                        // if it is possible to start the game then start the game
+                        if (isPossibleToStart){
+                            thisFunc();
+                        }
+
+                        // if it is not possible to start the game because of another player, but we are ready
+                        if (!isPossibleToStart){
+                            changeStatesElement.innerHTML = playerTableButtonOnWait;
+                            setTimeout(() => {
+                                runWhileReadyOrChange(thisFunc);
+                            }, 500);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
 
         // check items on event click
         document.addEventListener('click', item => {
@@ -200,6 +261,8 @@
                     changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
                     buzz.play();
                     setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
+                    fetch.setReadyState(false);
+                    
                     setTimeout(() => {
 
                         if (setup != null)
@@ -208,28 +271,52 @@
                     }, 3000)
 
                 }
+
                 // if there are no more placeable pieces left to be placed
                 if (!placeablePiecesCount){
-
+                    
                     swooshOut.play();
-                    //console.log('making play tables');
-                    gameShellContainerElement.classList = gameShellSlideRightClass;
+                    fetch.setReadyState(true);
 
-                    // timeout is to help with timing animations
-                    setTimeout(() => {
+                    // run this when we are actively ready to play the game
+                    let runOnReadyToPlay = () => {
 
-                        swooshIn.play()
-                        changeStatesElement.innerHTML = setupTableButton;
-                        removeNodesForPlaying();
-                        playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
-                        playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
-                        fetch.clearRuntimeFunctions();
-                        gameShellContainerElement.classList = gameShellSlideLeftClass;
-                        setup = null;
+                        // slide animation will play
+                        gameShellContainerElement.classList = gameShellSlideRightClass;
 
-                    }, 900);
+                        // timeout is to help with timing animations
+                        setTimeout(() => {
+
+                            swooshIn.play()
+                            changeStatesElement.innerHTML = setupTableButton;
+                            removeNodesForPlaying();
+                            playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
+                            playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+                            fetch.clearRuntimeFunctions();
+                            gameShellContainerElement.classList = gameShellSlideLeftClass;
+                            setup = null;
+
+                        }, 900);
+
+                    }
+
+                    // check if we are connected to a game to tell if we should play singleplayer or multiplayer
+                    let isPlayerConnected = fetch.getConnectedState();
+
+                    // we will wait for the other player to be finished and join those games together
+                    if (isPlayerConnected){
+                        runWhileReadyOrChange(() => runOnReadyToPlay());
+                    }
+
+                    // otherwise we will play singleplayer with the ai and remove ourselves from searching for a game
+                    if (!isPlayerConnected){
+                        fetch.disconnectFromGame();
+                        runOnReadyToPlay();
+                        fetch.setReadyState(false);
+                    }
 
                 }
+
             }
 
             // set the game to the setup phase

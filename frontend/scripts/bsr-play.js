@@ -67,6 +67,7 @@ class BsrPlay {
             // for now use original player to get a modifiable pieces count for multiplayer use
             this.#lastEnemyPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
             this.#fetchMethods.setReadyState(false);
+            this.#fetchMethods.setupInitialGame(this.#playerPiecesData);
         }
         else {
             this.#isPlayingAgainstAi = true;

@@ -190,7 +190,7 @@
         const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
 
         // run this until we are ready for a game to start or pieces count has changed
-        function runWhileReadyOrChange(thisFunc = function(){}){
+        function runWhilePlayerReadyOrChange(thisFunc = function(){}){
             let isPlayerConnected = fetch.getConnectedState();
             let isPlayerReady = fetch.getReadyState();
             let isPossibleToStart = fetch.getStartState();
@@ -218,9 +218,9 @@
 
                     // if pieces count has changed (we have to undo our ready state)
                     if (piecesSetCount){
-                        console.log("player changed a piece, reset button");
-                        fetch.setReadyState(false);
                         changeStatesElement.innerHTML = playerTableButton;
+                        fetch.setReadyState(false);
+                        //console.log("player changed a piece, reset button");
                     }
 
                     // if pieces count shows no placeable pieces left
@@ -228,6 +228,7 @@
 
                         // if it is possible to start the game then start the game
                         if (isPossibleToStart){
+                            swooshOut.play();
                             thisFunc();
                         }
 
@@ -235,7 +236,7 @@
                         if (!isPossibleToStart){
                             changeStatesElement.innerHTML = playerTableButtonOnWait;
                             setTimeout(() => {
-                                runWhileReadyOrChange(thisFunc);
+                                runWhilePlayerReadyOrChange(thisFunc);
                             }, 500);
 
                         }
@@ -275,7 +276,6 @@
                 // if there are no more placeable pieces left to be placed
                 if (!placeablePiecesCount){
                     
-                    swooshOut.play();
                     fetch.setReadyState(true);
 
                     // run this when we are actively ready to play the game
@@ -305,14 +305,14 @@
 
                     // we will wait for the other player to be finished and join those games together
                     if (isPlayerConnected){
-                        runWhileReadyOrChange(() => runOnReadyToPlay());
+                        runWhilePlayerReadyOrChange(() => runOnReadyToPlay());
                     }
 
                     // otherwise we will play singleplayer with the ai and remove ourselves from searching for a game
                     if (!isPlayerConnected){
+                        swooshOut.play();
                         fetch.disconnectFromGame();
                         runOnReadyToPlay();
-                        fetch.setReadyState(false);
                     }
 
                 }

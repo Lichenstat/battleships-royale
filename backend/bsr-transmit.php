@@ -99,19 +99,63 @@
     }
 
     // set all the neccessary pieces up to start and play the game
-    if(isset($_POST["setupGame"])){
-        echo " Got to setting up game - ";
-        $code = json_decode($_POST["setupGame"]);
+    if(isset($_POST["initializeGame"])){
+        //echo " Got to initializing the game up game - ";
+
+        $code = json_decode($_POST["initializeGame"]);
         $gameCode = $code -> gameCode;
-        echo BsrDatabaseMethods::setGamePlayingCode($gameCode);
+        $bsrPiecesData = $code -> bsrPiecesData;
+
+        //echo print_r($bsrPiecesData);
+
+        // set all of our initial data for the game
+        BsrDatabaseMethods::setGamePlayingCode($gameCode);
+        BsrDatabaseMethods::setInitialGameData($gameCode, $bsrPiecesData);
+        BsrDatabaseMethods::setPlayerHasUpdated($gameCode);
+        BsrDatabaseMethods::setWhoPreviouslyMoved($gameCode);
+        
+        // check if both players have initialized
+        $canUpdate = BsrDatabaseMethods::checkIfBothPlayersAreInitialized($gameCode);
+
+        // and if they have set both players to be able to update to get first move
+        if ($canUpdate){
+            BsrDatabaseMethods::setBothPlayersToUpdate($gameCode);
+        }
+
+        // return the players turn number (they will be able to move that turn)
+        $number -> playerNumber = BsrDatabaseMethods::getPlayersTurnNumber($gameCode);
+        $number = json_encode($number);
+        echo $number;
+
+    }
+
+    // check for a game update of some kind and return game information (if the player is allowed to update that is)
+    if(isset($_POST["checkForUpdate"])){
+        echo " Got to checking for an update - ";
+
+        $code = json_decode($_POST["checkForUpdate"]);
+        $gameCode = $code -> gameCode;
+
+    }
+
+    // set all the neccessary pieces up to start and play the game
+    if(isset($_POST["playerMove"])){
+        echo " Got to using a players move - ";
+
+        $code = json_decode($_POST["playerMove"]);
+        $gameCode = $code -> gameCode;
+
     }
 
     // update the current game for the player that made a move and return the updated game state if necessary
     if(isset($_POST["quitGame"])){
-        echo " Quit game - ";
+        echo " Player quitting game - ";
+
         $code = json_decode($_POST["quitGame"]);
         $gameCode = $code -> gameCode;
+
         BsrDatabaseMethods::removePlayingInfo($gameCode);
+
     }
 
     if(isset($_POST["test"])){
@@ -133,14 +177,15 @@
         //$t = BsrDatabaseMethods::getEnemiesBsrData($gameCode);
         //$t = BsrDatabaseMethods::getWhoPreviouslyMoved($gameCode);
         //$t = BsrDatabaseMethods::getRemovedShips($gameCode);
-        $t = BsrDatabaseMethods::checkGameReadyToStart($gameCode);
+        //$t = BsrDatabaseMethods::checkGameReadyToStart($gameCode);
+        $t = BsrDatabaseMethods::checkIfBothPlayersAreInitialized($gameCode);
         //$t = BsrDatabaseMethods::checkIfGameOver($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerExists($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
         //$t = BsrDatabaseMethods::checkPlayerIsWaitingInGameQueue($gameCode);
-        //echo print_r($t);
+        echo print_r($t);
         
     }
 

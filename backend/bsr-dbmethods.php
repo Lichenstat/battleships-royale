@@ -397,7 +397,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $exists;
 
-            echo " Check players code to see if they exist - ";
+            //echo " Check players code to see if they exist - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -412,13 +412,44 @@
             return $exists;
         }
 
+        // check if both players are currently playing the game
+        public static function checkIfBothPlayersAreInitialized($gameCode = ""){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+            $exists;
+
+            //echo " Checking both players to see if they exist - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // check to see if the current code exists in the game table
+            $query = "SELECT COUNT(*) FROM ".$dbGamePlay -> name." 
+                      WHERE (".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."') 
+                             AND (".$dbGamePlay -> playerColumn." IS NOT NULL AND ".$dbGamePlay -> connectedColumn." IS NOT NULL)
+                             AND (".$dbGamePlay -> playerBsrDataColumn." IS NOT NULL AND ".$dbGamePlay -> connectedBsrDataColumn." IS NOT NULL)";
+            //echo $query;
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+
+            if ($exists){
+                $db = null;
+                return true;
+            }
+            
+            $db = null;
+            return false;
+
+        }
+
         // assign game playing codes once one players codes are recieved
         public static function setGamePlayingCode($gameCode){
             $dbInfo = self::getDatabaseInfo();
             $dbGameSearch = self::getGameSearchTableInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " Setting play codes in playing $gameCode - ";
+            //echo " Setting play codes in playing $gameCode - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -442,7 +473,7 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " Setting as previous move - ";
+            //echo " Setting as previous move - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -450,7 +481,7 @@
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> previousMoveColumn."='".$gameCode."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             
             $db = null;
@@ -514,7 +545,7 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " Setting both sides to update - ";
+            //echo " Setting both sides to update - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -522,7 +553,7 @@
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> playerUpdateColumn."= 1, ".$dbGamePlay -> connectedUpdateColumn."= 1 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             
             $db = null;
@@ -533,7 +564,7 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " One side updated - ";
+            //echo " One side updated - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -541,13 +572,13 @@
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> playerUpdateColumn."= 0 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> connectedUpdateColumn."= 0 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             
             $db = null;
@@ -600,7 +631,7 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " Inserting data into proper locations - ";
+            //echo " Inserting data into proper locations - ";
 
             self::setGamePlayingCode($gameCode);
 
@@ -619,24 +650,25 @@
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> playerBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> playerLocationsColumn."='".$locationsSerialized."', ".$dbGamePlay -> playerShipsColumn."='".$shipsSerialized."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name."  
                       SET ".$dbGamePlay -> connectedBsrDataColumn."='".$bsrPiecesSerialzied."', ".$dbGamePlay -> connectedLocationsColumn."='".$locationsSerialized."', ".$dbGamePlay -> connectedShipsColumn."='".$shipsSerialized."' 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             
             $db = null;
         }
 
-        // return necessary starting game information
-        public static function getInitialGameInfo($gameCode = ""){
+        // return the players turn number for the game (most likely used in initialization)
+        public static function getPlayersTurnNumber($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
             $check;
-            echo " Returning starting information $gameCode - ";
+
+            //echo " Returning starting information $gameCode - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -644,7 +676,7 @@
             $query = "SELECT ".$dbGamePlay -> playerColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $check = $row[0];
             }
@@ -652,14 +684,13 @@
 
             // if the code is from the first slot, return 1
             if ($gameCode == $check){
-                $playerNumber -> number = 1;
-                return $playerNumber;
+                return 1;
             }
 
             $query = "SELECT ".$dbGamePlay -> connectedColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $check = $row[0];
             }
@@ -667,8 +698,7 @@
 
             // if the code is from the second slot, return 2
             if ($gameCode == $check){
-                $playerNumber -> number = 2;
-                return $playerNumber;
+                return 2;
             }
             
             $db = null;
@@ -1027,6 +1057,7 @@
             return $locations;
         }
 
+        /*
         // return information on game update
         public static function getUpdateInformation($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
@@ -1044,6 +1075,7 @@
             
             $db = null;
         }
+        */
 
         //---------------------------------------------------------------------
         // other useful functions not directly related to a specific table

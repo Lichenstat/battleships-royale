@@ -91,6 +91,7 @@ class BsrFetchAbstraction{
     // disconnect from game
     disconnectFromGame(){
         this.#fetch.disconnectFromGame();
+        this.#fetch.setReadyState(false);
     }
 
     // push function to array to run on game update
@@ -231,14 +232,13 @@ class BsrFetchAbstraction{
 
         // if we are connected to a player, simply allow us to disconnect from the player
         if (this.#fetch.getConnectedState()){
-            this.#fetch.setReadyState(false);
             this.#fetch.disconnectFromGame();
+            this.#fetch.setReadyState(false);
         }
 
         // otherwise try and find a game to play in
         else {
             if (!this.#fetch.getWaitingStateOfLobby()){
-
                 let playerCodeCleaned = Helper.removeAllSpacesFromString(playerCode);
                 //console.log(playerCodeCleaned);
                 this.#fetch.searchForPlayer(playerCodeCleaned);

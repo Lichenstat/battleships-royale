@@ -293,6 +293,7 @@
                             playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
                             playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
                             fetch.clearRuntimeFunctions();
+                            fetch.setQuitGameElement(changeStatesElement);
                             gameShellContainerElement.classList = gameShellSlideLeftClass;
                             setup = null;
 

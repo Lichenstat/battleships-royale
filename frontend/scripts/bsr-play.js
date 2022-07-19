@@ -26,8 +26,6 @@ class BsrPlay {
 
     #hasInfoUpdated;
 
-    #sendLocations;
-
     #playerDefaultGridCellId;
 
     #playerGrid;
@@ -45,7 +43,6 @@ class BsrPlay {
     //#setTimer;
 
     #playerTurn;
-    //#gameover;
 
     #initialized;
     #runInitializationFunctions;
@@ -59,37 +56,40 @@ class BsrPlay {
         this.#isPlayingAgainstAi = false;
         this.#aiPlayer = false;
 
+        // the player number set for the game (thier number is their turn)
         this.#playSetupInfo = { playerNumber: 1 }
+
+        // current play info to be updated as game progresses to get various info about the game
         this.#currentPlayInfo = { playerTurn: 1, piecesClicked: [[]], piecesHit: [], pieceName: "", gameover: false, bsrPiecesData: [] }
 
+        // set player last pieces count
         this.#lastPlayerPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
+
+        // if we are playing against another player
         if (this.#fetchMethods.getConnectedState()) {
             // for now use original player to get a modifiable pieces count for multiplayer use
             this.#lastEnemyPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
             this.#fetchMethods.setReadyState(false);
             this.#fetchMethods.setupInitialGame(this.#playerPiecesData);
         }
+
+        // otherwise we are playing against the ai
         else {
             this.#isPlayingAgainstAi = true;
             this.#aiPlayer = new BsrAi();
             this.#currentPlayInfo.bsrPiecesData = this.getOriginalAiPiecesData();
             this.#lastEnemyPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
+            this.#currentPlayInfo = { playerTurn: 1, piecesClicked: [[]], piecesHit: [], pieceName: "", gameover: false, bsrPiecesData: [] }
         }
 
         this.#hasInfoUpdated = false;
-
-        this.#sendLocations = { piecesClicked: [[]] };
-
 
         this.#playerDefaultGridCellId = "bsr__table-cell-(0,0)";
 
         this.#playerGrid = BsrCreateGrids.getPlayerGrid(this.#playerPiecesData);
         this.#buttonGrid = BsrCreateGrids.getButtonGrid();
-        //this.#hitImg = bsrGeneralInfo.hitImage;
-        //this.#missImg = bsrGeneralInfo.missImage;
 
         this.#playerNumber = this.#playSetupInfo.playerNumber;
-        //this.#playingAgainstAi = false;
 
         this.#buttonParentId = "";
         this.#buttonLocation = [this.#currentPlayInfo.piecesClicked];
@@ -98,7 +98,6 @@ class BsrPlay {
         //this.#setTimer = 1000; // 1000 = 1 sec
 
         this.#playerTurn = true;
-        //this.#gameover = this.#currentPlayInfo.gameover;
 
         //------------------------------------------------
 
@@ -242,13 +241,6 @@ class BsrPlay {
             }
         }
     }
-
-    //// check if there is a winner as of yet
-    //#checkIfWinner(){
-    //    if(this.#currentPlayInfo.gameover){
-    //        
-    //    }
-    //}
 
     // set outside functions to run on initialization
     setOutsideFunctionsToRunOnInitialization(func = function () { }) {

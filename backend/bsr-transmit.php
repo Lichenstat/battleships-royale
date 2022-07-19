@@ -136,14 +136,35 @@
         $code = json_decode($_POST["checkForUpdate"]);
         $gameCode = $code -> gameCode;
 
+        $canUpdate = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
+
+        // if we can update as the player
+        if ($canUpdate){
+
+            $updateItems;
+
+            BsrDatabaseMethods::setPlayerHasUpdated($gameCode);
+
+        }
+
     }
 
-    // set all the neccessary pieces up to start and play the game
+    // set the players move choice if it is their turn
     if(isset($_POST["playerMove"])){
         echo " Got to using a players move - ";
 
         $code = json_decode($_POST["playerMove"]);
         $gameCode = $code -> gameCode;
+
+        $canMove = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
+
+        // if our player can make a move (they wern't the last player to move)
+        if ($canMove){
+
+
+            BsrDatabaseMethods::setBothPlayersToUpdate($gameCode);
+
+        }
 
     }
 
@@ -154,7 +175,10 @@
         $code = json_decode($_POST["quitGame"]);
         $gameCode = $code -> gameCode;
 
+        // set/remove quitting info for the game
         BsrDatabaseMethods::removePlayingInfo($gameCode);
+        BsrDatabaseMethods::setWhoPreviouslyMoved($gameCode);
+        BsrDatabaseMethods::setBothPlayersToUpdate($gameCode);
 
     }
 

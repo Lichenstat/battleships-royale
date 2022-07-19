@@ -371,21 +371,28 @@
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
-            echo " Quit game, removing game info $gameCode - ";
+            //echo " Quit game, removing game info $gameCode - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
+            // remove temporary turn information from the table
+            $query = "UPDATE ".$dbGamePlay -> name." 
+                      SET ".$dbGamePlay -> locationUpdateColumn."=NULL, ".$dbGamePlay -> locationHitColumn."=NULL, ".$dbGamePlay -> shipRemovedColumn."=NULL 
+                      WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+            //echo $query;
+            $db -> query($query);
+
             // update the game playing table info using the quitting players id
             $query = "UPDATE ".$dbGamePlay -> name." 
-                      SET ".$dbGamePlay -> playerColumn."=NULL ,".$dbGamePlay -> playerLocationsColumn."=NULL ,".$dbGamePlay -> playerUpdateColumn."=NULL ,".$dbGamePlay -> locationUpdateColumn."=NULL 
+                      SET ".$dbGamePlay -> playerColumn."=NULL ,".$dbGamePlay -> playerLocationsColumn."=NULL ,".$dbGamePlay -> playerUpdateColumn."=NULL 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-                      //echo $query;
+            //echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name." 
-                      SET ".$dbGamePlay -> connectedColumn."=NULL ,".$dbGamePlay -> connectedLocationsColumn."=NULL ,".$dbGamePlay -> connectedUpdateColumn."=NULL ,".$dbGamePlay -> locationUpdateColumn."=NULL 
+                      SET ".$dbGamePlay -> connectedColumn."=NULL ,".$dbGamePlay -> connectedLocationsColumn."=NULL ,".$dbGamePlay -> connectedUpdateColumn."=NULL 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-                      //echo $query;
+            //echo $query;
             $db -> query($query);
         
             $db = null;
@@ -404,6 +411,7 @@
             // check to see if the current code exists in the game table
             $query = "SELECT COUNT(*) FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $exists = $row[0];
             }
@@ -540,7 +548,7 @@
             return false;
         }
 
-        // set both players to update their moves
+        // set both players to allow updating thier game (set to 1)
         public static function setBothPlayersToUpdate($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();

@@ -16,6 +16,7 @@ class BsrFetchAbstraction{
     #gameCodeContainerElement;
     #gameCodeSearchElement;
     #gameReadyElement;
+    #quitGameElement;
 
     #gameReadyElementPrevious;
 
@@ -36,6 +37,7 @@ class BsrFetchAbstraction{
         this.#gameCodeContainerElement;
         this.#gameCodeSearchElement;
         this.#gameReadyElement;
+        this.#quitGameElement;
 
         // game ready element previous state
         this.#gameReadyElementPrevious;
@@ -130,6 +132,22 @@ class BsrFetchAbstraction{
     setGameReadyElement(gameReadyElement){
         this.#gameReadyElementPrevious = gameReadyElement;
         this.#gameReadyElement = gameReadyElement;
+    }
+
+    // set the quitting element of the game being played
+    setQuitGameElement(quitGameElement){
+        
+        this.#quitGameElement = quitGameElement.children[0];
+        let quitGame = quitGameElement.children[0];
+
+        quitGame.addEventListener("click", elemItem => {
+            let isConnected = this.#fetch.getConnectedState();
+
+            if (isConnected){
+                this.#fetch.quitCurrentGame();
+            }
+
+        })
     }
 
     // update the game info about fetch connections

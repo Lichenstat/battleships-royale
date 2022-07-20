@@ -142,10 +142,12 @@ class BsrFetchMethods{
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod(this.#transmitURL, request, "json")
         .then(data => {
+
             //console.log(data);
             this.#connectedState = data.connectedState;
             this.#waitingOnOtherState = data.waitingOnOtherState;
             this.#startState = data.startState;
+
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
@@ -166,34 +168,52 @@ class BsrFetchMethods{
     // methods that are used to initialize the game and interact with eachother
 
     // initialize the game that the player just started using thier ship placements
-    setupInitialGame(bsrPiecesData = new BsrPiecesData()){
+    setupInitialGame(bsrPiecesData = new BsrPiecesData(), setupInfo){
         let serverData = BsrPlayParse.parseDataForServerFormat(bsrPiecesData);
         let bodyContent = {gameCode : this.#playerGameCode, bsrPiecesData : serverData};
         let bodyName = "initializeGame";
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod(this.#transmitURL, request, "json")
         .then(data => {
-            console.log(data);
+            //console.log(data);
+
+            setupInfo.playerNumber = data.playerNumber;
+            
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
 
+    // { playerTurn: 1, piecesClicked: [[]], piecesHit: [], pieceName: "", gameover: false, bsrPiecesData: [] }
     // check the game for update information
-    checkUpdateInformation(){
+    checkUpdateInformation(currentPlayInfo = {}, setInfoUpdated = {}){
         let bodyContent = {gameCode : this.#playerGameCode};
         let bodyName = "checkForUpdate";
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
-        this.#fetch.fetchMethod(this.#transmitURL, request, "text")
+        this.#fetch.fetchMethod(this.#transmitURL, request, "json")
         .then(data => {
             //console.log(data);
+
+            // assign parts of the current play info
+            currentPlayInfo.playerTurn = data.playerTurn;
+            currentPlayInfo.piecesClicked = [BsrPlayParse.normalizeLocationPieceToGrid(data.piecesClicked[0])];
+            currentPlayInfo.piecesHit = data.piecesHit;
+            currentPlayInfo.pieceName = data.pieceName;
+            currentPlayInfo.gameover = data.gameover;
+            if (data.bsrPiecesData.length > 0){
+                currentPlayInfo.bsrPiecesData = BsrPlayParse.parseDataForClientFormat(data.bsrPiecesData);
+            }
+
+            // set that our info has updated
+            setInfoUpdated.updated = true;
+
         })
-        .catch(error => console.log(`fetch error: ${error}`)); 
+        .catch(error => {} /*console.log(`fetch error: ${error}`)*/); 
     }
 
     // send the current players move to the server
-    playerMove(locations){
+    playerMove(locations  = []){
         let serverData = BsrPlayParse.convertLocationPieceToRawLocation(locations);
-        let bodyContent = {gameCode : this.#playerGameCode, bsrPiecesData : serverData};
+        let bodyContent = {gameCode : this.#playerGameCode, locations : [serverData]};
         let bodyName = "playerMove";
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
         this.#fetch.fetchMethod(this.#transmitURL, request, "text")
@@ -222,11 +242,13 @@ class BsrFetchMethods{
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
         let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "test", bodyItems);
-        fetchMethod.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "text")
+        fetchMethod.fetchMethod(this.#transmitURL, request, "text")
         .then(data => {
+
             //let ndat = JSON.parse(data)
             console.log(data);
             //this.#playerGameCode = ndat;
+            
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }

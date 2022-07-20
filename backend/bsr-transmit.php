@@ -131,37 +131,69 @@
 
     // check for a game update of some kind and return game information (if the player is allowed to update that is)
     if(isset($_POST["checkForUpdate"])){
-        echo " Got to checking for an update - ";
+        //echo " Got to checking for an update - ";
+
+        //error_reporting(E_ALL);
+        //ini_set("display_errors","On");
 
         $code = json_decode($_POST["checkForUpdate"]);
         $gameCode = $code -> gameCode;
 
         $canUpdate = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
-
+        
         // if we can update as the player
         if ($canUpdate){
 
+            // { playerTurn: 1, piecesClicked: [[]], piecesHit: [], pieceName: "", gameover: false, bsrPiecesData: [] }
+            // get the update items for a game update for players clientside
             $updateItems;
+            $updateItems -> playerTurn = BsrDatabaseMethods::getCurrentTurn($gameCode);
+            $locations = BsrDatabaseMethods::getAttackedLocationsWithHits($gameCode);
+            $updateItems -> piecesClicked = [$locations -> locations];
+            $updateItems -> piecesHit = $locations -> hits;
+            $updateItems -> pieceName = BsrDatabaseMethods::getRemovedShips($gameCode)[0];
+            $isGameOver = BsrDatabaseMethods::checkIfGameOver($gameCode);
+            $updateItems -> gameover = $isGameOver;
+            
+            // if the game is over, get the players bsr data
+            if ($isGameOver){
+                $updateItems -> bsrPiecesData = BsrDatabaseMethods::getEnemiesBsrData($gameCode);
+            }
 
+            // otherwise the bsr data is empty
+            else{
+                $updateItems -> bsrPiecesData = [];
+            }
+
+            // set our player as updated
             BsrDatabaseMethods::setPlayerHasUpdated($gameCode);
 
-        }
+            // echo our updated items
+            $updateItems = json_encode($updateItems);
+            echo $updateItems;
 
+        }
+        
     }
 
     // set the players move choice if it is their turn
     if(isset($_POST["playerMove"])){
-        echo " Got to using a players move - ";
+        //echo " Got to using a players move - ";
 
         $code = json_decode($_POST["playerMove"]);
         $gameCode = $code -> gameCode;
+        $locations = $code -> locations;
 
         $canMove = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
 
         // if our player can make a move (they wern't the last player to move)
         if ($canMove){
 
+            // update our locations played and our ship locations that got hit 
+            BsrDatabaseMethods::updateLocationsPlayed($gameCode, $locations);
+            BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
 
+            // allow both players to update after this
             BsrDatabaseMethods::setBothPlayersToUpdate($gameCode);
 
         }
@@ -170,15 +202,17 @@
 
     // update the current game for the player that made a move and return the updated game state if necessary
     if(isset($_POST["quitGame"])){
-        echo " Player quitting game - ";
+        //echo " Player quitting game - ";
 
         $code = json_decode($_POST["quitGame"]);
         $gameCode = $code -> gameCode;
 
-        // set/remove quitting info for the game
-        BsrDatabaseMethods::removePlayingInfo($gameCode);
-        BsrDatabaseMethods::setWhoPreviouslyMoved($gameCode);
+        // set both players to update
         BsrDatabaseMethods::setBothPlayersToUpdate($gameCode);
+
+        // set/remove quitting info for the players game
+        BsrDatabaseMethods::setWhoPreviouslyMoved($gameCode);
+        BsrDatabaseMethods::removePlayingInfo($gameCode);
 
     }
 

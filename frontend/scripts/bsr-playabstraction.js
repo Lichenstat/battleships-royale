@@ -16,6 +16,7 @@ class BsrPlayAbstraction{
     #textInfoElement;
     #playerShipInfoElement;
     #enemyShipInfoElement;
+    #quitElement;
 
     #playerPushAudio;
     #enemyPushAudio;
@@ -36,6 +37,7 @@ class BsrPlayAbstraction{
         this.#textInfoElement;
         this.#playerShipInfoElement;
         this.#enemyShipInfoElement;
+        this.#quitElement;
 
         // audio for various interactions
         this.#playerPushAudio = new Audio(bsrAudio.playerPush);
@@ -210,11 +212,20 @@ class BsrPlayAbstraction{
         })
     }
 
+    // set the quitting element to stop play from updating over and over
+    setQuitElement(quitElement){
+        this.#quitElement = quitElement.children[0];
+        quitElement.addEventListener("click", () => {
+            this.#play.clearRuntimeInterval();
+        })
+    }
+
     // quick way to setup all the various game elements
-    initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement){
+    initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement, quitElement){
         this.loadPlayingGrids(gridContainerElement);
         this.setEventListenersOfGridButtons();
         this.setUpdatePlayerInfo(textInfoElement, playerShipInfoElement, enemyShipInfoElement);
+        this.setQuitElement(quitElement);
 
         // set functions to run during overall play runtime
         //this.#play.setOutsideFunctionsToRunOnInitialization(() => this.updateTextInfo(this.#textInfoElement));

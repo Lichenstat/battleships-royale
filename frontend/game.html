@@ -287,15 +287,20 @@
                         // timeout is to help with timing animations
                         setTimeout(() => {
 
-                            swooshIn.play()
-                            changeStatesElement.innerHTML = setupTableButton;
-                            removeNodesForPlaying();
-                            playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
-                            playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
-                            fetch.clearRuntimeFunctions();
-                            fetch.setQuitGameElement(changeStatesElement);
-                            gameShellContainerElement.classList = gameShellSlideLeftClass;
-                            setup = null;
+                            // check if setup exists so that we can start our game properly
+                            if (setup != null){
+
+                                swooshIn.play()
+                                changeStatesElement.innerHTML = setupTableButton;
+                                removeNodesForPlaying();
+                                playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
+                                playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
+                                fetch.clearRuntimeFunctions();
+                                fetch.setQuitGameElement(changeStatesElement);
+                                gameShellContainerElement.classList = gameShellSlideLeftClass;
+                                setup = null;   
+
+                            }
 
                         }, 900);
 

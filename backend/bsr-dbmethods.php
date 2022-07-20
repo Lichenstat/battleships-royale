@@ -501,7 +501,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $previousMove;
 
-            echo " Getting the previous move - ";
+            //echo " Getting the previous move - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -509,7 +509,7 @@
             $query = "SELECT ".$dbGamePlay -> previousMoveColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $previousMove = $row[0];
             }
@@ -598,7 +598,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $canUpdate;
 
-            echo " Can our player update - ";
+            //echo " Can our player update - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
 
@@ -606,7 +606,7 @@
             $query = "SELECT ".$dbGamePlay -> playerUpdateColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $canUpdate = $row[0];
             }
@@ -620,7 +620,7 @@
             $query = "SELECT ".$dbGamePlay -> connectedUpdateColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $canUpdate = $row[0];
             }
@@ -713,7 +713,7 @@
         }
         
         // set the last ship location used in the table (works for single locations atm)
-        public static function updateShipLocationsPlayed($gameCode = "", $locations = ""){
+        public static function updateLocationsPlayed($gameCode = "", $locations = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
@@ -741,7 +741,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $locations;
 
-            echo " Getting ship locations $location - ";
+            //echo " Getting ship locations $location - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -749,7 +749,7 @@
             $query = "SELECT ".$dbGamePlay -> connectedLocationsColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             foreach($db -> query($query) as $row){
                 $locations = $row[0];
@@ -765,7 +765,7 @@
             $query = "SELECT ".$dbGamePlay -> playerLocationsColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             foreach($db -> query($query) as $row){
                 $locations = $row[0];
@@ -785,7 +785,7 @@
                $dbGamePlay = self::getPlayingTableInfo();
             $locations;
 
-            echo " Getting ship locations $location - ";
+            //echo " Getting ship locations $location - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -793,7 +793,7 @@
             $query = "SELECT ".$dbGamePlay -> connectedShipsColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             foreach($db -> query($query) as $row){
                 $locations = $row[0];
@@ -809,7 +809,7 @@
             $query = "SELECT ".$dbGamePlay -> playerShipsColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             foreach($db -> query($query) as $row){
                 $locations = $row[0];
@@ -828,7 +828,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $locations;
             
-            echo " Getting both ship locations - ";
+            //echo " Getting both ship locations - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -836,7 +836,7 @@
             $query = "SELECT ".$dbGamePlay -> connectedLocationsColumn.", ".$dbGamePlay -> playerLocationsColumn." 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             foreach($db -> query($query) as $row){
                 $locations -> player = unserialize($row[0]);
@@ -854,7 +854,7 @@
             $shipsRemoved = [];
             $newUpdateShips = [];
             
-            echo " Updating ship location - ";
+            //echo " Updating ship location and hit - ";
             
             // remove locations from enemy player and reserialize
             $updateLocations = self::getShipLocationsOfEnemyPlayer($gameCode);
@@ -868,28 +868,38 @@
 
             // check and remove necessary ships with locations pieces
             for ($i = 0; $i < $shipsLength; $i++){
+                
                 $ship = $updateShips -> ships[$i];
                 $shipLocations = $updateShips -> locations[$i];
                 $locationsLength = count($locations);
+                
                 // check if piece has changed in size and if it has no length left (empty) remove ship from array
                 for ($j = 0; $j < $locationsLength; $j++){
+                    
                     $check = Helper::removeArraysFromMultidimentionalArray($locations, $shipLocations);
                     $newUpdateShips -> locations[$i] = $check;
                     $checkSize = count($check);
+                    
                     // if our pieces locations are empty, unset the locations and name and set the name of the piece as a removed piece
                     if (!$checkSize){
+                        
                         $shipsSank[] = $ship;
                         unset($newUpdateShips -> locations[$i]);
                         $shipsRemoved[] = ($newUpdateShips -> ships[$i]);
                         $shipsRemoved = array_values($shipsRemoved);
                         unset($newUpdateShips -> ships[$i]);
+
                     }
+
                 }
+
                 // reindex arrays
                 $newUpdateShips -> locations = array_values($newUpdateShips -> locations);
                 $newUpdateShips -> ships = array_values($newUpdateShips -> ships);
+
             }       
 
+            // serialize our info
             $updateHits = serialize($updateLocations -> bools);
             $updateLocations = serialize($updateLocations -> array);
             $updateShips = serialize($newUpdateShips);
@@ -901,20 +911,20 @@
             $query = "UPDATE ".$dbGamePlay -> name." 
                       SET ".$dbGamePlay -> connectedLocationsColumn."='".$updateLocations."' ,".$dbGamePlay -> connectedShipsColumn."='".$updateShips."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
 
             $query = "UPDATE ".$dbGamePlay -> name." 
                       SET ".$dbGamePlay -> playerLocationsColumn."='".$updateLocations."' ,".$dbGamePlay -> playerShipsColumn."='".$updateShips."' 
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
 
             // set location hit with removed ships
             $query = "UPDATE ".$dbGamePlay -> name." 
                       SET ".$dbGamePlay -> locationHitColumn."='".$updateHits."' , ".$dbGamePlay -> shipRemovedColumn."='".$shipsRemoved."' 
                       WHERE ".$dbGamePlay -> playerColumn."='".$gameCode."' OR ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
-            echo $query;
+            //echo $query;
             $db -> query($query);
             
             $db = null;
@@ -926,7 +936,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $removed;
 
-            echo " Getting removed (sank) ships - ";
+            //echo " Getting removed (sank) ships - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -948,10 +958,11 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $gameOver;
 
-            echo " Checking if the game is over or not - ";
+            //echo " Checking if the game is over or not - ";
 
             $shipLocations = self::getShipLocationsOfBothPlayers($gameCode);
 
+            // if either ship locations of player or connected are empty, the game must be over
             if (empty($shipLocations -> player) || empty($shipLocations -> connected)){
                 return true;
             }
@@ -965,7 +976,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $bsr;
 
-            echo " Get the enemies bsr data to return - ";
+            //echo " Get the enemies bsr data to return - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -998,13 +1009,13 @@
             $db = null;
         }
 
-        // get whos turn it is during the game
+        // get whos turn it is during the game (works for 2 people for now)
         public static function getCurrentTurn($gameCode = ""){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
             $currentTurn;
 
-            echo " Get whos turn it is - ";
+            //echo " Get whos turn it is - ";
 
             $previousMove = self::getWhoPreviouslyMoved($gameCode);
 
@@ -1014,7 +1025,7 @@
             $query = "SELECT COUNT(*) 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> previousMoveColumn."='".$previousMove."' AND ".$dbGamePlay -> playerColumn."='".$previousMove."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $currentTurn = $row[0];
             }
@@ -1028,7 +1039,7 @@
             $query = "SELECT COUNT(*) 
                       FROM ".$dbGamePlay -> name." 
                       WHERE ".$dbGamePlay -> previousMoveColumn."='".$previousMove."' AND ".$dbGamePlay -> connectedColumn."='".$previousMove."' LIMIT 1";
-            echo $query;
+            //echo $query;
             foreach($db -> query($query) as $row){
                 $currentTurn = $row[0];
             }
@@ -1048,7 +1059,7 @@
             $dbGamePlay = self::getPlayingTableInfo();
             $locations;
 
-            echo " Getting attacked locations from table - ";
+            //echo " Getting attacked locations from table - ";
 
             $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
             
@@ -1065,28 +1076,10 @@
             return $locations;
         }
 
-        /*
-        // return information on game update
-        public static function getUpdateInformation($gameCode = ""){
-            $dbInfo = self::getDatabaseInfo();
-            $dbGamePlay = self::getPlayingTableInfo();
-
-            echo " Returning necessary update information - ";
-
-            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
-            
-            // check to see if the current code exists in the game table
-            $query = "";
-            foreach($db -> query($query) as $row){
-                $exists = $row[0];
-            }
-            
-            $db = null;
-        }
-        */
-
         //---------------------------------------------------------------------
         // other useful functions not directly related to a specific table
+
+
         public static function cleanupTables(){
 
         }     

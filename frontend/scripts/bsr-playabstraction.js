@@ -32,6 +32,12 @@ class BsrPlayAbstraction{
         // need new bsr play setup
         this.#play = new BsrPlay(bsrPlayerPiecesData, fetchMethods);
 
+        // set functions to run during overall play runtime
+        //this.#play.setOutsideFunctionsToRunOnInitialization(() => this.updateTextInfo(this.#textInfoElement));
+        this.#play.setOutsideFunctionsToRunOnPlayRuntime(() => this.setChosenPiecesOutcome());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.setGameoverImages());
+        this.#play.setOutsideFunctionToRunOnWin(() => this.updateTextInfo(this.#textInfoElement));
+
         // for updating parts in game
         this.#gridContainerElement;
         this.#textInfoElement;
@@ -47,6 +53,7 @@ class BsrPlayAbstraction{
         this.#sunkAudio = new Audio(bsrAudio.sunk);
         this.#winAudio = new Audio(bsrAudio.win);
         this.#loseAudio = new Audio(bsrAudio.lose);
+
     }
 
     // load the player grid with all the pieces in some element(s)
@@ -64,6 +71,7 @@ class BsrPlayAbstraction{
     // set the event handler for grid buttons being pushed disabling them
     #setButtonsPushDisabled(){
         let pieces = this.#play.getDisabledPushButtons();
+        //console.log(pieces);
         if(pieces && this.#play.checkIfPlayerTurn()){
             let allButtonsSize = Object.keys(pieces).length;
             for (let i = 0; i < allButtonsSize; i++){
@@ -75,65 +83,157 @@ class BsrPlayAbstraction{
         }
     }
 
+    // check if a given grid clicked piece can exist or not from the current clicked piece updated
+    // (checks if returned clicked grid piece is NaN), used for multiplayer purposes
+    #checkIfPieceCanBePlayed(){
+
+        let currentPlayInfo = this.#play.getCurrentPlayInfo();
+        let isNanPiece = Number.isNaN(currentPlayInfo.piecesClicked[0][0]);
+        
+        if (isNanPiece){
+            return false;
+        }
+
+        return true;
+
+    }
+
     // update certain things on a chosen pieces outcome
     #chosenPieceOutcomeUpdates(){
+
         let currentPlayInfo = this.#play.getCurrentPlayInfo();
+
         // update our text info
         if (this.#textInfoElement){
             this.updateTextInfo(this.#textInfoElement);
         }
-        // update the proper ship information if it exists
-        if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
-            this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
-            this.#playerPushAudio.play();
+
+        if (this.#checkIfPieceCanBePlayed()){
+
+            let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
+
+            if (playingAgainstAi){
+
+                // update the proper ship information if it exists
+                if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
+                    this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
+                    this.#playerPushAudio.play();
+                }
+                if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
+                    this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
+                    this.#enemyPushAudio.play();
+                }
+
+            }
+
+            if (!playingAgainstAi){
+
+                // update the proper ship information if it exists
+                if (this.#playerShipInfoElement && this.#play.checkIfPlayerTurn()){
+                    this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
+                    this.#playerPushAudio.play();
+                }
+                if (this.#enemyShipInfoElement && !this.#play.checkIfPlayerTurn()){
+                    this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
+                    this.#enemyPushAudio.play();
+                }
+
+            }
+
+    
+            // check if we hit or missed a piece to play proper audio
+            let checkHit = Helper.checkIfValueIsInArray(true, currentPlayInfo.piecesHit);
+            if (checkHit){
+                this.#hitAudio.play();
+            }
+            if (!checkHit){
+                this.#missAudio.play();
+            }
+    
+            // check if we have suken 1 or more ships
+            if (currentPlayInfo.pieceName){
+                this.#sunkAudio.play();
+            }
+
         }
-        if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
-            this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
-            this.#enemyPushAudio.play();
-        }
-        // check if we hit or missed a piece to play proper audio
-        let checkHit = Helper.checkIfValueIsInArray(true, currentPlayInfo.piecesHit);
-        if (checkHit){
-            this.#hitAudio.play();
-        }
-        if (!checkHit){
-            this.#missAudio.play();
-        }
-        // check if we have suken 1 or more ships
-        if (currentPlayInfo.pieceName){
-            this.#sunkAudio.play();
-        }
+
     }
 
     // set pieces after they have been checked and sent back after ai/server updates
     setChosenPiecesOutcome(){
+
         //console.log('ran pieces outcome');
         this.#chosenPieceOutcomeUpdates();
-        let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
-        let currentTurn = this.#play.getCurrentPlayInfo().playerTurn;
-        let playerTurn = this.#play.getPlayerNumber();
-        //console.log(pieces);
-        let ids = pieces.ids;
-        let srcs = pieces.imageSrcs;
-        let length = ids.length;
-        for (let i = 0; i < length; i++){
-            let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
-            //console.log(allSameCellIds);
-            // the programming only works for 2 players at the moment, will have to change if more players
-            // playing at once is desired
-            // other players grid
-            if(currentTurn == playerTurn){
-                let images = allSameCellIds[1].children[0].innerHTML;
-                allSameCellIds[1].innerHTML = images;
-                allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
-                allSameCellIds[1].children[1].src = srcs[i];
+
+        if (this.#checkIfPieceCanBePlayed()){
+
+            let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
+            let currentPlayInfo = this.#play.getCurrentPlayInfo();
+            let currentTurn = currentPlayInfo.playerTurn;
+            let playerTurn = this.#play.getPlayerNumber();
+            let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
+            //console.log(pieces);
+            let ids = pieces.ids;
+            let srcs = pieces.imageSrcs;
+            let length = ids.length;
+            for (let i = 0; i < length; i++){
+
+                let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
+                //console.log(allSameCellIds);
+
+                // the programming only works for 2 players at the moment, will have to change if more players
+                // playing at once is desired
+
+                // if we are playing against the ai
+                if (playingAgainstAi){
+
+                    // other players grid
+                    if(currentTurn == playerTurn){
+
+                        let images = allSameCellIds[1].children[0].innerHTML;
+                        allSameCellIds[1].innerHTML = images;
+                        allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
+                        allSameCellIds[1].children[1].src = srcs[i];
+    
+                    }
+    
+                    // client player grid
+                    if(currentTurn != playerTurn){
+    
+                        allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
+                        allSameCellIds[0].children[0].children[1].src = srcs[i]
+    
+                    }
+
+                }
+
+                // if we are playing against another player
+                if (!playingAgainstAi){
+
+                    // other players grid
+                    if(currentTurn == playerTurn){
+
+                        allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
+                        allSameCellIds[0].children[0].children[1].src = srcs[i];
+    
+                    }
+    
+                    // client player grid
+                    if(currentTurn != playerTurn){
+
+                        let images = allSameCellIds[1].children[0].innerHTML;
+                        allSameCellIds[1].innerHTML = images;
+                        allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
+                        allSameCellIds[1].children[1].src = srcs[i];
+    
+                    }
+
+                }
+
             }
-            // client player grid
-            if(currentTurn != playerTurn){
-                allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
-                allSameCellIds[0].children[0].children[1].src = srcs[i]
-            }
+
         }
+
     }
 
     // update certain things on gameover
@@ -222,16 +322,12 @@ class BsrPlayAbstraction{
 
     // quick way to setup all the various game elements
     initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement, quitElement){
+        
         this.loadPlayingGrids(gridContainerElement);
         this.setEventListenersOfGridButtons();
         this.setUpdatePlayerInfo(textInfoElement, playerShipInfoElement, enemyShipInfoElement);
         this.setQuitElement(quitElement);
 
-        // set functions to run during overall play runtime
-        //this.#play.setOutsideFunctionsToRunOnInitialization(() => this.updateTextInfo(this.#textInfoElement));
-        this.#play.setOutsideFunctionsToRunOnPlayRuntime(() => this.setChosenPiecesOutcome());
-        this.#play.setOutsideFunctionToRunOnWin(() => this.setGameoverImages());
-        this.#play.setOutsideFunctionToRunOnWin(() => this.updateTextInfo(this.#textInfoElement));
     }
 
   }

@@ -713,7 +713,7 @@
         }
         
         // set the last ship location used in the table (works for single locations atm)
-        public static function updateLocationsPlayed($gameCode = "", $locations = ""){
+        public static function updateLocationsPlayed($gameCode = "", $locations = [[]]){
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 

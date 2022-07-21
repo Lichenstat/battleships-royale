@@ -70,7 +70,8 @@ class BsrPlayParse{
         let tableLength = piecesDataTable.length;
         // go to individual piece and get its internals
         for (let i = 0; i < tableLength; i++){
-            piecesDataTable[i].internals = playPieces.getInternalsOfPiece(piecesDataTable[i].name, piecesDataTable[i].rotation);
+            let pieceInternals = playPieces.getInternalsOfPiece(piecesDataTable[i].name, piecesDataTable[i].rotation);
+            piecesDataTable[i].internals = Object.values(pieceInternals);
             let locaionsLength = piecesDataTable[i].locations.length;
             let newLocations = [];
             // replace current raw locations with normalized grid locations (add the number and letter indexes size onto the location)

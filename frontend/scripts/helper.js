@@ -207,7 +207,7 @@ class Helper{
         return false;
     }
 
-    // check if arrays are equal by position and size
+    // check if arrays are equal by position, content, and size
     static checkIfArraysAreEqual(arrayOne, arrayTwo){
         let arrOne = arrayOne.length;
         let arrTwo = arrayTwo.length;

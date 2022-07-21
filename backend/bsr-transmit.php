@@ -178,11 +178,13 @@
 
     // set the players move choice if it is their turn
     if(isset($_POST["playerMove"])){
-        //echo " Got to using a players move - ";
+        echo " Got to using a players move - ";
 
         $code = json_decode($_POST["playerMove"]);
         $gameCode = $code -> gameCode;
         $locations = $code -> locations;
+
+        echo $locations;
 
         $canMove = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
 
@@ -190,6 +192,7 @@
         if ($canMove){
 
             // update our locations played and our ship locations that got hit 
+            BsrDatabaseMethods::setWhoPreviouslyMoved($gameCode);
             BsrDatabaseMethods::updateLocationsPlayed($gameCode, $locations);
             BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
 
@@ -226,7 +229,7 @@
         //BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
         //BsrDatabaseMethods::joinMatch($gameCode);
         //BsrDatabaseMethods::disconnectFromGame($gameCode);
-        //$t = BsrDatabaseMethods::updateShipLocationsPlayed($gameCode, $locations);
+        $t = BsrDatabaseMethods::updateLocationsPlayed($gameCode, $locations);
         //$t = BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
         //$t = BsrDatabaseMethods::getShipLocationsOfEnemyPlayer($gameCode);
         //$t = BsrDatabaseMethods::getShipLocationsOfBothPlayers($gameCode);
@@ -236,7 +239,7 @@
         //$t = BsrDatabaseMethods::getWhoPreviouslyMoved($gameCode);
         //$t = BsrDatabaseMethods::getRemovedShips($gameCode);
         //$t = BsrDatabaseMethods::checkGameReadyToStart($gameCode);
-        $t = BsrDatabaseMethods::checkIfBothPlayersAreInitialized($gameCode);
+        //$t = BsrDatabaseMethods::checkIfBothPlayersAreInitialized($gameCode);
         //$t = BsrDatabaseMethods::checkIfGameOver($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerExists($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayersConnected($gameCode);

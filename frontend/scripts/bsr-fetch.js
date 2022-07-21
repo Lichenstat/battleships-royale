@@ -211,8 +211,8 @@ class BsrFetchMethods{
     }
 
     // send the current players move to the server
-    playerMove(locations  = []){
-        let serverData = BsrPlayParse.convertLocationPieceToRawLocation(locations);
+    playerMove(locations = []){
+        let serverData = BsrPlayParse.convertLocationPieceToRawLocation(locations[0]);
         let bodyContent = {gameCode : this.#playerGameCode, locations : [serverData]};
         let bodyName = "playerMove";
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
@@ -237,8 +237,8 @@ class BsrFetchMethods{
 
     // test fetch request with various stuffs
     test(){
-        let bodyItems = {gameCode : "14", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
-        //let bodyItems = {gameCode : "14", locations : [[1,3]]};
+        //let bodyItems = {gameCode : "14", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
+        let bodyItems = {gameCode : "df048aa2aa5d8540123e", locations : [[2,10]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
         let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "test", bodyItems);

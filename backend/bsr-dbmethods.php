@@ -394,12 +394,37 @@
                       WHERE ".$dbGamePlay -> connectedColumn."='".$gameCode."'";
             //echo $query;
             $db -> query($query);
+
+            $query = "DELETE FROM ".$dbGamePlay -> name."
+                      WHERE ".$dbGamePlay -> playerColumn." IS NULL AND ".$dbGamePlay -> connectedColumn." IS NULL AND ".$dbGamePlay -> previousMoveColumn."='".$gameCode."'";
+            //echo $query;
+            $db -> query($query);
         
             $db = null;
         }
 
+        // remove last played row by a givne game code if it exists as a previous move code
+        public static function deleteRowViaPreviousMoveCodeUsingGameCode($gameCode = ""){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+
+            //echo " Removing last played player code if necessary - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            $query = "DELETE FROM ".$dbGamePlay -> name."
+                      WHERE ".$dbGamePlay -> previousMoveColumn."='".$gameCode."'";
+            //echo $query;
+            $db -> query($query);
+        
+            $db = null;
+
+        }
+
         // check if the players codes have been inserted into the playing table yet
         public static function checkPlayersCodeIsPlaying($gameCode = ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
             $exists;
@@ -418,6 +443,7 @@
             
             $db = null;
             return $exists;
+
         }
 
         // check if both players are currently playing the game

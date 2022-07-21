@@ -108,6 +108,10 @@
 
         //echo print_r($bsrPiecesData);
 
+        // remove row from previous game code just in case there is still a game
+        // idle with this game code
+        BsrDatabaseMethods::deleteRowViaPreviousMoveCodeUsingGameCode($gameCode);
+
         // set all of our initial data for the game
         BsrDatabaseMethods::setGamePlayingCode($gameCode);
         BsrDatabaseMethods::setInitialGameData($gameCode, $bsrPiecesData);
@@ -229,7 +233,7 @@
         //BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
         //BsrDatabaseMethods::joinMatch($gameCode);
         //BsrDatabaseMethods::disconnectFromGame($gameCode);
-        $t = BsrDatabaseMethods::updateLocationsPlayed($gameCode, $locations);
+        //$t = BsrDatabaseMethods::updateLocationsPlayed($gameCode, $locations);
         //$t = BsrDatabaseMethods::updateShipLocationsAndHits($gameCode, $locations);
         //$t = BsrDatabaseMethods::getShipLocationsOfEnemyPlayer($gameCode);
         //$t = BsrDatabaseMethods::getShipLocationsOfBothPlayers($gameCode);
@@ -246,7 +250,8 @@
         //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
         //$t = BsrDatabaseMethods::checkPlayerIsWaitingInGameQueue($gameCode);
-        echo print_r($t);
+        BsrDatabaseMethods::removePlayingInfo($gameCode);
+        //echo print_r($t);
         
     }
 

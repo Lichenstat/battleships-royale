@@ -70,17 +70,31 @@ class BsrPlayAbstraction{
 
     // set the event handler for grid buttons being pushed disabling them
     #setButtonsPushDisabled(){
-        let pieces = this.#play.getDisabledPushButtons();
-        //console.log(pieces);
-        if(pieces && this.#play.checkIfPlayerTurn()){
-            let allButtonsSize = Object.keys(pieces).length;
-            for (let i = 0; i < allButtonsSize; i++){
-                let key = Object.keys(pieces)[i];
-                let allSameCellIds = document.querySelectorAll("[id='" + key + "']");
-                // coded to work with 2 grids for now, just use second occurence of id
-                allSameCellIds[1].innerHTML = pieces[key];
+
+        // if it is our turn and we have finished the last turn, get disabled buttons
+        let ourTurn = this.#play.checkIfPlayerTurn();
+        let finishedLastTurn = this.#play.checkIfFinishedLastTurn();
+
+        if (ourTurn && finishedLastTurn){
+            let pieces = this.#play.getDisabledPushButtons();
+            //console.log(pieces);
+
+            if(pieces){
+                let allButtonsSize = Object.keys(pieces).length;
+
+                for (let i = 0; i < allButtonsSize; i++){
+
+                    let key = Object.keys(pieces)[i];
+                    let allSameCellIds = document.querySelectorAll("[id='" + key + "']");
+                    // coded to work with 2 grids for now, just use second occurence of id
+                    allSameCellIds[1].innerHTML = pieces[key];
+
+                }
+
             }
+
         }
+
     }
 
     // check if a given grid clicked piece can exist or not from the current clicked piece updated
@@ -110,36 +124,16 @@ class BsrPlayAbstraction{
 
         if (this.#checkIfPieceCanBePlayed()){
 
-            let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
 
-            if (playingAgainstAi){
-
-                // update the proper ship information if it exists
-                if (this.#playerShipInfoElement && !this.#play.checkIfPlayerTurn()){
-                    this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
-                    this.#playerPushAudio.play();
-                }
-                if (this.#enemyShipInfoElement && this.#play.checkIfPlayerTurn()){
-                    this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
-                    this.#enemyPushAudio.play();
-                }
-
+            // update the proper ship information if it exists
+            if (this.#playerShipInfoElement && this.#play.checkIfPlayerTurn()){
+                this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
+                this.#playerPushAudio.play();
             }
-
-            if (!playingAgainstAi){
-
-                // update the proper ship information if it exists
-                if (this.#playerShipInfoElement && this.#play.checkIfPlayerTurn()){
-                    this.updatePlayerInfo(this.#playerShipInfoElement, this.#play.getPlayerPiecesCount());
-                    this.#playerPushAudio.play();
-                }
-                if (this.#enemyShipInfoElement && !this.#play.checkIfPlayerTurn()){
-                    this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
-                    this.#enemyPushAudio.play();
-                }
-
+            if (this.#enemyShipInfoElement && !this.#play.checkIfPlayerTurn()){
+                this.updatePlayerInfo(this.#enemyShipInfoElement, this.#play.getEnemyPiecesCount());
+                this.#enemyPushAudio.play();
             }
-
     
             // check if we hit or missed a piece to play proper audio
             let checkHit = Helper.checkIfValueIsInArray(true, currentPlayInfo.piecesHit);
@@ -169,9 +163,10 @@ class BsrPlayAbstraction{
 
             let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
             let currentPlayInfo = this.#play.getCurrentPlayInfo();
-            let currentTurn = currentPlayInfo.playerTurn;
-            let playerTurn = this.#play.getPlayerNumber();
-            let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
+            //let currentTurn = currentPlayInfo.playerTurn;
+            //let playerTurn = this.#play.getPlayerNumber();
+            let playerTurn = this.#play.checkIfPlayerTurn();
+            //let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
             //console.log(pieces);
             let ids = pieces.ids;
             let srcs = pieces.imageSrcs;
@@ -184,49 +179,21 @@ class BsrPlayAbstraction{
                 // the programming only works for 2 players at the moment, will have to change if more players
                 // playing at once is desired
 
-                // if we are playing against the ai
-                if (playingAgainstAi){
+                // other players grid
+                if(playerTurn) {
 
-                    // other players grid
-                    if(currentTurn == playerTurn){
-
-                        let images = allSameCellIds[1].children[0].innerHTML;
-                        allSameCellIds[1].innerHTML = images;
-                        allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
-                        allSameCellIds[1].children[1].src = srcs[i];
-    
-                    }
-    
-                    // client player grid
-                    if(currentTurn != playerTurn){
-    
-                        allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
-                        allSameCellIds[0].children[0].children[1].src = srcs[i]
-    
-                    }
+                    allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
+                    allSameCellIds[0].children[0].children[1].src = srcs[i];
 
                 }
 
-                // if we are playing against another player
-                if (!playingAgainstAi){
+                // client player grid
+                if(!playerTurn) {
 
-                    // other players grid
-                    if(currentTurn == playerTurn){
-
-                        allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
-                        allSameCellIds[0].children[0].children[1].src = srcs[i];
-    
-                    }
-    
-                    // client player grid
-                    if(currentTurn != playerTurn){
-
-                        let images = allSameCellIds[1].children[0].innerHTML;
-                        allSameCellIds[1].innerHTML = images;
-                        allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
-                        allSameCellIds[1].children[1].src = srcs[i];
-    
-                    }
+                    let images = allSameCellIds[1].children[0].innerHTML;
+                    allSameCellIds[1].innerHTML = images;
+                    allSameCellIds[1].children[1].classList.add("bsr--appear-quick");
+                    allSameCellIds[1].children[1].src = srcs[i];
 
                 }
 
@@ -241,10 +208,13 @@ class BsrPlayAbstraction{
         let currentPlayInfo = this.#play.getCurrentPlayInfo();
         // check if it is gameover and play right audio for such (at the moment this works with 2 players)
         if (currentPlayInfo.gameover){
-            if (currentPlayInfo.playerTurn != this.#play.getPlayerNumber()){
+
+            let turn = this.#play.checkIfPlayerTurn();
+            
+            if (turn){
                 this.#loseAudio.play();
             }
-            if (currentPlayInfo.playerTurn == this.#play.getPlayerNumber()){
+            if (!turn){
                 this.#winAudio.play();
             }
         }
@@ -259,19 +229,26 @@ class BsrPlayAbstraction{
         let srcs = pieces.imageSrcs;
         let length = ids.length;
         for (let i = 0; i < length; i++){
+
             let allSameCellIds = document.querySelectorAll("[id='" + ids[i] + "']");
             //console.log(allSameCellIds);
             // if the button is not disabled (does not have proper image elements for setting up pieces), 
             // create disabled button and put images into cell
             if (allSameCellIds[1].children[0].nodeName == 'BUTTON'){
+
                 allSameCellIds[1].innerHTML = this.#play.getButtonsGrid().getGridButtonDisabled();
                 let images = allSameCellIds[1].children[0].innerHTML;
                 allSameCellIds[1].innerHTML = images;
+
             }
+
             // if our child node is an image (meaning we can put the ship image in the src), use the ship image
             if (allSameCellIds[1].children[0].nodeName == 'IMG'){
+
                 allSameCellIds[1].children[0].src = srcs[i];
+
             }
+            
         }
     }
 

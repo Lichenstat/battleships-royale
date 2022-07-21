@@ -37,7 +37,9 @@ class BsrPlay {
 
     #intervalTimer;
 
-    #playerTurn;
+    #finishedLastTurn;
+    #playerCanUseButtons;
+    #gameOverHasHappened;
 
     #initialized;
     #runInitializationFunctions;
@@ -69,6 +71,7 @@ class BsrPlay {
             this.#lastEnemyPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
             this.#fetchMethods.setReadyState(false);
             this.#fetchMethods.setupInitialGame(this.#playerPiecesData, this.#playSetupInfo);
+            this.#playerCanUseButtons = false;
 
         }
 
@@ -81,6 +84,7 @@ class BsrPlay {
             this.#playSetupInfo = { playerNumber: 1 }
             this.#currentPlayInfo = { playerTurn: 1, piecesClicked: [[]], piecesHit: [], pieceName: "", gameover: false, bsrPiecesData: {} }
             this.#currentPlayInfo.bsrPiecesData = this.getOriginalAiPiecesData();
+            this.#playerCanUseButtons = true;
             
         }
 
@@ -97,7 +101,8 @@ class BsrPlay {
 
         this.#intervalTimer = 1000; // 1000 = 1 sec
 
-        this.#playerTurn = true;
+        this.#finishedLastTurn = true;
+        this.#gameOverHasHappened = false;
 
         //------------------------------------------------
 
@@ -190,6 +195,11 @@ class BsrPlay {
         return false;
     }
 
+    // check if a wole turn has finished or not
+    checkIfFinishedLastTurn(){
+        return this.#finishedLastTurn;
+    }
+
     // check if we are playing agianst ai or not
     checkIfPlayingAgainstAi() {
         return this.#isPlayingAgainstAi;
@@ -231,7 +241,8 @@ class BsrPlay {
     setClickedButtonInfo(button) {
 
         // if its the players turn
-        if (this.#playerTurn) {
+        let ourTurn = this.checkIfPlayerTurn();
+        if (ourTurn && this.#finishedLastTurn && this.#playerCanUseButtons) {
 
             // and our button is not disabled
             if (!button.disabled) {
@@ -241,28 +252,12 @@ class BsrPlay {
                 this.#buttonLocation = [Helper.parseElementIdForMatrixLocation(this.#buttonParentId)];
                 this.#hasButtonUpdated = true;
 
-            }
-
-        }
-
-        // and if we are playing multiplayer, send the clicked button info to the server
-        if (!this.#isPlayingAgainstAi){
-
-            // if its the players turn
-            if (!this.#playerTurn) {
-
-                // and our button is not disabled
-                if (!button.disabled) {
-                    console.log("pushed buttons")
-                    // set button clicked information
-                    this.#buttonParentId = button.parentNode.id;
-                    this.#buttonLocation = [Helper.parseElementIdForMatrixLocation(this.#buttonParentId)];
-                    //console.log(this.#buttonLocation);
-                    this.#hasButtonUpdated = true;
+                // if we are not playing against ai, we are playing aginst player
+                if (!this.#isPlayingAgainstAi){
                     this.#fetchMethods.playerMove(this.#buttonLocation);
-
+                    this.#playerCanUseButtons = false;
                 }
-            
+
             }
 
         }
@@ -313,16 +308,7 @@ class BsrPlay {
                     func();
                 }
             );
-        }
-    }
-
-    // set what turn it is for playing
-    #setPlayerTurnByCurrentPlayInfo() {
-        if (this.#playSetupInfo.playerNumber == this.#currentPlayInfo.playerTurn) {
-            this.#playerTurn = true;
-        }
-        else {
-            this.#playerTurn = false;
+            this.#gameOverHasHappened = true;
         }
     }
 
@@ -405,13 +391,13 @@ class BsrPlay {
         // hit or miss
         let hitMiss = '';
         if (this.#currentPlayInfo.piecesHit[0]) {
-            hitMiss = 'Hit!'
+            hitMiss = 'Hit!';
         }
         if (!this.#currentPlayInfo.piecesHit[0]) {
-            hitMiss = 'Miss...'
+            hitMiss = 'Miss...';
         }
         if (Helper.checkIfArraysAreEqual(this.#currentPlayInfo.piecesClicked[0], [])) {
-            hitMiss = '--------'
+            hitMiss = '--------';
         }
 
         // has piece sunk
@@ -423,32 +409,15 @@ class BsrPlay {
         }
 
         // whos turn is it
-        let turn = this.#currentPlayInfo.playerTurn;
+        let turn = this.checkIfPlayerTurn();
         let turnString = '';
 
-        // playing against ai turn check
-        if (this.#isPlayingAgainstAi){
-
-            if (this.#playerTurn) {
-                turnString = "- Your Turn -";
-            }
-            if (!this.#playerTurn) {
-                turnString = "- Enemy Turn -";
-            }
-
+        if (turn) {
+            turnString = "- Your Turn -";
         }
-
-        // playing against player turn check
-        if (!this.#isPlayingAgainstAi){
-
-            if (turn == this.#playSetupInfo.playerNumber) {
-                turnString = "- Your Turn -";
-            }
-            if (turn != this.#playSetupInfo.playerNumber) {
-                turnString = "- Enemy Turn -";
-            }   
-
-        }
+        if (!turn) {
+            turnString = "- Enemy Turn -";
+        }   
 
         // if we don't have a turn as of yet (most likely waiting for multiplayer server connection)
         if (this.#playSetupInfo.playerNumber == 0) {
@@ -458,10 +427,10 @@ class BsrPlay {
         // is it gameover and who won
         if (this.#currentPlayInfo.gameover) {
             let outcome = '';
-            if (turn == this.#playSetupInfo.playerNumber) {
+            if (!turn) {
                 outcome = "You Win!";
             }
-            if (turn != this.#playSetupInfo.playerNumber) {
+            if (turn) {
                 outcome = "You Lose...";
             }
             //console.log('turn on gameover: ', this.#currentPlayInfo.playerTurn);
@@ -482,10 +451,9 @@ class BsrPlay {
 
     // functions to run on ai "thinking" wait time
     #aiThinkingWaitTimeFunctions = () => {
-        this.#playerTurn = true;
         this.#runOnGameUpdate();
         this.#checkPlayerVsAiGameover();
-        this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
+        this.#finishedLastTurn = true;
     }
 
     // runtime functions/methods to take place if the player is fighting against an ai
@@ -495,7 +463,10 @@ class BsrPlay {
         if (this.#currentPlayInfo.playerTurn == this.#playSetupInfo.playerNumber && !this.#currentPlayInfo.gameover) {
             
             if (this.#hasButtonUpdated) {
-
+                
+                this.#finishedLastTurn = false;
+                this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
+                console.log(this.#currentPlayInfo);
                 //console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
                 this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
@@ -505,10 +476,8 @@ class BsrPlay {
                 //console.log(this.#currentPlayInfo);
                 //this.#setChosenPiecesOutcome();
                 this.#hasButtonUpdated = false;
-                this.#playerTurn = false;
                 this.#runOnGameUpdate();
                 this.#checkPlayerVsAiGameover();
-                this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
             
             }
 
@@ -517,7 +486,9 @@ class BsrPlay {
         // if its the ai's turn
         if (this.#currentPlayInfo.playerTurn != this.#playSetupInfo.playerNumber && !this.#currentPlayInfo.gameover) {
             
+            this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
             //console.log("ai attacked");
+            console.log(this.#currentPlayInfo);
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, this.#currentPlayInfo);
@@ -537,24 +508,28 @@ class BsrPlay {
     #vsPlayerRuntime() {
 
         // if its the players turn
-        if (this.#currentPlayInfo.playerTurn == this.#playSetupInfo.playerNumber && !this.#currentPlayInfo.gameover) {
-            console.log("we are running our turn");
+        if (this.#currentPlayInfo.playerTurn == this.#playSetupInfo.playerNumber) {
+            
+            //console.log("we are running our turn");
             this.#decrementPiecesCount(this.#lastPlayerPiecesCount);
-            this.#playerTurn = false;
+            this.#finishedLastTurn = true;
+            this.#playerCanUseButtons = true;
             this.#runOnGameUpdate();
+            
         }
 
         // if its the opponents turn
-        if (this.#currentPlayInfo.playerTurn != this.#playSetupInfo.playerNumber && !this.#currentPlayInfo.gameover) {
-            console.log("it is running thier turn");
+        if (this.#currentPlayInfo.playerTurn != this.#playSetupInfo.playerNumber) {
+            
+            //console.log("they are running thier turn");
             this.#decrementPiecesCount(this.#lastEnemyPiecesCount);
-            this.#playerTurn= true;
             this.#hasButtonUpdated = false;
+            this.#finishedLastTurn = false;
             this.#runOnGameUpdate();
+
         }
 
         this.#runOnWin();
-        this.#currentPlayInfo.bsrPiecesData
 
     }
 
@@ -565,20 +540,26 @@ class BsrPlay {
             
             // if we are playing aginst the ai, use the ai runtime
             if (this.#isPlayingAgainstAi) {
-                if (this.#playerTurn) {
-                    this.#vsAiRuntime();
-                }
-            }
+                this.#vsAiRuntime();
 
+            }
+            
             // if we are playing against the player, use the player runtime
             if (!this.#isPlayingAgainstAi) {
-                if (this.#hasInfoUpdated.updated){
-                    console.log(this.#playSetupInfo);
-                    console.log(this.#currentPlayInfo);
+                
+                if (this.#hasInfoUpdated.updated && !this.#gameOverHasHappened){
+                    
+                    //console.log(this.#playSetupInfo);
+                    //console.log(this.#currentPlayInfo);
                     this.#hasInfoUpdated.updated = false;
                     this.#vsPlayerRuntime();
+                    
                 }
+                
             }
+
+        //}
+
     }
 
     //-------------------------------------------------------------------------

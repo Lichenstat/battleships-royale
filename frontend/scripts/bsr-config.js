@@ -106,6 +106,11 @@ const bsrAudio = {
     dragOver : "./assets/audio/slight-tap.mp3",
     dragStop : "./assets/audio/button-down.mp3",
 
+    // mostly meant for fetch interactions
+    findGame : "./assets/audio/find-game.mp3",
+    foundGame : "./assets/audio/found-game.mp3",
+    disconnect : "./assets/audio/disconnect.mp3",
+
     // mostly meant for play interactions
     playerPush : "./assets/audio/player-push.mp3",
     enemyPush : "./assets/audio/enemy-push.mp3",

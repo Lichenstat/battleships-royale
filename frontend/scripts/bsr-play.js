@@ -466,7 +466,7 @@ class BsrPlay {
                 
                 this.#finishedLastTurn = false;
                 this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
-                console.log(this.#currentPlayInfo);
+                //console.log(this.#currentPlayInfo);
                 //console.log('player attacked');
                 this.#currentPlayInfo.piecesClicked = this.#buttonLocation;
                 this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
@@ -488,7 +488,7 @@ class BsrPlay {
             
             this.#currentPlayInfo = BsrPlayerAiInteractions.setCurrentTurn(this.#currentPlayInfo);
             //console.log("ai attacked");
-            console.log(this.#currentPlayInfo);
+            //console.log(this.#currentPlayInfo);
             let aiLocationChoice = [this.#aiPlayer.getNextAttackLocation()];
             this.#currentPlayInfo.piecesClicked = aiLocationChoice;
             this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#playerPiecesData, this.#currentPlayInfo);

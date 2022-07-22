@@ -1,5 +1,6 @@
 // Fetch abstraction calls for interacting during bsr runtime
 import { BsrFetchMethods } from "./bsr-fetch.js";
+import { bsrAudio } from "./bsr-config.js";
 import { Helper } from "./helper.js";
 
 export { BsrFetchAbstraction };
@@ -9,14 +10,22 @@ class BsrFetchAbstraction{
 
     #fetch;
 
+    #fetchInterval;
+
     #updateInterval;
-    #fetchInfoStringDefault;
+    #updateInfoStringDefault;
 
     #gameStatusElement;
     #gameCodeContainerElement;
     #gameCodeSearchElement;
     #gameReadyElement;
     #quitGameElement;
+
+    #findGameAudio;
+    #foundGameAudio;
+    #disconnectAudio;
+
+    #playerConnected;
 
     #gameReadyElementPrevious;
 
@@ -28,10 +37,13 @@ class BsrFetchAbstraction{
 
         this.#fetch = new BsrFetchMethods(gameCode);
 
-        // generic default values
-        this.#updateInterval = 1000;
-        this.#fetchInfoStringDefault = "No Server Connection - Playing Against AI";
+        // update interval for server fetches
+        this.#fetchInterval = 1000;
 
+        // update interval for ui info updates
+        this.#updateInterval = 500;
+        this.#updateInfoStringDefault = "No Server Connection - Playing Against AI";
+        
         // elements that are used for interating with the player if we can get a game code
         this.#gameStatusElement;
         this.#gameCodeContainerElement;
@@ -39,21 +51,30 @@ class BsrFetchAbstraction{
         this.#gameReadyElement;
         this.#quitGameElement;
 
+        // audio
+        this.#findGameAudio = new Audio(bsrAudio.findGame);
+        this.#foundGameAudio = new Audio(bsrAudio.foundGame);
+        this.#disconnectAudio = new Audio(bsrAudio.disconnect);
+
+        // check if player connected to other or not (used for audio of connecting)
+        this.#playerConnected = false;
+
         // game ready element previous state
         this.#gameReadyElementPrevious;
 
         // game code input when server proeprly connects
-        this.#gameCodeInput = '<div id="bsr__gamecodesearch" class="bsr__gamecodesearch"> <button id="bsr__gamecodebutton" class="bsr__gamecodebutton bsr--text bsr--rounded-left">Join Random Game</button> <input id="bsr__gamecodeinput" class="bsr__gamecodeinput bsr--text bsr--rounded-right" type="text" placeholder="Enter Game Code Here"> </div>';
-
-        // game ready button avalable on server connection successful
-
+        this.#gameCodeInput = '<div id="bsr__gamecodesearch" class="bsr__gamecodesearch"> <button id="bsr__gamecodebutton" class="bsr__gamecodebutton bsr--text bsr--rounded-left">Join Random Game</button> <input id="bsr__gamecodeinput" class="bsr__gamecodeinput bsr--text bsr--text-center bsr--rounded-right" type="text" placeholder="Enter Game Code Here"> </div>';
 
         // functions to be ran during the update interval
         this.#runtimeFunctions = [];
 
-        // run functions on game update interval
+        // send fetch request to server to get game info every interval
         setInterval(() => {
-            this.#fetch.checkConnectedState()
+            this.#fetch.checkConnectedState();
+        }, this.#fetchInterval);
+        
+        // update ui with current info
+        setInterval(() => {
             this.#runOnGameUpdate();
             //console.log(this.#runtimeFunctions);
         }, this.#updateInterval);
@@ -160,13 +181,25 @@ class BsrFetchAbstraction{
             let info = "Connected To Server";
             info = info + " - ";
             let isConnected = this.#fetch.getConnectedState();
+
             // and we are connected to a game
             if (isConnected){
                 info = info + "Playing Against Player";
+
+                if (!this.#playerConnected){
+
+                    this.#playerConnected = true;
+                    this.#foundGameAudio.play();
+                    
+                }
+
             }
             // and we are not connected to a game
             if (!isConnected){
+
                 info = info + "Playing Against AI";
+                this.#playerConnected = false;
+
             }
             // set stats info
             gameStatusElement.innerText = info;
@@ -174,7 +207,7 @@ class BsrFetchAbstraction{
 
         // if we have no game code, there is no server connection, thus we will play with the AI
         if (gameCode.length <= 0){
-            gameStatusElement.innerHtml = this.#fetchInfoStringDefault;
+            gameStatusElement.innerHtml = this.#updateInfoStringDefault;
         }
     }
 
@@ -183,7 +216,10 @@ class BsrFetchAbstraction{
         let gameCode = this.#fetch.getGameCode();
 
         if (gameCode.length > 0 && codeContainerElement.innerText == ""){
-            codeContainerElement.innerText = "Game Code: " + gameCode;
+
+            let gameCodeString = "&emsp;&emsp;&emsp;&emsp;&emsp;" + "Game Code: " + gameCode + "&emsp;&emsp;&emsp;&emsp;";
+            codeContainerElement.innerHTML = gameCodeString;
+
         }
 
     }
@@ -199,6 +235,7 @@ class BsrFetchAbstraction{
             // if our innerHtml is blank, put our game code input into it
             if (codeSearchElement.innerHTML == ""){
                 codeSearchElement.innerHTML = this.#gameCodeInput;
+                codeSearchElement.style.padding = "7px";
                 this.#setEventListenerOfJoinOrDisconnect();
             }
 
@@ -232,7 +269,7 @@ class BsrFetchAbstraction{
              
                          // if there is no game code sent to join, we will tell the user to join a random game
                          if (!codeSearchElement.children[0].children[1].value){
-                             codeSearchElement.children[0].children[0].innerText = "Find Random Game";
+                             codeSearchElement.children[0].children[0].innerText = "Find Game";
                          }  
 
                     }
@@ -250,16 +287,23 @@ class BsrFetchAbstraction{
 
         // if we are connected to a player, simply allow us to disconnect from the player
         if (this.#fetch.getConnectedState()){
+
             this.#fetch.disconnectFromGame();
+            this.#disconnectAudio.play();
             this.#fetch.setReadyState(false);
+            
         }
 
         // otherwise try and find a game to play in
         else {
             if (!this.#fetch.getWaitingStateOfLobby()){
+
                 let playerCodeCleaned = Helper.removeAllSpacesFromString(playerCode);
                 //console.log(playerCodeCleaned);
-                this.#fetch.searchForPlayer(playerCodeCleaned);
+                if (playerCodeCleaned != this.#fetch.getGameCode()){
+                    this.#findGameAudio.play();
+                    this.#fetch.searchForPlayer(playerCodeCleaned);
+                }
                 this.#fetch.setReadyState(false);
 
             }

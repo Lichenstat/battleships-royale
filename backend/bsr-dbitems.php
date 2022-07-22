@@ -18,8 +18,8 @@
 
             $db -> playerColumn = "PlayerCode";
             $db -> timeoutColumn = "Timeout";
-            $db -> baseTimeoutCount = 3;
-            $db -> gameCodeSize = 20;
+            $db -> baseTimeoutCount = 60;
+            $db -> gameCodeSize = 10;
 
             return $db;
         }

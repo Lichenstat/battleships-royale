@@ -292,6 +292,7 @@
 
                                 swooshIn.play()
                                 changeStatesElement.innerHTML = setupTableButton;
+                                enemyShipInfoElement.style.padding = "10px";
                                 removeNodesForPlaying();
                                 playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
                                 playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);

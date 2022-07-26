@@ -9,7 +9,8 @@
     // var_dump
     // print_r
 
-    require "bsr-dbmethods.php";
+    require_once("bsr-dbmethods.php");
+    require "bsr-timeout.php";
     //require_once("bsr-check.php");
 
     //echo "Got to transmit - ";
@@ -24,6 +25,8 @@
         // if we have no game code, make one, update the timeout attached to it, and return it
         if (empty($gameCode)){
 
+            BsrDatabaseMethods::incrementVisits();
+
             $gameCode -> gameCode = BsrDatabaseMethods::getGameCode($gameCode);
             BsrDatabaseMethods::resetTimeout($gameCode -> gameCode);
             $encode = json_encode($gameCode);
@@ -32,9 +35,11 @@
         }
 
         // otherwise simply just update the timeout for the code that does exist
-        else{
+        else {
 
+            BsrTimeout::updateTimeouts();
             BsrDatabaseMethods::resetTimeout($gameCode);
+            //echo "Update gamecode ".$gameCode;
 
         }
         
@@ -224,12 +229,19 @@
     }
 
     if(isset($_POST["test"])){
+
         echo " Testing - ";
         $n = json_decode($_POST["test"]);
         $bsr = $n -> bsrPiecesData;
         $locations = $n -> locations;
         $gameCode = $n -> gameCode;
+
         //echo $gameCode;
+        //BsrDatabaseMethods::updateTimeout();
+        //BsrDatabaseMethods::createTables();
+        //BsrDatabaseMethods::toggleUpdateTimeoutBool();
+        //BsrTimeout::updateTimeouts();
+        //BsrDatabaseMethods::cleanupTables();
         //BsrDatabaseMethods::setInitialGameData($gameCode, $bsr);
         //BsrDatabaseMethods::joinMatch($gameCode);
         //BsrDatabaseMethods::disconnectFromGame($gameCode);
@@ -250,7 +262,7 @@
         //$t = BsrDatabaseMethods::checkIfPlayerCanUpdate($gameCode);
         //$t = BsrDatabaseMethods::checkIfPlayerCanMakeMove($gameCode);
         //$t = BsrDatabaseMethods::checkPlayerIsWaitingInGameQueue($gameCode);
-        BsrDatabaseMethods::removePlayingInfo($gameCode);
+        //BsrDatabaseMethods::removePlayingInfo($gameCode);
         //echo print_r($t);
         
     }

@@ -110,6 +110,7 @@ const bsrAudio = {
     findGame : "./assets/audio/find-game.mp3",
     foundGame : "./assets/audio/found-game.mp3",
     disconnect : "./assets/audio/disconnect.mp3",
+    disconnectAutomatically : "./assets/audio/disconnect-automatically.mp3",
 
     // mostly meant for play interactions
     playerPush : "./assets/audio/player-push.mp3",

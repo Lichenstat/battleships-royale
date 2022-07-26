@@ -24,8 +24,10 @@ class BsrFetchAbstraction{
     #findGameAudio;
     #foundGameAudio;
     #disconnectAudio;
+    #disconnectAutomaticallyAudio;
 
     #playerConnected;
+    #connectionLeft;
 
     #gameReadyElementPrevious;
 
@@ -55,9 +57,11 @@ class BsrFetchAbstraction{
         this.#findGameAudio = new Audio(bsrAudio.findGame);
         this.#foundGameAudio = new Audio(bsrAudio.foundGame);
         this.#disconnectAudio = new Audio(bsrAudio.disconnect);
+        this.#disconnectAutomaticallyAudio = new Audio(bsrAudio.disconnectAutomatically);
 
-        // check if player connected to other or not (used for audio of connecting)
+        // check if player connected to other or not (used for audio of connecting/disconnecting)
         this.#playerConnected = false;
+        this.#connectionLeft = false;
 
         // game ready element previous state
         this.#gameReadyElementPrevious;
@@ -162,13 +166,9 @@ class BsrFetchAbstraction{
         let quitGame = quitGameElement.children[0];
 
         quitGame.addEventListener("click", elemItem => {
-            let isConnected = this.#fetch.getConnectedState();
-
-            if (isConnected){
-                this.#fetch.quitCurrentGame();
-            }
-
+            this.#fetch.quitCurrentGame();
         })
+
     }
 
     // update the game info about fetch connections
@@ -189,16 +189,24 @@ class BsrFetchAbstraction{
                 if (!this.#playerConnected){
 
                     this.#playerConnected = true;
+                    this.#connectionLeft = true;
                     this.#foundGameAudio.play();
-                    
+
                 }
 
             }
+
             // and we are not connected to a game
             if (!isConnected){
-
                 info = info + "Playing Against AI";
                 this.#playerConnected = false;
+                
+                if (this.#connectionLeft){
+
+                    this.#connectionLeft = false;
+                    this.#disconnectAutomaticallyAudio.play();
+                    
+                }
 
             }
             // set stats info
@@ -289,8 +297,9 @@ class BsrFetchAbstraction{
         if (this.#fetch.getConnectedState()){
 
             this.#fetch.disconnectFromGame();
-            this.#disconnectAudio.play();
             this.#fetch.setReadyState(false);
+            this.#disconnectAudio.play();
+            this.#connectionLeft = false;
             
         }
 
@@ -332,11 +341,13 @@ class BsrFetchAbstraction{
 
     }
 
+    /*
     // test some stuff
     test(){
 
         this.#fetch.test();
 
     }
+    */
 
 }

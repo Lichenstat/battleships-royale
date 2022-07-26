@@ -120,7 +120,7 @@ class Helper{
 
     // remove all spaces from a string
     static removeAllSpacesFromString(string){
-        string = string.replace(/[ ]*/g, '');
+        string = string.replace(/\s*/g, '');
         return string;
     }
 

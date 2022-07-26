@@ -472,7 +472,7 @@ class BsrPlay {
                 this.#currentPlayInfo = BsrPlayerAiInteractions.checkIfHitOrMiss(this.#aiPlayer.getAiPiecesData(), this.#currentPlayInfo);
                 let newPiecesCount = this.#aiPlayer.getAiPiecesData().getPiecesLeftThatHaveLocations();
                 this.#currentPlayInfo = BsrPlayerAiInteractions.getChangeInPiecesCount(newPiecesCount, this.#lastEnemyPiecesCount, this.#currentPlayInfo);
-                this.#lastEnemyPiecesCount = newPiecesCount
+                this.#lastEnemyPiecesCount = newPiecesCount;
                 //console.log(this.#currentPlayInfo);
                 //this.#setChosenPiecesOutcome();
                 this.#hasButtonUpdated = false;

@@ -2,7 +2,7 @@
 <?php
 
     // Database methods to be used with thier respective calls,
-    // is written in PDO
+    // calls are written using PDO
 
     require "bsr-dbinfo.php";
     require "bsr-dbitems.php";
@@ -23,6 +23,72 @@
                 echo $e -> getMessage()."<br>";
                 die();
             }
+        }
+
+        //---------------------------------------------------------------------
+        // site info methods
+
+        // increment the visitors count when they have visited the site
+        public static function incrementVisits(){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbSiteInfo = self::getSiteInfoTable();
+            
+            //echo " Increment Visits - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // increment site visits
+            $query = "UPDATE ".$dbSiteInfo -> name." 
+                      SET ".$dbSiteInfo -> visitsColumn."=".$dbSiteInfo -> visitsColumn." + 1";
+            $db -> query($query);
+
+            $db = null;
+
+        }
+
+        // get the current update timeout bool value
+        public static function getUpdateTimeoutBool(){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbSiteInfo = self::getSiteInfoTable();
+
+            $bool;
+            
+            //echo " Get update bool - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // get bool value
+            $query = "SELECT ".$dbSiteInfo -> updateTimeoutColumn." 
+                      FROM ".$dbSiteInfo -> name;
+            //echo $query;
+            foreach($db -> query($query) as $row){
+                $bool = $row[0];
+            }
+
+            $db = null;
+            return $bool;
+
+        }
+
+        // set the update timeout bool
+        public static function setUpdateTimeoutBool($bool = 0){
+          
+            $dbInfo = self::getDatabaseInfo();
+            $dbSiteInfo = self::getSiteInfoTable();
+            
+            //echo " Increment Visits - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // increment site visits
+            $query = "UPDATE ".$dbSiteInfo -> name." 
+                      SET ".$dbSiteInfo -> updateTimeoutColumn."=".$bool;
+            $db -> query($query);
+
+            $db = null;
+
         }
 
         //---------------------------------------------------------------------
@@ -99,7 +165,7 @@
 
         }
 
-        // update the game timeout using the game code
+        // reset the game timeout using the game code
         public static function resetTimeout($gameCode = ""){
 
             if (!empty($gameCode)){
@@ -119,6 +185,25 @@
                 $db = null;
 
             }
+
+        }
+
+        // update the game timeout of all players if desired
+        public static function updateTimeout($decrementCount = 1){
+
+                $dbInfo = self::getDatabaseInfo();
+                $dbPlayersTable = self::getPlayersTableInfo();
+                
+                //echo " Updating timeout - ";
+
+                $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+                // update all players timeout by subtracting a given number (timeout is set to 60, subtract whatever is needed)
+                $query = "UPDATE ".$dbPlayersTable -> name." 
+                          SET ".$dbPlayersTable -> timeoutColumn."=".$dbPlayersTable -> timeoutColumn." - ".$decrementCount;
+                $db -> query($query);
+
+                $db = null;
 
         }
 
@@ -368,6 +453,7 @@
 
         // remove playing info for the person who quits the game
         public static function removePlayingInfo($gameCode = ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
@@ -396,11 +482,12 @@
             $db -> query($query);
 
             $query = "DELETE FROM ".$dbGamePlay -> name."
-                      WHERE ".$dbGamePlay -> playerColumn." IS NULL AND ".$dbGamePlay -> connectedColumn." IS NULL AND ".$dbGamePlay -> previousMoveColumn."='".$gameCode."'";
+                      WHERE ".$dbGamePlay -> playerColumn." IS NULL AND ".$dbGamePlay -> connectedColumn." IS NULL"; // AND ".$dbGamePlay -> previousMoveColumn."='".$gameCode."'";
             //echo $query;
             $db -> query($query);
         
             $db = null;
+
         }
 
         // remove last played row by a givne game code if it exists as a previous move code
@@ -504,6 +591,7 @@
 
         // set what player made the previous move during the game
         public static function setWhoPreviouslyMoved($gameCode= ""){
+
             $dbInfo = self::getDatabaseInfo();
             $dbGamePlay = self::getPlayingTableInfo();
 
@@ -519,6 +607,7 @@
             $db -> query($query);
             
             $db = null;
+
         }
 
         // get who previously moved
@@ -1105,10 +1194,147 @@
         //---------------------------------------------------------------------
         // other useful functions not directly related to a specific table
 
-
+        // cleanup all the database information in the tables when a player has timedout after leaving
         public static function cleanupTables(){
+            
+            $dbInfo = self::getDatabaseInfo();
+            $dbPlayersTable = self::getPlayersTableInfo();
+            $dbGameSearch = self::getGameSearchTableInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+
+            $codes;
+
+            //echo " Cleaning up tables - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+            
+            // get all player codes that have an expired timeout (0 or less)
+            $query = "SELECT ".$dbPlayersTable -> playerColumn." 
+                      FROM ".$dbPlayersTable -> name." 
+                      WHERE ".$dbPlayersTable -> timeoutColumn." <= 0";
+            //echo $query;
+            $codes = $db -> query($query);
+
+            // for every code
+            foreach($db -> query($query) as $row){
+
+                //echo " ".$row[0];
+
+                // delete all rows in a table using the codes with expired timeouts
+                // Players table
+                $query = "DELETE FROM ".$dbPlayersTable -> name." 
+                          WHERE ".$dbPlayersTable -> playerColumn."='".$row[0]."'";
+                //echo $query;
+                $db -> query($query);
+
+                // GameSearch Table
+                $query = "DELETE FROM ".$dbGameSearch -> name." 
+                          WHERE ".$dbGameSearch -> playerColumn."='".$row[0]."' OR ".$dbGameSearch -> connectedColumn."='".$row[0]."'";
+                //echo $query;
+                $db -> query($query);
+
+                // Playing Table
+
+                // remove player that left and set other player as winner (if possible)
+                self::setBothPlayersToUpdate($row[0]);
+                self::setWhoPreviouslyMoved($row[0]);
+                self::removePlayingInfo($row[0]);  
+                
+            }
+
+            //delete empty playing tables
+            $query = "DELETE FROM ".$dbGamePlay -> name." 
+            WHERE ".$dbGamePlay -> playerColumn." IS NULL AND ".$dbGamePlay -> connectedColumn." IS NULL";
+            //echo $query;
+            $db -> query($query);  
+
+            $db = null;
 
         }     
+
+        // create all the data tables and thier columns with their given data types in database game initialization
+        public static function createTables(){
+
+            $dbInfo = self::getDatabaseInfo();
+            $dbSiteInfo = self::getSiteInfoTable();
+            $dbPlayersTable = self::getPlayersTableInfo();
+            $dbGameSearch = self::getGameSearchTableInfo();
+            $dbGamePlay = self::getPlayingTableInfo();
+
+            echo " Creating tables (if necessary) - ";
+
+            $db = new PDO('mysql:host='.$dbInfo -> host.';dbname='.$dbInfo -> name, $dbInfo -> username, $dbInfo -> password);
+
+            // create tables with proper data types
+
+            // Info table
+
+            $exists;
+
+            $query = "CREATE TABLE IF NOT EXISTS ".$dbSiteInfo -> name." ( 
+                     ".$dbSiteInfo -> visitsColumn." INT, 
+                     ".$dbSiteInfo -> updateTimeoutColumn." BOOL 
+                     )";
+            echo $query." ";
+            $db -> query($query);
+
+            // check if info rows are set or not (greater than 0 means they exist)
+            $query = "SELECT COUNT(*) FROM ".$dbSiteInfo -> name;
+            echo $query." ";
+
+            foreach($db -> query($query) as $row){
+                $exists = $row[0];
+            }
+
+            // if not, put the initial information in the site info rows
+            if ($exists <= 0){
+                $query="INSERT INTO ".$dbSiteInfo -> name." 
+                        VALUES (0, 1)";
+                echo $query." ";
+                $db -> query($query);
+            }
+
+            // Players table
+            $query = "CREATE TABLE IF NOT EXISTS ".$dbPlayersTable -> name." ( 
+                     ".$dbPlayersTable -> playerColumn." VARCHAR(50), 
+                     ".$dbPlayersTable -> timeoutColumn." INT 
+                     )";
+            echo $query." ";
+            $db -> query($query);
+
+            // GameSearch Table
+            $query = "CREATE TABLE IF NOT EXISTS ".$dbGameSearch -> name." ( 
+                     ".$dbGameSearch -> playerColumn." VARCHAR(50), 
+                     ".$dbGameSearch -> connectedColumn." VARCHAR(50), 
+                     ".$dbGameSearch -> playerReadyColumn." TINYINT(1), 
+                     ".$dbGameSearch -> connectedReadyColumn." TINYINT(1) 
+                     )";
+            echo $query." ";
+            $db -> query($query);
+
+            // Playing Table
+            $query = "CREATE TABLE IF NOT EXISTS ".$dbGamePlay -> name." ( 
+                     ".$dbGamePlay -> playerColumn." VARCHAR(50), 
+                     ".$dbGamePlay -> playerBsrDataColumn." VARCHAR(2500), 
+                     ".$dbGamePlay -> playerShipsColumn." VARCHAR(2000), 
+                     ".$dbGamePlay -> playerLocationsColumn." VARCHAR(1000), 
+                     ".$dbGamePlay -> connectedColumn." VARCHAR(50), 
+                     ".$dbGamePlay -> connectedBsrDataColumn." VARCHAR(2500), 
+                     ".$dbGamePlay -> connectedShipsColumn." VARCHAR(2000), 
+                     ".$dbGamePlay -> connectedLocationsColumn." VARCHAR(1000), 
+                     ".$dbGamePlay -> playerUpdateColumn." TINYINT(1), 
+                     ".$dbGamePlay -> connectedUpdateColumn." TINYINT(1), 
+                     ".$dbGamePlay -> previousMoveColumn." VARCHAR(50), 
+                     ".$dbGamePlay -> locationUpdateColumn." VARCHAR(250), 
+                     ".$dbGamePlay -> locationHitColumn." VARCHAR(250), 
+                     ".$dbGamePlay -> shipRemovedColumn." VARCHAR(250) 
+                     )";
+            echo $query." ";
+            $db -> query($query);
+
+            $db = null;
+
+        }  
 
     }
 

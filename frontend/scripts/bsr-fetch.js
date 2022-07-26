@@ -37,7 +37,7 @@ class BsrFetchMethods{
         this.#genericArgumentsForRequest = {'Content-Type': 'application/x-www-form-urlencoded'};
         
         // check game code proeprties
-        this.#checkGameCodeCycleTime = 60000; // or 1 minute (60000)
+        this.#checkGameCodeCycleTime = 5000; // 1 minute is 60000
 
         // assign our game code and keep updating its timeout
         this.#checkGameCode();
@@ -235,10 +235,11 @@ class BsrFetchMethods{
         .catch(error => console.log(`fetch error: ${error}`));
     }
 
+    /*
     // test fetch request with various stuffs
     test(){
         //let bodyItems = {gameCode : "14", bsrPiecesData : [{id : 0,  name : "destroyer", locations : [[1,1],[1,2],[1,3]]},{id : 1, name : "submarine", locations : [[2,1],[2,2],[2,3]]}]};
-        let bodyItems = {gameCode : "e1c5495c51dcec85de6f", locations : [[2,10]]};
+        let bodyItems = {gameCode : "a2dba37e16", locations : [[2,10]]};
         let fetchMethod = new FetchMethod();
         let arg = {'Content-Type': 'application/x-www-form-urlencoded'};
         let request = fetchMethod.createRequest("POST", "cors", "no-cache", "same-origin", arg, "follow", "same-origin", "test", bodyItems);
@@ -252,5 +253,6 @@ class BsrFetchMethods{
         })
         .catch(error => console.log(`fetch error: ${error}`));
     }
+    */
 
 }

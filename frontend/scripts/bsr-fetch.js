@@ -98,7 +98,7 @@ class BsrFetchMethods{
         let bodyContent = {gameCode : this.#playerGameCode};
         let bodyName = "checkGameCode";
         let request = this.#fetch.createRequest("POST", "cors", "no-cache", "same-origin", this.#genericArgumentsForRequest, "follow", "same-origin", bodyName, bodyContent);
-        this.#fetch.fetchMethod("http://192.168.1.73:81/backend/bsr-transmit.php", request, "json")
+        this.#fetch.fetchMethod(this.#transmitURL, request, "json")
         .then(data => {
             //console.log(data);
             if (!Helper.checkIfObjectIsEmpty(data)){
@@ -200,7 +200,9 @@ class BsrFetchMethods{
             currentPlayInfo.pieceName = data.pieceName;
             currentPlayInfo.gameover = data.gameover;
             if (data.bsrPiecesData.length > 0){
+
                 currentPlayInfo.bsrPiecesData = BsrPlayParse.parseDataForClientFormat(data.bsrPiecesData);
+            
             }
 
             // set that our info has updated

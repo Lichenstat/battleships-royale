@@ -18,6 +18,7 @@
                $gridSizes -> height = 9;
 
                return $gridSizes;
+
           }
 
           // get ship sizes and counts
@@ -49,6 +50,7 @@
                $ships -> count = $total;
 
                return $ships;
+               
           }
 
      }

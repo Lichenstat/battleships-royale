@@ -101,7 +101,7 @@ class Helper{
         return originalString.replace(new RegExp(partToReplace, 'g'), replaceWith).toString();
     }
 
-    // parse class or id to change it's modifier in BEM format for enabling or disabling 
+    // parse class or id to change it's modifier for enabling or disabling 
     static setModifierOfClassOrId(classOrId){
         let change = classOrId.toString().match(/--disabled|--enabled/g);
         change = change.toString();

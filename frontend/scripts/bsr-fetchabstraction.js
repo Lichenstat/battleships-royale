@@ -242,9 +242,11 @@ class BsrFetchAbstraction{
 
             // if our innerHtml is blank, put our game code input into it
             if (codeSearchElement.innerHTML == ""){
+
                 codeSearchElement.innerHTML = this.#gameCodeInput;
                 codeSearchElement.style.padding = "7px";
                 this.#setEventListenerOfJoinOrDisconnect();
+
             }
 
             // if our code search element is not empty (we can then modify it)
@@ -273,12 +275,12 @@ class BsrFetchAbstraction{
                         // if the user has inputted some text, update button to show join game
                         if (codeSearchElement.children[0].children[1].value){
                             codeSearchElement.children[0].children[0].innerText = "Join Game";
-                         }
+                        }
              
-                         // if there is no game code sent to join, we will tell the user to join a random game
-                         if (!codeSearchElement.children[0].children[1].value){
-                             codeSearchElement.children[0].children[0].innerText = "Find Game";
-                         }  
+                        // if there is no game code sent to join, we will tell the user to join a random game
+                        if (!codeSearchElement.children[0].children[1].value){
+                            codeSearchElement.children[0].children[0].innerText = "Find Game";
+                        }  
 
                     }
                   

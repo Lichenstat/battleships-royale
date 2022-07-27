@@ -129,13 +129,16 @@
 
         // remove nodes once playing starts
         let removeNodesForPlaying = () => {
+
             piecesContainerElement.remove();
             buttonsContainerElement.remove();
             removePiecesElement.remove();
+
         }
 
         // function to reset all replaced elements when they are put back into the document
         let resetNodesForSetup = () => {
+
             setupPlacement.innerHTML = originalSetup;
             piecesContainerElement = document.getElementById("bsr__piecesshell");
             buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
@@ -144,6 +147,7 @@
             removePiecesElement = document.getElementById("bsr__piecesremover");
             randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
             gridContainerElement = document.getElementById("bsr__gridplacement");
+            
         }
 
         let setup = new BsrSetupAbstraction();
@@ -202,6 +206,7 @@
         
         // run this until we are ready for a game to start or pieces count has changed
         function runWhilePlayerReadyOrChange(thisFunc = function(){}){
+
             let isPlayerConnected = fetch.getConnectedState();
             let isPlayerReady = fetch.getReadyState();
             let isPossibleToStart = fetch.getStartState();
@@ -328,9 +333,11 @@
 
                     // otherwise we will play singleplayer with the ai and remove ourselves from searching for a game
                     if (!isPlayerConnected){
+
                         swooshOut.play();
                         fetch.disconnectFromGame();
                         runOnReadyToPlay();
+
                     }
 
                 }
@@ -373,6 +380,6 @@
         }
         //-------------------------------------------------------------------------
         
-        </script>
-        </body>
-        </html>
+    </script>
+</body>
+</html>

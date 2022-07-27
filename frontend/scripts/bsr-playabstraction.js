@@ -163,10 +163,7 @@ class BsrPlayAbstraction{
 
             let pieces = this.#play.getOutcomeIdsWithImagesForUpdating();
             let currentPlayInfo = this.#play.getCurrentPlayInfo();
-            //let currentTurn = currentPlayInfo.playerTurn;
-            //let playerTurn = this.#play.getPlayerNumber();
             let playerTurn = this.#play.checkIfPlayerTurn();
-            //let playingAgainstAi = this.#play.checkIfPlayingAgainstAi();
             //console.log(pieces);
             let ids = pieces.ids;
             let srcs = pieces.imageSrcs;
@@ -179,7 +176,7 @@ class BsrPlayAbstraction{
                 // the programming only works for 2 players at the moment, will have to change if more players
                 // playing at once is desired
 
-                // other players grid
+                // client player grid
                 if(playerTurn) {
 
                     allSameCellIds[0].children[0].children[1].classList.add("bsr--appear-quick");
@@ -187,7 +184,7 @@ class BsrPlayAbstraction{
 
                 }
 
-                // client player grid
+                // other player grid
                 if(!playerTurn) {
 
                     let images = allSameCellIds[1].children[0].innerHTML;

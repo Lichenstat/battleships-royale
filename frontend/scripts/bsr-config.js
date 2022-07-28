@@ -118,7 +118,7 @@ const bsrAudio = {
     miss : "./frontend/assets/audio/miss.mp3",
     hit : "./frontend/assets/audio/hit.mp3",
     sunk : "./frontend/assets/audio/sunk.mp3",
-    win : ".frontend//assets/audio/tada-trumpet.mp3",
+    win : ".frontend/assets/audio/tada-trumpet.mp3",
     lose : "./frontend/assets/audio/sad-trumpet.mp3",
 
 }

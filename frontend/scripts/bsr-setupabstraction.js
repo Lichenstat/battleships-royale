@@ -1,7 +1,7 @@
 // abstraction class for setup.js (ease of use)
 
 import { BsrSetup } from "./bsr-setup.js";
-import { bsrPieceInteractors } from "./bsr-config.js";
+import { bsrPieceInteractors, bsrAudio } from "./bsr-config.js";
 import { Helper } from "./helper.js";
 
 export { BsrSetupAbstraction };
@@ -28,6 +28,13 @@ class BsrSetupAbstraction{
     #patrolboath;
     #patrolboatv;
 
+    #rotateAudio;
+    #randomAudio;
+    #removeAudio;
+    #dragStartAudio;
+    #dragOverAudio;
+    #dragDropAudio;
+
     #canPlacePiece;
     #removedPreviousPiece;
     #tempGrid;
@@ -48,16 +55,25 @@ class BsrSetupAbstraction{
         this.#randomPlacementElement;
 
         // pre load all required whole ship scaled pieces
-        this.#carrierh = new Image();    this.#carrierh.src    = "./frontend/assets/board-pieces/horizontal/whole/carrierscaled.png";
-        this.#carrierv = new Image();    this.#carrierv.src    = "./frontend/assets/board-pieces/vertical/whole/carrierscaled.png";
-        this.#battleshiph = new Image(); this.#battleshiph.src = "./frontend/assets/board-pieces/horizontal/whole/battleshipscaled.png";
-        this.#battleshipv = new Image(); this.#battleshipv.src = "./frontend/assets/board-pieces/vertical/whole/battleshipscaled.png";
-        this.#destroyerh = new Image();  this.#destroyerh.src  = "./frontend/assets/board-pieces/horizontal/whole/destroyerscaled.png";
-        this.#destroyerv = new Image();  this.#destroyerv.src  = "./frontend/assets/board-pieces/vertical/whole/destroyerscaled.png";
-        this.#submarineh = new Image();  this.#submarineh.src  = "./frontend/assets/board-pieces/horizontal/whole/submarinescaled.png";
-        this.#submarinev = new Image();  this.#submarinev.src  = "./frontend/assets/board-pieces/vertical/whole/submarinescaled.png";
-        this.#patrolboath = new Image(); this.#patrolboath.src = "./frontend/assets/board-pieces/horizontal/whole/patrolboatscaled.png";
-        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./frontend/assets/board-pieces/vertical/whole/patrolboatscaled.png";
+        this.#carrierh = new Image();    this.#carrierh.src    = "./assets/images/board-pieces/horizontal/whole/carrierscaled.png";
+        this.#carrierv = new Image();    this.#carrierv.src    = "./assets/images/board-pieces/vertical/whole/carrierscaled.png";
+        this.#battleshiph = new Image(); this.#battleshiph.src = "./assets/images/board-pieces/horizontal/whole/battleshipscaled.png";
+        this.#battleshipv = new Image(); this.#battleshipv.src = "./assets/images/board-pieces/vertical/whole/battleshipscaled.png";
+        this.#destroyerh = new Image();  this.#destroyerh.src  = "./assets/images/board-pieces/horizontal/whole/destroyerscaled.png";
+        this.#destroyerv = new Image();  this.#destroyerv.src  = "./assets/images/board-pieces/vertical/whole/destroyerscaled.png";
+        this.#submarineh = new Image();  this.#submarineh.src  = "./assets/images/board-pieces/horizontal/whole/submarinescaled.png";
+        this.#submarinev = new Image();  this.#submarinev.src  = "./assets/images/board-pieces/vertical/whole/submarinescaled.png";
+        this.#patrolboath = new Image(); this.#patrolboath.src = "./assets/images/board-pieces/horizontal/whole/patrolboatscaled.png";
+        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./assets/images/board-pieces/vertical/whole/patrolboatscaled.png";
+
+        // get all required audios for playing on event handlers
+        this.#rotateAudio = new Audio(bsrAudio.rotate);
+        this.#randomAudio = new Audio(bsrAudio.random);
+        this.#removeAudio = new Audio(bsrAudio.remove);
+        this.#dragStartAudio = new Audio(bsrAudio.dragStart);
+        this.#dragOverAudio = new Audio(bsrAudio.dragOver);
+        this.#dragDropAudio = new Audio(bsrAudio.dragStop);
+
 
         // properties to use in interfacing
         this.#canPlacePiece = false;
@@ -151,6 +167,7 @@ class BsrSetupAbstraction{
             //console.log('rotationg pieces');
             this.#setup.changeBoardPieceRotation();
             this.updateDragAndDropPieces(piecesContainerElement, true);
+            this.#rotateAudio.play();
         }
     }
 
@@ -160,6 +177,7 @@ class BsrSetupAbstraction{
             this.#setup.getPiecesData().clearPiecesDataTable();
             this.updateDragAndDropPieces(piecesContainerElement, true);
             this.loadBlankGrid(gridContainerElement);
+            this.#removeAudio.play();
         }
     }
 
@@ -175,6 +193,7 @@ class BsrSetupAbstraction{
             this.#setup.setRandomPieces();
             this.loadSetGridPieces(gridContainerElement);
             this.updateDragAndDropPieces(piecesContainerElement, true);
+            this.#randomAudio.play();
         })
     }
 
@@ -231,6 +250,7 @@ class BsrSetupAbstraction{
         //console.log('ran dragstart from setup.js');
         this.saveDragAndDropGrid(this.#gridContainerElement);
         if ((Helper.parseElementIdForMatrixLocation(item.target.parentNode.id)).length == 2){
+            this.#dragStartAudio.play();
             this.setPieceDragImage(item);
             this.#setup.setClickedPieceInfo(item.target.parentNode);
         }
@@ -280,19 +300,21 @@ class BsrSetupAbstraction{
         //console.log(setup.getDraggedPieceLocation());
         //console.log(canPlacePiece);
         if (!this.#canPlacePiece || !Helper.checkIfArraysAreEqual(this.#setup.getDraggedPieceLocation(), [0,0])){
-                this.#gridContainerElement.innerHTML = this.#tempGrid;
-                // set a small timer to check if we have stopped dragging the piece or not
-                setTimeout(() => {
-                    if (!this.#dragging){
-                        this.reloadDragAndDropGrid(this.#gridContainerElement);
-                    }
-                }, this.#time)
+            this.#dragOverAudio.play();
+            this.#gridContainerElement.innerHTML = this.#tempGrid;
+            // set a small timer to check if we have stopped dragging the piece or not
+            setTimeout(() => {
+                if (!this.#dragging){
+                    this.reloadDragAndDropGrid(this.#gridContainerElement);
+                }
+            }, this.#time)
         }
     }
 
     // on the drop of the piece
     dragDrop(item){
         //console.log('ran drop from setup.js');
+        this.#dragDropAudio.play();
         this.#setup.removePieceIfNeeded();
         this.#setup.setPieceLocationsAndCount();
         this.updateDragAndDropPieces(this.#piecesContainerElement, true);

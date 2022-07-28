@@ -72,6 +72,12 @@ class Helper{
         return 0;
     }
 
+    // check if an object is empty or not
+    static checkIfObjectIsEmpty(object = {}){
+        let isObjectEmpty = Object.keys(object).length === 0;
+        return isObjectEmpty;
+    }
+
     // parse an element id for a location inside a matrix
     // (assumes between parenthesis, ex: (14,7))
     static parseElementIdForMatrixLocation(id = "default__id-(0,0)"){
@@ -95,7 +101,7 @@ class Helper{
         return originalString.replace(new RegExp(partToReplace, 'g'), replaceWith).toString();
     }
 
-    // parse class or id to change it's modifier in BEM format for enabling or disabling 
+    // parse class or id to change it's modifier for enabling or disabling 
     static setModifierOfClassOrId(classOrId){
         let change = classOrId.toString().match(/--disabled|--enabled/g);
         change = change.toString();
@@ -114,7 +120,7 @@ class Helper{
 
     // remove all spaces from a string
     static removeAllSpacesFromString(string){
-        string = string.replace(/[ ]*/g, '');
+        string = string.replace(/\s*/g, '');
         return string;
     }
 
@@ -190,7 +196,18 @@ class Helper{
         return true;
     }
 
-    // check if arrays are equal by position and size
+    // check if a value exists within an array
+    static checkIfValueIsInArray(value, array = []){
+        let arrayLength = array.length;
+        for (let i = 0; i < arrayLength; i++){
+            if (value == array[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // check if arrays are equal by position, content, and size
     static checkIfArraysAreEqual(arrayOne, arrayTwo){
         let arrOne = arrayOne.length;
         let arrTwo = arrayTwo.length;

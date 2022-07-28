@@ -9,6 +9,6 @@ export function arbitraryThingy(firstly = "pre[.]fox[.]wor[.]d", secondly = "su[
     let sea = secondly.replace(/(..)./g, '$1').toString();
     let m = "m-ali.l t^o::";
     m = m.replace(/(.)./g, '$1');
-    console.log(`${m}${plains}${mountains}${sea}`);
+    //console.log(`${m}${plains}${mountains}${sea}`);
     return `${m}${plains}${mountains}${sea}`;
 }

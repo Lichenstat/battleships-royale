@@ -1,4 +1,4 @@
-/* battleships royale css is stylized using BEM naming conventions*/
+/* battleships royale css stylesheet*/
 
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Stardos+Stencil:wght@700&display=swap');
@@ -11,8 +11,6 @@
 /*grid pieces*/
 @import 'bsr-grids.css';
 
-/* remove black outline on chrome/edge*/
-
 body{
   /*border: 2px solid greenyellow;*/
   width : 1250px;
@@ -21,9 +19,24 @@ body{
   margin-right: auto;
   font-family: 'Stardos Stencil', cursive;
   background-image: url("../assets/images/sea.jpg");
-  background-size: 100%;
+  background-size: 135%;
   background-position: center;
-  background-attachment: fixed;
+}
+
+/* when screen size becomes too small allow scrolling horizontally*/
+@media (max-width: 1260px){
+  body{
+    /*border: 2px solid green;*/
+    overflow-x: auto;
+  }
+}
+
+/* when screen size becomes too small add a background attachment to stop background repeat*/
+@media (max-width: 970px){
+  body{
+    /*border: 2px solid red;*/
+    background-attachment: fixed;
+  }
 }
 
 button{
@@ -41,7 +54,12 @@ button:active{
   background:linear-gradient( 135deg, #7d8083, rgb(146, 146, 146), #7d8083);
 }
 
-/* stylings for the various elements --------------------------------------- */
+input{
+  font-family: 'Stardos Stencil', cursive;
+  /*font-size: 16px;*/
+}
+
+/* stylings and animations for the various elements --------------------------------------- */
 
 .bsr--border{
   border-style: outset;
@@ -69,6 +87,10 @@ button:active{
 
 .bsr--rounded-left{
   border-radius: 20px 0px 0px 20px;
+}
+
+.bsr--rounded-right{
+  border-radius: 0px 20px 20px 0px;
 }
 
 .bsr--text-underline{
@@ -138,9 +160,9 @@ button:active{
 }
 
 .bsr--background-show-remove{
-  background-image: url("../assets/images/remove-ship.png");
+  background-image: url("../assets/images/setup/remove-ship.png");
   background-size: 50px 50px;
-  background-position-y: center;
+  background-position: center center;
 }
 
 .bsr--slight-background-movement{
@@ -165,6 +187,7 @@ button:active{
 }
 
 /* these are the elements themselves --------------------------------------- */
+
 .bsr__container{
   /*border: 2px solid blue;*/
   display: block;
@@ -190,6 +213,7 @@ button:active{
   /*border: 2px solid black;*/
   margin-left: 6px;
   width: fit-content;
+  /*min-height: 32px;*/
   height: fit-content;
   padding: 10px;
 }
@@ -198,6 +222,7 @@ button:active{
   /*border: 2px solid yellow;*/
   margin-top: auto;
   width: fit-content;
+  /*min-height: 32px;*/
   height: fit-content;
   padding: 10px;
 }
@@ -206,8 +231,26 @@ button:active{
   /*border: 2px solid black;*/
   margin-right: 6px;
   width: fit-content;
+  /*min-height: 32px;*/
   height: fit-content;
   padding: 10px;
+}
+
+.bsr__gamecodesearch{
+  /*border: 2px solid green;*/
+  display: flex;
+  justify-content: center;
+  
+}
+
+.bsr__gamecodebutton{
+  /*border: 2px solid bisque;*/
+  width: 175px;
+}
+
+.bsr__gamecodeinput{
+  /*border: 2px solid violet;*/
+  width: 200px;
 }
 
 .bsr__setupplacement{
@@ -240,6 +283,8 @@ button:active{
   margin-left: -7px;
   width: 150px;
   height: 150px;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .bsr__gridplacement{

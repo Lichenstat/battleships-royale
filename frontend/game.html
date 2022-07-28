@@ -3,14 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title>Battleships - Play</title>
-    <!--<meta name="description" content="A simple HTML5 Template for projects.">-->
-    <!--<meta name="author" content="SitePoint">-->
+    <meta name="description" content="Play Battleships Online!">
+    <meta name="keywords" content="battleships, battleship, game, boardgame, fun, play, online, multiplayer, battle, ship">
+    <meta name="author" content="Lichenstat">
     <!--<base href=".">-->
-    <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./assets/images/icon/favicon.ico">
     <link  rel="stylesheet"  href="./styling/bsr-stylesheet.css"/>
 </head>
 <body class="bsr--slight-background-movement">
-    <div class='bsr bsr__container '>
+    <div class='bsr bsr__container'>
         <div class="bsr__title bsr--text-large bsr--text-center bsr--white bsr--text-underline bsr--appear-and-glow">
             Battleships
         </div>
@@ -25,13 +26,13 @@
             <div id="bsr__setupplacement" class="bsr__setupplacement bsr--border bsr--rounded bsr--background-dark bsr--appear-and-glow-temporary">
                 <div id="bsr__setupbuttonsshell" class="bsr__setupbuttonsshell bsr--border-no-right bsr--rounded-left">
                     <button type="button" id="bsr__piecesrotate" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage shiny" src="./assets/images/rotate.png" alt="Rotate Ships">
+                        <img class="bsr__buttonimage shiny" src="./assets/images/setup/rotate.png" alt="Rotate Ships">
                     </button>
                     <button type="button" id="bsr__placepiecerandomly" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage" src="./assets/images/random.png" alt="Randomly Place Ships">
+                        <img class="bsr__buttonimage" src="./assets/images/setup/random.png" alt="Randomly Place Ships">
                     </button>
                     <button type="button" id="bsr__piecesremove" class="bsr__setupbutton bsr--text bsr--border bsr--rounded">
-                        <img class="bsr__buttonimage" src="./assets/images/delete.png" alt="Remove All Ships">
+                        <img class="bsr__buttonimage" src="./assets/images/setup/delete.png" alt="Remove All Ships">
                     </button>
                 </div>
                 <div id="bsr__piecesshell" class="bsr__piecesshell bsr--background-show-remove bsr--border-top-bottom bsr--text bsr--white"></div>
@@ -56,11 +57,6 @@
         <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
             <div id="bsr__getintouch" class="bsr--glow-mouseover">Bugs / Recommendations / Personal Comments</div>
         </div>
-        <!--
-        <div class="bsr__lookhere bsr--text-underline bsr--appear-and-glow-temporary-delayed-text">
-            <div class="bsr--glow-mouseover">Possible Business Inquiry</div>
-        </div>
-        -->
     </div>
     <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
@@ -86,18 +82,36 @@
     </script>
     <script type="module">
 
-        import { Helper } from "./scripts/helper.js";
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
+        import { BsrFetchAbstraction } from "./scripts/bsr-fetchabstraction.js";
+        import { Helper } from "./scripts/helper.js";
         import { arbitraryThingy } from "./scripts/sus.js";
 
+        // check if the player is using safari as their browser
+        let isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+        
+        // if it is safari (show alert, disallow playing)
+        if (isSafari){
+            alert("We have detected that you are using Safari web browser. Battleships does not work with Safari, please download/use a compatible browser (Recommended: Chrome, Edge, Firefox).")
+        }
+
+        // otherwise allow playing
+        if (!isSafari){
+
         //--------------------------------------------------------------
+
+        //--------------------------------------------------------------
+
+        // play audio on page load
+        new Audio("./assets/audio/ocean-wave-quick.mp3").play();
+
         // get our elements to easily initialize bsr setup
 
         let gameShellContainerElement = document.getElementById("bsr__gameshell");
         let gameShellSlideLeftClass = "bsr__gameshell bsr--slidein-left";
         let gameShellSlideRightClass = "bsr__gameshell bsr--slideout-right";
-
+        
         let textInfoElement = document.getElementById("bsr__playinfo");
         let playerShipInfoElement = document.getElementById("bsr__playershipinfo");
         let enemyShipInfoElement = document.getElementById("bsr__enemyshipinfo");
@@ -113,14 +127,18 @@
         let gridContainerElement = document.getElementById("bsr__gridplacement");
         let changeStatesElement = document.getElementById("bsr__changestates");
 
+        // remove nodes once playing starts
         let removeNodesForPlaying = () => {
+
             piecesContainerElement.remove();
             buttonsContainerElement.remove();
             removePiecesElement.remove();
+
         }
 
         // function to reset all replaced elements when they are put back into the document
         let resetNodesForSetup = () => {
+
             setupPlacement.innerHTML = originalSetup;
             piecesContainerElement = document.getElementById("bsr__piecesshell");
             buttonsContainerElement = document.getElementById("bsr__setupbuttonsshell");
@@ -129,6 +147,7 @@
             removePiecesElement = document.getElementById("bsr__piecesremover");
             randomPlacementElement = document.getElementById("bsr__placepiecerandomly");
             gridContainerElement = document.getElementById("bsr__gridplacement");
+            
         }
 
         let setup = new BsrSetupAbstraction();
@@ -136,7 +155,7 @@
 
         //-------------------------------------------------------------------------
         // for grid and pieces using drag and drop
-
+        
         // event on the start of the drag
         document.addEventListener('dragstart', item => {
             if (setup != null){
@@ -159,7 +178,7 @@
                 setup.dragLeave(item);
             }
         });
-
+        
         // on the drop of the piece
         document.addEventListener('drop', item => {
             //console.log('ran drop');
@@ -167,14 +186,84 @@
                 setup.dragDrop(item);
             }
         });
-
+        
         //-------------------------------------------------------------------------
         // for playing events (choosing square, player turns, etc.)
 
         let playing;
+        let fetch = new BsrFetchAbstraction();
+        fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
 
+        // audio to play during runtime
+        let buzz = new Audio("./assets/audio/buzzer.mp3");
+        let swooshIn = new Audio("./assets/audio/woosh-blow-reverse.mp3");
+        let swooshOut = new Audio("./assets/audio/woosh-blow.mp3");
+
+        // buttons defining state change between setup and playing
         const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';
-        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">End Game</button>';
+        const playerTableButtonOnWait = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Waiting On Other Player</button>';
+        const setupTableButton = '<button type="button" id="bsr__generateplacementgrid" class="bsr__generateplacementgrid bsr--border bsr--rounded bsr--text">Quit Game</button>';
+        
+        // run this until we are ready for a game to start or pieces count has changed
+        function runWhilePlayerReadyOrChange(thisFunc = function(){}){
+
+            let isPlayerConnected = fetch.getConnectedState();
+            let isPlayerReady = fetch.getReadyState();
+            let isPossibleToStart = fetch.getStartState();
+
+            /*
+            console.log("player connected: ", isPlayerConnected);
+            console.log("player ready: ", isPlayerReady);
+            console.log("can game start: ", isPossibleToStart);
+            */
+
+            // if we are not connected to the game after starting, just reset our change state button
+            if (!isPlayerConnected){
+                changeStatesElement.innerHTML = playerTableButton;
+            }
+
+            // if we are connected as players
+            if (isPlayerConnected){
+                changeStatesElement.innerHTML = playerTableButton;
+
+                // if the player is ready to play
+                if (isPlayerReady){
+                    
+                    // get pieces count for checking if we are ready or not
+                    let piecesSetCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+
+                    // if pieces count has changed (we have to undo our ready state)
+                    if (piecesSetCount){
+                        changeStatesElement.innerHTML = playerTableButton;
+                        fetch.setReadyState(false);
+                        //console.log("player changed a piece, reset button");
+                    }
+
+                    // if pieces count shows no placeable pieces left
+                    if (!piecesSetCount){
+                        
+                        // if it is possible to start the game then start the game
+                        if (isPossibleToStart){
+                            swooshOut.play();
+                            thisFunc();
+                        }
+                        
+                        // if it is not possible to start the game because of another player, but we are ready
+                        if (!isPossibleToStart){
+                            changeStatesElement.innerHTML = playerTableButtonOnWait;
+                            setTimeout(() => {
+                                runWhilePlayerReadyOrChange(thisFunc);
+                            }, 500);
+                            
+                        }
+
+                    }
+                    
+                }
+
+            }
+
+        }
 
         // check items on event click
         document.addEventListener('click', item => {
@@ -182,36 +271,90 @@
             // set up the playing phase if possible
             if (item.target.id == "bsr__generateplayertable"){
                 let placeablePiecesCount = Helper.accumulateObjectValues(setup.getPiecesData().getPlaceablePiecesLeft());
+                
+                // if we have placeable pieces still left to be placed
                 if (placeablePiecesCount){
+
                     changeStatesElement.innerHTML = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">' + placeablePiecesCount + ' placeable ship(s) left' + '</button>';
+                    buzz.play();
                     setup.updateDragAndDropPiecesWhenNotAllPlaced(piecesContainerElement, removePiecesElement);
+                    fetch.setReadyState(false);
+                    
                     setTimeout(() => {
+
                         if (setup != null)
                             changeStatesElement.innerHTML = playerTableButton;
+
                     }, 3000)
+
                 }
+
+                // if there are no more placeable pieces left to be placed
                 if (!placeablePiecesCount){
-                    let playingAgainstAi = true;
-                    //console.log('making play tables');
-                    gameShellContainerElement.classList = gameShellSlideRightClass;
-                    // timeout is to help with timing animations
-                    setTimeout(() => {
-                        changeStatesElement.innerHTML = setupTableButton;
-                        removeNodesForPlaying();
-                        playing = new BsrPlayAbstraction(setup.getPiecesData(), playingAgainstAi);
-                        playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement);
-                        gameShellContainerElement.classList = gameShellSlideLeftClass;
-                        setup = null;
-                    }, 900);
+                    
+                    fetch.setReadyState(true);
+
+                    // run this when we are actively ready to play the game
+                    let runOnReadyToPlay = () => {
+
+                        // slide animation will play
+                        gameShellContainerElement.classList = gameShellSlideRightClass;
+
+                        // timeout is to help with timing animations
+                        setTimeout(() => {
+
+                            // check if setup exists so that we can start our game properly
+                            if (setup != null){
+
+                                swooshIn.play()
+                                changeStatesElement.innerHTML = setupTableButton;
+                                enemyShipInfoElement.style.padding = "10px";
+                                removeNodesForPlaying();
+                                playing = new BsrPlayAbstraction(setup.getPiecesData(), fetch.getFetch());
+                                playing.initializePlay(gridContainerElement, textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
+                                fetch.clearRuntimeFunctions();
+                                fetch.setQuitGameElement(changeStatesElement);
+                                gameShellContainerElement.classList = gameShellSlideLeftClass;
+                                setup = null;   
+
+                            }
+
+                        }, 900);
+
+                    }
+
+                    // check if we are connected to a game to tell if we should play singleplayer or multiplayer
+                    let isPlayerConnected = fetch.getConnectedState();
+
+                    // we will wait for the other player to be finished and join those games together
+                    if (isPlayerConnected){
+                        runWhilePlayerReadyOrChange(() => runOnReadyToPlay());
+                    }
+
+                    // otherwise we will play singleplayer with the ai and remove ourselves from searching for a game
+                    if (!isPlayerConnected){
+
+                        swooshOut.play();
+                        fetch.disconnectFromGame();
+                        runOnReadyToPlay();
+
+                    }
+
                 }
+
             }
 
-            // set teh game to the setup phase
+            // set the game to the setup phase
             if (item.target.id == "bsr__generateplacementgrid"){
+
+                swooshOut.play();
                 //console.log('making setup table');
                 gameShellContainerElement.classList = gameShellSlideRightClass;
+                
                 // timeout is to help with timing animations
                 setTimeout(() => {
+
+                    swooshIn.play();
                     changeStatesElement.innerHTML = playerTableButton;
                     textInfoElement.innerHTML = 'No Server Connection - Playing Against AI';
                     playerShipInfoElement.innerHTML = '';
@@ -219,8 +362,10 @@
                     resetNodesForSetup();
                     setup = new BsrSetupAbstraction();
                     setup.initializeSetup(gridContainerElement, piecesContainerElement, rotatePiecesElement, removeAllPiecesElement, removePiecesElement, randomPlacementElement);
+                    fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
                     gameShellContainerElement.classList = gameShellSlideLeftClass;
                     playing = null;
+
                 }, 900);
 
             }
@@ -231,7 +376,8 @@
             }
 
         });
-
+        
+        }
         //-------------------------------------------------------------------------
         
     </script>

@@ -1,9 +1,14 @@
 // bsr properties to use with various other bsr files
+// if you plan on changing some of the configurations here you might have to
+// change them as well as in the bsr-config in php as well, as that is
+// seperate and not dependent on this config. (This will most likely be due 
+// to chang in ship counts or grid sizes).
 
-export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors }
+export { bsrGridProperties, bsrGeneralInfo, bsrGridPieces, bsrGridInternals, bsrPieceInteractors, bsrAudio }
 
 // for the bsr tables
 const bsrGridProperties = {
+
     class : 'bsr__table',
     classEnabled : 'bsr__table bsr__table--enabled',
     classDisabled : 'bsr__table bsr__table--disabled',
@@ -17,16 +22,20 @@ const bsrGridProperties = {
     content : {'(1,1)' : 'name',
                '(2,1)' : ' ', '(2,2)' : '1', '(2,3)' : '2', '(2,4)' : '3', '(2,5)' : '4', '(2,6)' : '5', '(2,7)' : '6', '(2,8)' : '7', '(2,9)' : '8', '(2,10)' : '9', '(2,11)' : '10',
                '(3,1)' : 'A', '(4,1)' : 'B', '(5,1)' : 'C', '(6,1)' : 'D', '(7,1)' : 'E', '(8,1)' : 'F', '(9,1)' : 'G', '(10,1)' : 'H', '(11,1)' : 'I', '(12,1)' : 'J'} 
+
 }
 
 // general info for bsr stuff
 const bsrGeneralInfo = {
+
     horizontal : 'horizontal',
     vertical : 'vertical'
+
 }
 
 // for information on play pieces
 const bsrGridPieces = {
+
     carrierHorizontal : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-horizontal', id: 'bsr__table--carrier', rows : 1, columns : 5, content : '' },
     carrierVertical : { count : 1, size : 5, name : 'carrier', class : 'bsr__table bsr__table--enabled bsr__table--carrier-vertical', id: 'bsr__table--carrier', rows : 5, columns : 1, content : '' },
     battleshipHorizontal : { count : 2, size : 4, name : 'battleship', class : 'bsr__table bsr__table--enabled bsr__table--battleship-horizontal', id: 'bsr__table--battleship', rows : 1, columns : 4, content : '' },
@@ -37,10 +46,12 @@ const bsrGridPieces = {
     submarineVertical : { count : 2, size : 3, name : 'submarine', class : 'bsr__table bsr__table--enabled bsr__table--submarine-vertical', id: 'bsr__table--submarine', rows : 3, columns : 1, content : '' },
     patrolboatHorizontal : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-horizontal', id: 'bsr__table--patrolboat', rows : 1, columns : 2, content : '' },
     patrolboatVertical : { count : 3, size : 2, name : 'patrolboat', class : 'bsr__table bsr__table--enabled bsr__table--patrolboat-vertical', id: 'bsr__table--patrolboat', rows : 2, columns : 1, content : '' },
+
 }
 
 // for the various grid internals
 const bsrGridInternals = {
+
     // drag and drop pieces
     dragAndDropId : "bsr__placementplot",
     dragAndDropClassName : "bsr__placementplot",
@@ -67,15 +78,47 @@ const bsrGridInternals = {
     playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
 
     // src for certain images
-    missImage : "./frontend/assets/board-pieces/outcome/miss.png",
-    hitImage : "./frontend/assets/board-pieces/outcome/hit.png",
+    missImage : "./assets/images/board-pieces/outcome/miss.png",
+    hitImage : "./assets/images/board-pieces/outcome/hit.png",
+
 }
 
 // for interacting with various grid pieces
 const bsrPieceInteractors = {
+
     dragAndDropPieceRemoverId : "bsr__pieceremover",
     dragAndDropPieceRemover : '<div class="bsr__pieceremover" id="bsr__pieceremover" ondrop="dropBoardPiece(event)" ondragover="allowDropBoardPiece(event)"></div>',
 
     piecesContainerId : "bsr__piecescontainer",
     piecesContainer : '<div class="bsr__piecescontainer" id="bsr__piecescontainer"></div>'
+
+}
+
+// for sound effects and music
+const bsrAudio = {
+
+    // mostly meant for setup interactions
+    buzz : "./assets/audio/buzz.mp3",
+    rotate : "./assets/audio/rotate.mp3",
+    random : "./assets/audio/random.mp3",
+    remove : "./assets/audio/remove.mp3",
+    dragStart : "./assets/audio/button-up.mp3",
+    dragOver : "./assets/audio/slight-tap.mp3",
+    dragStop : "./assets/audio/button-down.mp3",
+
+    // mostly meant for fetch interactions
+    findGame : "./assets/audio/find-game.mp3",
+    foundGame : "./assets/audio/found-game.mp3",
+    disconnect : "./assets/audio/disconnect.mp3",
+    disconnectAutomatically : "./assets/audio/disconnect-automatically.mp3",
+
+    // mostly meant for play interactions
+    playerPush : "./assets/audio/player-push.mp3",
+    enemyPush : "./assets/audio/enemy-push.mp3",
+    miss : "./assets/audio/miss.mp3",
+    hit : "./assets/audio/hit.mp3",
+    sunk : "./assets/audio/sunk.mp3",
+    win : "./assets/audio/tada-trumpet.mp3",
+    lose : "./assets/audio/sad-trumpet.mp3",
+
 }

@@ -55,16 +55,16 @@ class BsrSetupAbstraction{
         this.#randomPlacementElement;
 
         // pre load all required whole ship scaled pieces
-        this.#carrierh = new Image();    this.#carrierh.src    = "./assets/images/board-pieces/horizontal/whole/carrierscaled.png";
-        this.#carrierv = new Image();    this.#carrierv.src    = "./assets/images/board-pieces/vertical/whole/carrierscaled.png";
-        this.#battleshiph = new Image(); this.#battleshiph.src = "./assets/images/board-pieces/horizontal/whole/battleshipscaled.png";
-        this.#battleshipv = new Image(); this.#battleshipv.src = "./assets/images/board-pieces/vertical/whole/battleshipscaled.png";
-        this.#destroyerh = new Image();  this.#destroyerh.src  = "./assets/images/board-pieces/horizontal/whole/destroyerscaled.png";
-        this.#destroyerv = new Image();  this.#destroyerv.src  = "./assets/images/board-pieces/vertical/whole/destroyerscaled.png";
-        this.#submarineh = new Image();  this.#submarineh.src  = "./assets/images/board-pieces/horizontal/whole/submarinescaled.png";
-        this.#submarinev = new Image();  this.#submarinev.src  = "./assets/images/board-pieces/vertical/whole/submarinescaled.png";
-        this.#patrolboath = new Image(); this.#patrolboath.src = "./assets/images/board-pieces/horizontal/whole/patrolboatscaled.png";
-        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./assets/images/board-pieces/vertical/whole/patrolboatscaled.png";
+        this.#carrierh = new Image();    this.#carrierh.src    = "./frontend/assets/images/board-pieces/horizontal/whole/carrierscaled.png";
+        this.#carrierv = new Image();    this.#carrierv.src    = "./frontend/assets/images/board-pieces/vertical/whole/carrierscaled.png";
+        this.#battleshiph = new Image(); this.#battleshiph.src = "./frontend/assets/images/board-pieces/horizontal/whole/battleshipscaled.png";
+        this.#battleshipv = new Image(); this.#battleshipv.src = "./frontend/assets/images/board-pieces/vertical/whole/battleshipscaled.png";
+        this.#destroyerh = new Image();  this.#destroyerh.src  = "./frontend/assets/images/board-pieces/horizontal/whole/destroyerscaled.png";
+        this.#destroyerv = new Image();  this.#destroyerv.src  = "./frontend/assets/images/board-pieces/vertical/whole/destroyerscaled.png";
+        this.#submarineh = new Image();  this.#submarineh.src  = "./frontend/assets/images/board-pieces/horizontal/whole/submarinescaled.png";
+        this.#submarinev = new Image();  this.#submarinev.src  = "./frontend/assets/images/board-pieces/vertical/whole/submarinescaled.png";
+        this.#patrolboath = new Image(); this.#patrolboath.src = "./frontend/assets/images/board-pieces/horizontal/whole/patrolboatscaled.png";
+        this.#patrolboatv = new Image(); this.#patrolboatv.src = "./frontend/assets/images/board-pieces/vertical/whole/patrolboatscaled.png";
 
         // get all required audios for playing on event handlers
         this.#rotateAudio = new Audio(bsrAudio.rotate);

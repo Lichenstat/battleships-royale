@@ -78,8 +78,8 @@ const bsrGridInternals = {
     playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
 
     // src for certain images
-    missImage : "./assets/images/board-pieces/outcome/miss.png",
-    hitImage : "./assets/images/board-pieces/outcome/hit.png",
+    missImage : "./frontend/assets/images/board-pieces/outcome/miss.png",
+    hitImage : "./frontend/assets/images/board-pieces/outcome/hit.png",
 
 }
 
@@ -98,27 +98,27 @@ const bsrPieceInteractors = {
 const bsrAudio = {
 
     // mostly meant for setup interactions
-    buzz : "./assets/audio/buzz.mp3",
-    rotate : "./assets/audio/rotate.mp3",
-    random : "./assets/audio/random.mp3",
-    remove : "./assets/audio/remove.mp3",
-    dragStart : "./assets/audio/button-up.mp3",
-    dragOver : "./assets/audio/slight-tap.mp3",
-    dragStop : "./assets/audio/button-down.mp3",
+    buzz : "./frontend/assets/audio/buzz.mp3",
+    rotate : "./frontend/assets/audio/rotate.mp3",
+    random : "./frontend/assets/audio/random.mp3",
+    remove : "./frontend/assets/audio/remove.mp3",
+    dragStart : "./frontend/assets/audio/button-up.mp3",
+    dragOver : "./frontend/assets/audio/slight-tap.mp3",
+    dragStop : "./frontend/assets/audio/button-down.mp3",
 
     // mostly meant for fetch interactions
-    findGame : "./assets/audio/find-game.mp3",
-    foundGame : "./assets/audio/found-game.mp3",
-    disconnect : "./assets/audio/disconnect.mp3",
-    disconnectAutomatically : "./assets/audio/disconnect-automatically.mp3",
+    findGame : "./frontend/assets/audio/find-game.mp3",
+    foundGame : "./frontend/assets/audio/found-game.mp3",
+    disconnect : "./frontend/assets/audio/disconnect.mp3",
+    disconnectAutomatically : "./frontend/assets/audio/disconnect-automatically.mp3",
 
     // mostly meant for play interactions
-    playerPush : "./assets/audio/player-push.mp3",
-    enemyPush : "./assets/audio/enemy-push.mp3",
-    miss : "./assets/audio/miss.mp3",
-    hit : "./assets/audio/hit.mp3",
-    sunk : "./assets/audio/sunk.mp3",
-    win : "./assets/audio/tada-trumpet.mp3",
-    lose : "./assets/audio/sad-trumpet.mp3",
+    playerPush : "./frontend/assets/audio/player-push.mp3",
+    enemyPush : "./frontend/assets/audio/enemy-push.mp3",
+    miss : "./frontend/assets/audio/miss.mp3",
+    hit : "./frontend/assets/audio/hit.mp3",
+    sunk : "./frontend/assets/audio/sunk.mp3",
+    win : ".frontend//assets/audio/tada-trumpet.mp3",
+    lose : "./frontend/assets/audio/sad-trumpet.mp3",
 
 }

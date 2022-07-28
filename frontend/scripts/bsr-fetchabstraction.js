@@ -74,7 +74,7 @@ class BsrFetchAbstraction{
 
         // send fetch request to server to get game info every interval
         setInterval(() => {
-            this.#fetch.checkConnectedState();
+            //this.#fetch.checkConnectedState();
         }, this.#fetchInterval);
         
         // update ui with current info
@@ -97,7 +97,8 @@ class BsrFetchAbstraction{
 
     // get the connected state of the fetch
     getConnectedState(){
-        return this.#fetch.getConnectedState();
+        return false;
+        //return this.#fetch.getConnectedState();
     }
 
     // get ready state of fetch
@@ -112,12 +113,12 @@ class BsrFetchAbstraction{
 
     // set the ready state of our game
     setReadyState(bool = false){
-        this.#fetch.setReadyState(bool);
+        //this.#fetch.setReadyState(bool);
     }
 
     // disconnect from game
     disconnectFromGame(){
-        this.#fetch.disconnectFromGame();
+        //this.#fetch.disconnectFromGame();
         this.#fetch.setReadyState(false);
     }
 
@@ -166,7 +167,7 @@ class BsrFetchAbstraction{
         let quitGame = quitGameElement.children[0];
 
         quitGame.addEventListener("click", elemItem => {
-            this.#fetch.quitCurrentGame();
+            //this.#fetch.quitCurrentGame();
         })
 
     }

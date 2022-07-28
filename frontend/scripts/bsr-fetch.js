@@ -40,9 +40,9 @@ class BsrFetchMethods{
         this.#checkGameCodeCycleTime = 5000; // 1 minute is 60000
 
         // assign our game code and keep updating its timeout
-        this.#checkGameCode();
+        //this.#checkGameCode();
         setInterval(() => {
-            this.#checkGameCode();
+            //this.#checkGameCode();
         }, this.#checkGameCodeCycleTime);
 
         // waiting on other player to join the game
@@ -87,7 +87,7 @@ class BsrFetchMethods{
     // set the ready state of the players game
     setReadyState(bool = false){
         this.#readyState = bool;
-        this.updateReadyState();
+        //this.updateReadyState();
     }
     
     //-------------------------------------------------------------------------

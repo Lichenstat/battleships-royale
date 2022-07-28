@@ -70,7 +70,7 @@ class BsrPlay {
             // for now use original player to get a modifiable pieces count for multiplayer use
             this.#lastEnemyPiecesCount = this.#playerPiecesData.getPiecesLeftThatHaveLocations();
             this.#fetchMethods.setReadyState(false);
-            this.#fetchMethods.setupInitialGame(this.#playerPiecesData, this.#playSetupInfo);
+            //this.#fetchMethods.setupInitialGame(this.#playerPiecesData, this.#playSetupInfo);
             this.#playerCanUseButtons = false;
 
         }
@@ -119,8 +119,8 @@ class BsrPlay {
         if (!this.#isPlayingAgainstAi){
             this.#intervalRuntime = setInterval(() => {
                 //console.log("checking for game update");
-                this.#fetchMethods.checkUpdateInformation(this.#currentPlayInfo, this.#hasInfoUpdated);
-                this.playRuntime();
+                //this.#fetchMethods.checkUpdateInformation(this.#currentPlayInfo, this.#hasInfoUpdated);
+                //this.playRuntime();
                 //console.log(this.#currentPlayInfo);
             }, this.#intervalTimer);
         }

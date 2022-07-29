@@ -85,6 +85,7 @@
         import { BsrSetupAbstraction } from "./scripts/bsr-setupabstraction.js";
         import { BsrPlayAbstraction } from "./scripts/bsr-playabstraction.js";
         import { BsrFetchAbstraction } from "./scripts/bsr-fetchabstraction.js";
+        import { bsrAudio } from "./scripts/bsr-config.js";
         import { Helper } from "./scripts/helper.js";
         import { arbitraryThingy } from "./scripts/sus.js";
 
@@ -104,7 +105,7 @@
         //--------------------------------------------------------------
 
         // play audio on page load
-        new Audio("./assets/audio/ocean-wave-quick.mp3").play();
+        new Audio(bsrAudio.entrance).play();
 
         // get our elements to easily initialize bsr setup
 
@@ -195,9 +196,9 @@
         fetch.initializeFetch(textInfoElement, playerShipInfoElement, enemyShipInfoElement, changeStatesElement);
 
         // audio to play during runtime
-        let buzz = new Audio("./assets/audio/buzzer.mp3");
-        let swooshIn = new Audio("./assets/audio/woosh-blow-reverse.mp3");
-        let swooshOut = new Audio("./assets/audio/woosh-blow.mp3");
+        let buzz = new Audio(bsrAudio.buzz);
+        let swooshIn = new Audio(bsrAudio.swooshIn);
+        let swooshOut = new Audio(bsrAudio.swooshOut);
 
         // buttons defining state change between setup and playing
         const playerTableButton = '<button type="button" id="bsr__generateplayertable" class="bsr__generateplayertable bsr--border bsr--rounded bsr--text">Start Game</button>';

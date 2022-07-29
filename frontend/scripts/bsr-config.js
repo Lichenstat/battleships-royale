@@ -77,9 +77,22 @@ const bsrGridInternals = {
     playerPieceOutcomeImageId: "bsr__outcomeimage",
     playerPieceBlankOutcomeImage : '<img class="bsr__outcomeimage" id="bsr__outcomeimage" src="">',
 
-    // src for certain images
+    // src for certain outcome images
     missImage : "./assets/images/board-pieces/outcome/miss.png",
-    hitImage : "./assets/images/board-pieces/outcome/hit.png",
+    hitImage :  "./assets/images/board-pieces/outcome/hit.png",
+
+    // src for ceratin ship images
+    carrierHorizontal :    "./assets/images/board-pieces/horizontal/whole/carrierscaled.png",
+    carrierVertical :      "./assets/images/board-pieces/vertical/whole/carrierscaled.png",
+    battleshipHorizontal : "./assets/images/board-pieces/horizontal/whole/battleshipscaled.png",
+    battleshipVertical :   "./assets/images/board-pieces/vertical/whole/battleshipscaled.png",
+    destroyerHorizontal :  "./assets/images/board-pieces/horizontal/whole/destroyerscaled.png",
+    destroyerVertical :    "./assets/images/board-pieces/vertical/whole/destroyerscaled.png",
+    submarineHorizontal :  "./assets/images/board-pieces/horizontal/whole/submarinescaled.png",
+    submarineVertical :    "./assets/images/board-pieces/vertical/whole/submarinescaled.png",
+    patrolboatHorizontal : "./assets/images/board-pieces/horizontal/whole/patrolboatscaled.png",
+    patrolboatVertical :   "./assets/images/board-pieces/vertical/whole/patrolboatscaled.png",
+
 
 }
 
@@ -97,8 +110,13 @@ const bsrPieceInteractors = {
 // for sound effects and music
 const bsrAudio = {
 
+    // mostly meant for the main HTML page
+    entrance : "./assets/audio/ocean-wave-quick.mp3",
+    buzz : "./assets/audio/buzzer.mp3",
+    swooshIn : "./assets/audio/woosh-blow-reverse.mp3",
+    swooshOut : "./assets/audio/woosh-blow.mp3",
+
     // mostly meant for setup interactions
-    buzz : "./assets/audio/buzz.mp3",
     rotate : "./assets/audio/rotate.mp3",
     random : "./assets/audio/random.mp3",
     remove : "./assets/audio/remove.mp3",

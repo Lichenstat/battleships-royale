@@ -28,14 +28,15 @@
 + Important For Deploying:
 	+ Some files directories (and hrefs/srcs) might need to be changed depending on hosting options (some sites only allow index to be the main HTML file, the current main HTML file is game.html). If needed to be changed, they can be found in:
 		+ Frontend:
-			+ bsr-game.html (as modules, stylesheet, images, sounds)
+			+ bsr-game.html (as modules, stylesheet, images)
 			+ bsr-config.js (as images and sounds)
-			+ bsr-setupabstraction.js (as images)
 			+ bsr-playpieces.js (as #createGridPieceContents line 103)
 			+ bsr-fetch.js (as this.#transmitURL for fetch connection URL)
 		+ Backend:
 			+ bsr-dbinfo-example.php (update necessary information for database connection and change the name of the file to bsr-dbinfo.php)
+	+ When initializing and needing to create the necessary tables for the Battleships game there is a 
+	method in bsr-dbmethods.php called createTables() that can be called once to automatically set up all the tables (as long as the said database user calling this methods and its queries has SQL permission to create tables as necessary)
 	
-	+ (Side note: The code for this project is somewhat rough at the current moment and could use some nice refactoring)
++ (Side note: The code for this project is somewhat rough at the current moment and could use some nice refactoring)
 	
 	
